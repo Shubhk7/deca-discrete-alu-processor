@@ -1,175 +1,161 @@
-# Pinouts and Complete Interconnection Guide
-## 4-Bit Reconfigurable ALU (Hardware Implementation)
+# Pinouts, Truth Tables, and Complete Interconnection Guide
+## Dual-Mode 8-Bit Reconfigurable ALU with 74LS181 Golden Reference & Hardware Verifier
 
-This document provides the exact pinouts, connection maps, and electrical rules for building the 4-bit ALU on breadboard and transferring to a plain perfboard/zero-PCB.
+This document provides complete pinouts, truth tables, and connection schematics for the **Dual-Mode Reconfigurable ALU**:
+* **Mode 0 (8-Bit Compute Mode)**: Cascades the **Custom 4-Bit ALU** (Lower Nibble $D_0–D_3$) with the **74LS181** (Upper Nibble $D_4–D_7$) via carry propagation ($C_4 \to C_n$).
+* **Mode 1 (4-Bit Hardware Verification Mode)**: Both ALUs run the same 4-bit inputs in parallel, and a **74LS85 magnitude comparator** performs real-time equivalence checking (Green PASS / Red FAIL).
 
 ---
 
 ## 1. Integrated Circuit (IC) Pinout Reference
 
-All ICs are standard Dual In-line Package (DIP), viewed from the top with the notch/dot at the top.
+All ICs are standard Dual In-line Package (DIP), viewed from the top with the orientation notch at the top.
 
-### 1.1 74LS283 (4-Bit Binary Full Adder with Fast Carry) - 16 Pins
+### 1.1 74LS181 (4-Bit Arithmetic Logic Unit / Function Generator) - 24 Pins (Skinny DIP)
 ```
-                +---V---+
-          S1 -- | 1   16| -- VCC (+5V)
-          B1 -- | 2   15| -- A1
-          A2 -- | 3   14| -- B2
-          S2 -- | 4   13| -- S0
-         VCC -- | 5   12| -- C0 (Carry In)
-         B3  -- | 6   11| -- B0
-         A3  -- | 7   10| -- A0
-         GND -- | 8    9| -- C4 (Carry Out)
-                +-------+
+                  +-------V-------+
+            /B0 - | 1          24 | - VCC (+5V)
+            /A0 - | 2          23 | - /A1
+             S3 - | 3          22 | - /B1
+             S2 - | 4          21 | - /A2
+             S1 - | 5          20 | - /B2
+             S0 - | 6          19 | - /A3
+          /Cn+4 - | 7          18 | - /B3
+              M - | 8          17 | - G (Generate)
+            /F0 - | 9          16 | - /P (Propagate)
+            /F1 - | 10         15 | - /Cn (Carry In)
+            /F2 - | 11         14 | - /F3
+            GND - | 12         13 | - A=B (Open-collector output)
+                  +---------------+
 ```
-> **Note on Power Pins**: 
-> * **Pin 16**: $V_{CC}$ (+5V)
-> * **Pin 5**: Internally connected $V_{CC}$ (tie to +5V)
-> * **Pin 8**: GND (0V)
-> * Inputs: $A = [A_3, A_2, A_1, A_0]$, $B = [B_3, B_2, B_1, B_0]$, $C_0 = \text{Carry In}$
-> * Outputs: $S = [S_3, S_2, S_1, S_0]$, $C_4 = \text{Carry Out}$ (Pin 9)
+* **Power**: Pin 24 = $+5\text{ V}$ ($V_{CC}$), Pin 12 = $\text{GND}$ (0V).
+* **Mode ($M$)**: Pin 8
+  * $M = 1$ (HIGH) $\implies$ **Logic Operations** (internal carries disabled).
+  * $M = 0$ (LOW) $\implies$ **Arithmetic Operations** (internal carries active).
+* **Carry-In ($\overline{C_n}$)**: Pin 15 (Active-LOW in active-high data convention).
+* **Carry-Out ($\overline{C_{n+4}}$)**: Pin 7 (Active-LOW).
+* **Function Select ($S_3, S_2, S_1, S_0$)**: Pins 3, 4, 5, 6.
+* **Operand Inputs**: $A_0..A_3$ (Pins 2, 23, 21, 19), $B_0..B_3$ (Pins 1, 22, 20, 18).
+* **Function Outputs**: $F_0..F_3$ (Pins 9, 10, 11, 14).
+
+#### 74LS181 Function Table (Active-High Data Convention)
+| $S_3$ | $S_2$ | $S_1$ | $S_0$ | Logic ($M=1$) | Arithmetic ($M=0, \overline{C_n}=0$ with Carry) | Arithmetic ($M=0, \overline{C_n}=1$ No Carry) |
+| :---: | :---: | :---: | :---: | :--- | :--- | :--- |
+| 1 | 0 | 0 | 1 | $F = A \oplus B$ (XOR) | **$F = A + B + 1$** | **$F = A + B$ (ADD)** |
+| 0 | 1 | 1 | 0 | $F = \overline{A \oplus B}$ (XNOR) | **$F = A - B$ (SUB)** | $F = A - B - 1$ |
+| 1 | 1 | 1 | 0 | **$F = A \cdot B$ (AND)** | $F = (A\overline{B}) + A + 1$ | $F = (A\overline{B}) + A$ |
+| 1 | 0 | 1 | 1 | **$F = A + B$ (OR)** | $F = (A + B) + 1$ | $F = A + B$ |
+| 0 | 0 | 0 | 0 | **$F = \overline{A}$ (NOT A)** | $F = A$ | $F = A - 1$ |
+| 1 | 1 | 1 | 1 | $F = A$ | **$F = A + 1$ (INC A)** | $F = A$ |
+| 1 | 1 | 0 | 0 | **$F = 0$ (CLEAR)** | $F = (A + A) + 1$ | $F = A + A$ |
 
 ---
 
-### 1.2 74LS86 (Quad 2-Input XOR Gate) - 14 Pins
+### 1.2 74LS85 (4-Bit Magnitude Comparator) - 16 Pins
 ```
-                +---V---+
-          1A -- | 1   14| -- VCC (+5V)
-          1B -- | 2   13| -- 4B
-          1Y -- | 3   12| -- 4A
-          2A -- | 4   11| -- 4Y
-          2B -- | 5   10| -- 3B
-          2Y -- | 6    9| -- 3A
-         GND -- | 7    8| -- 3Y
-                +-------+
+                  +-------V-------+
+             B3 - | 1          16 | - VCC (+5V)
+        I(A<B) - | 2          15 | - A3
+        I(A=B) - | 3          14 | - B2
+        I(A>B) - | 4          13 | - A2
+        O(A>B) - | 5          12 | - A1
+        O(A=B) - | 6          11 | - B1
+        O(A<B) - | 7          10 | - A0
+            GND - | 8           9 | - B0
+                  +---------------+
 ```
-* **Pin 14**: $V_{CC}$ (+5V) | **Pin 7**: GND (0V)
-* Gate 1: Inputs Pins 1, 2 $\to$ Output Pin 3 ($1Y = 1A \oplus 1B$)
-* Gate 2: Inputs Pins 4, 5 $\to$ Output Pin 6 ($2Y = 2A \oplus 2B$)
-* Gate 3: Inputs Pins 9, 10 $\to$ Output Pin 8 ($3Y = 3A \oplus 3B$)
-* Gate 4: Inputs Pins 12, 13 $\to$ Output Pin 11 ($4Y = 4A \oplus 4B$)
+* **Power**: Pin 16 = $+5\text{ V}$, Pin 8 = $\text{GND}$.
+* **Cascading Inputs (Crucial)**:
+  * **Pin 3 ($I_{A=B}$)**: **TIE TO +5V (HIGH)**.
+  * **Pin 2 ($I_{A<B}$)**: Tie to GND (LOW).
+  * **Pin 4 ($I_{A>B}$)**: Tie to GND (LOW).
+* **Comparison Inputs**:
+  * $A = [A_3, A_2, A_1, A_0]$: Pins 15, 13, 12, 10 $\to$ Connect to **Custom ALU Outputs $Y_3..Y_0$**.
+  * $B = [B_3, B_2, B_1, B_0]$: Pins 1, 14, 11, 9 $\to$ Connect to **74LS181 Outputs $F_3..F_0$**.
+* **Equivalence Output**:
+  * **Pin 6 ($O_{A=B}$)**: Goes **HIGH (+5V)** when Custom ALU Output == 74LS181 Output!
+  * Connect Pin 6 $\to 330\ \Omega \to$ **Green "PASS / VERIFIED" LED** $\to$ GND.
+  * Connect Pin 6 $\to$ Inverter $\to 330\ \Omega \to$ **Red "MISMATCH / FAULT" LED** $\to$ GND.
 
 ---
 
-### 1.3 74LS08 (Quad 2-Input AND Gate) - 14 Pins
+### 1.3 74LS157 (Quad 2-to-1 Data Selector / Multiplexer) - 16 Pins
+Used for electronic switching between **Mode 0 (8-Bit Compute)** and **Mode 1 (4-Bit Verify)**.
 ```
-                +---V---+
-          1A -- | 1   14| -- VCC (+5V)
-          1B -- | 2   13| -- 4B
-          1Y -- | 3   12| -- 4A
-          2A -- | 4   11| -- 4Y
-          2B -- | 5   10| -- 3B
-          2Y -- | 6    9| -- 3A
-         GND -- | 7    8| -- 3Y
-                +-------+
+                  +-------V-------+
+         SELECT - | 1          16 | - VCC (+5V)
+             1A - | 2          15 | - /STROBE (GND)
+             1B - | 3          14 | - 4A
+             1Y - | 4          13 | - 4B
+             2A - | 5          12 | - 4Y
+             2B - | 6          11 | - 3A
+             2Y - | 7          10 | - 3B
+            GND - | 8           9 | - 3Y
+                  +---------------+
 ```
-* **Pin 14**: $V_{CC}$ (+5V) | **Pin 7**: GND (0V)
-* Gate 1: Pins 1, 2 $\to$ Out Pin 3 ($1Y = 1A \cdot 1B$)
-* Gate 2: Pins 4, 5 $\to$ Out Pin 6 ($2Y = 2A \cdot 2B$)
-* Gate 3: Pins 9, 10 $\to$ Out Pin 8 ($3Y = 3A \cdot 3B$)
-* Gate 4: Pins 12, 13 $\to$ Out Pin 11 ($4Y = 4A \cdot 4B$)
+* **Pin 1 (SELECT)**:
+  * $0$ (LOW) $\implies$ Outputs $1Y..4Y$ follow Inputs $1A..4A$ (**Mode 0: 8-Bit Compute**).
+  * $1$ (HIGH) $\implies$ Outputs $1Y..4Y$ follow Inputs $1B..4B$ (**Mode 1: 4-Bit Verify**).
+* **Pin 15 ($\overline{\text{STROBE}}$)**: **Tie to GND** (Enable).
 
 ---
 
-### 1.4 74LS32 (Quad 2-Input OR Gate) - 14 Pins
-```
-                +---V---+
-          1A -- | 1   14| -- VCC (+5V)
-          1B -- | 2   13| -- 4B
-          1Y -- | 3   12| -- 4A
-          2A -- | 4   11| -- 4Y
-          2B -- | 5   10| -- 3B
-          2Y -- | 6    9| -- 3A
-         GND -- | 7    8| -- 3Y
-                +-------+
-```
-* **Pin 14**: $V_{CC}$ (+5V) | **Pin 7**: GND (0V)
-* Gate 1: Pins 1, 2 $\to$ Out Pin 3 ($1Y = 1A + 1B$)
-* Gate 2: Pins 4, 5 $\to$ Out Pin 6 ($2Y = 2A + 2B$)
-* Gate 3: Pins 9, 10 $\to$ Out Pin 8 ($3Y = 3A + 3B$)
-* Gate 4: Pins 12, 13 $\to$ Out Pin 11 ($4Y = 4A + 4B$)
+### 1.4 Custom 4-Bit ALU Core ICs
+
+| IC | Function | Pins | Critical Connections |
+| :--- | :--- | :---: | :--- |
+| **74LS283** | 4-bit Binary Full Adder | 16 | Pin 16 & 5 to +5V, Pin 8 to GND. Carry In = Pin 12 ($C_0$). Carry Out = Pin 9 ($C_4$). |
+| **74LS86** | Quad 2-input XOR Gate (2 ICs) | 14 | IC #1: Conditional B inverter ($B \oplus SUB$). IC #2: Logic XOR. |
+| **74LS08** | Quad 2-input AND Gate | 14 | Logic AND ($A \cdot B$). |
+| **74LS32** | Quad 2-input OR Gate | 14 | Logic OR ($A + B$). |
+| **74LS04** | Hex Inverter / NOT Gate | 14 | Logic NOT ($\overline{A}$). |
+| **74LS151** | 8:1 MUX (4 ICs) | 16 | 1 MUX per bit. Pin 7 ($\overline{E}$) to GND. Select lines $S_0, S_1, S_2$ on Pins 11, 10, 9. |
 
 ---
 
-### 1.5 74LS04 (Hex Inverter / NOT Gate) - 14 Pins
-```
-                +---V---+
-          1A -- | 1   14| -- VCC (+5V)
-          1Y -- | 2   13| -- 6A
-          2A -- | 3   12| -- 6Y
-          2Y -- | 4   11| -- 5A
-          3A -- | 5   10| -- 5Y
-          3Y -- | 6    9| -- 4A
-         GND -- | 7    8| -- 4Y
-                +-------+
-```
-* **Pin 14**: $V_{CC}$ (+5V) | **Pin 7**: GND (0V)
-* Inverter 1: Pin 1 $\to$ Pin 2 ($1Y = \overline{1A}$)
-* Inverter 2: Pin 3 $\to$ Pin 4 ($2Y = \overline{2A}$)
-* Inverter 3: Pin 5 $\to$ Pin 6 ($3Y = \overline{3A}$)
-* Inverter 4: Pin 9 $\to$ Pin 8 ($4Y = \overline{4A}$)
-* Inverter 5: Pin 11 $\to$ Pin 10 ($5Y = \overline{5A}$)
-* Inverter 6: Pin 13 $\to$ Pin 12 ($6Y = \overline{6A}$)
+## 2. Operation Mapping & Opcode Translation
+
+The system uses a unified 3-bit Opcode ($S_2, S_1, S_0$) that controls both ALUs:
+
+| Opcode ($S_2 S_1 S_0$) | Selected Operation | Custom ALU MUX Input | 74LS181 Mode ($M$) | 74LS181 Select ($S_3 S_2 S_1 S_0$) | 74LS181 Carry-In ($\overline{C_n}$) |
+| :---: | :--- | :---: | :---: | :---: | :---: |
+| `000` | **ADD** ($A + B$) | $D_0$ | `0` (Arith) | `1 0 0 1` | `1` (No carry-in) |
+| `001` | **SUB** ($A - B$) | $D_1$ | `0` (Arith) | `0 1 1 0` | `0` (Active carry-in) |
+| `010` | **AND** ($A \cdot B$) | $D_2$ | `1` (Logic) | `1 1 1 0` | X |
+| `011` | **OR** ($A + B$) | $D_3$ | `1` (Logic) | `1 0 1 1` | X |
+| `100` | **XOR** ($A \oplus B$) | $D_4$ | `1` (Logic) | `1 0 0 1` | X |
+| `101` | **NOT A** ($\overline{A}$) | $D_5$ | `1` (Logic) | `0 0 0 0` | X |
+| `110` | **INC A** ($A + 1$) | $D_6$ | `0` (Arith) | `1 1 1 1` | `0` (With carry-in) |
+| `111` | **CLEAR** (`0000`) | $D_7$ | `1` (Logic) | `1 1 0 0` | X |
 
 ---
 
-### 1.6 74LS151 / 74HC151 (8-to-1 Line Multiplexer) - 16 Pins
+## 3. Dual-Mode Input Routing Schematic
+
 ```
-                +---V---+
-          D3 -- | 1   16| -- VCC (+5V)
-          D2 -- | 2   15| -- D4
-          D1 -- | 3   14| -- D5
-          D0 -- | 4   13| -- D6
-           Y -- | 5   12| -- D7
-          /Y -- | 6   11| -- A (Select S0)
-      /STROBE - | 7   10| -- B (Select S1)
-         GND -- | 8    9| -- C (Select S2)
-                +-------+
+                                [ MODE SWITCH ]
+                           (0 = COMPUTE, 1 = VERIFY)
+                                       |
+                 +---------------------+---------------------+
+                 |                                           |
+                 v                                           v
+       [ 74LS157 #1 (A-Bus) ]                      [ 74LS157 #2 (B-Bus) ]
+       1A..4A: A[7..4] (Upper Nibble)              1A..4A: B[7..4] (Upper Nibble)
+       1B..4B: A[3..0] (Lower Nibble)              1B..4B: B[3..0] (Lower Nibble)
+                 |                                           |
+                 +---------------------+---------------------+
+                                       |
+                                       v
+                             [ 74LS181 Inputs ]
+                                A3..A0, B3..B0
+
+                             [ Custom ALU Inputs ]
+                       Always A[3..0] and B[3..0] Direct
 ```
-* **Pin 16**: $V_{CC}$ (+5V) | **Pin 8**: GND (0V)
-* **Pin 7 (/STROBE / Enable)**: **MUST BE TIED TO GND (0V)** to enable output.
-* **Select Inputs**:
-  * Pin 11: $A$ (Least Significant Bit $S_0$)
-  * Pin 10: $B$ (Middle Bit $S_1$)
-  * Pin 9: $C$ (Most Significant Bit $S_2$)
-* **Data Inputs**: Pins 4 ($D_0$), 3 ($D_1$), 2 ($D_2$), 1 ($D_3$), 15 ($D_4$), 14 ($D_5$), 13 ($D_6$), 12 ($D_7$)
-* **Output**: Pin 5 ($Y$ - Active High Output)
 
----
-
-## 2. Operation Mapping & Multiplexer Inputs
-
-For each bit position $k \in \{0, 1, 2, 3\}$, Multiplexer $k$ selects the $k$-th bit of the result:
-
-| Opcode ($S_2 S_1 S_0$) | Selected Input | Operation | Logic / Equation for Bit $k$ | Source Signal |
-| :---: | :---: | :--- | :--- | :--- |
-| `000` | $D_0$ | **ADD** ($A + B$) | $S_k$ from 74LS283 (when $SUB=0$) | 74LS283 Sum Output $S_k$ |
-| `001` | $D_1$ | **SUB** ($A - B$) | $S_k$ from 74LS283 (when $SUB=1$) | 74LS283 Sum Output $S_k$ *(Tied to $D_0$)* |
-| `010` | $D_2$ | **AND** ($A \cdot B$) | $A_k \cdot B_k$ | 74LS08 Output $k$ |
-| `011` | $D_3$ | **OR** ($A + B$) | $A_k + B_k$ | 74LS32 Output $k$ |
-| `100` | $D_4$ | **XOR** ($A \oplus B$) | $A_k \oplus B_k$ | 74LS86 Output $k$ |
-| `101` | $D_5$ | **NOT A** ($\overline{A}$) | $\overline{A_k}$ | 74LS04 Output $k$ |
-| `110` | $D_6$ | **INC A** ($A + 1$) | Incrementer logic bit $k$ | Discrete adder/logic bit $k$ |
-| `111` | $D_7$ | **CLEAR** (`0000`) | Constant `0` | Tied to GND (0V) |
-
-> **Smart Wiring Trick**: 
-> Notice that for MUX input $D_0$ (ADD) and $D_1$ (SUB), the Adder already outputs $A+B$ when $S_0=0$ and $A-B$ when $S_0=1$. 
-> Therefore, **Pin $D_0$ and Pin $D_1$ on each 74LS151 MUX can be tied directly together and connected to the corresponding Sum pin of the 74LS283 Adder!** This eliminates redundant circuitry.
-
----
-
-## 3. Subtraction Control Logic ($SUB$)
-
-Two's complement subtraction:
-$$A - B = A + \overline{B} + 1$$
-
-To achieve this:
-1. When subtraction is selected (`001`), the $SUB$ line becomes `1`.
-   $$SUB = \overline{S_2} \cdot \overline{S_1} \cdot S_0$$
-   *(Or simply use the $S_0$ line when $S_2 S_1 = 00$)*.
-2. Invert operand $B$: Each bit $B_k$ is fed through an XOR gate with $SUB$:
-   $$B'_k = B_k \oplus SUB$$
-   * If $SUB = 0$: $B'_k = B_k \oplus 0 = B_k$ (Direct addition).
-   * If $SUB = 1$: $B'_k = B_k \oplus 1 = \overline{B_k}$ (Inverted for 2's complement).
-3. Connect $SUB$ to the Carry-In ($C_0$, Pin 12) of 74LS283:
-   * When $SUB = 1$, $+1$ is automatically added!
+### Carry Routing Logic:
+* In **Mode 0 (8-Bit Compute)**:
+  * Carry-In to Custom ALU: $C_0 = SUB$.
+  * Carry-In to 74LS181: Connect Custom ALU Carry-Out ($C_4$) to 74LS181 Carry-In ($\overline{C_n}$).
+* In **Mode 1 (4-Bit Verify)**:
+  * Both ALUs receive the exact same carry-in condition for independent parallel operation.

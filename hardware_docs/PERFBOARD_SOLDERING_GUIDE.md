@@ -1,104 +1,91 @@
 # Plain PCB (Perfboard / Zero-PCB) Transfer & Soldering Guide
-## How to Migrate from Breadboard to a Permanent Hardware Circuit
+## Dual-Mode 8-Bit ALU with 74LS181 Golden Verifier
 
-Migrating a digital circuit from a solderless breadboard to a plain perfboard (also known as a general-purpose dot-matrix PCB or Zero-PCB) turns a temporary prototype into a rugged, permanent engineering showcase.
-
-Follow these rules to ensure your board works on the first power-up without damaged ICs or hours of desoldering.
+Transferring your verified breadboard circuit to a permanent perfboard (zero-PCB) creates a professional, road-tested piece of hardware. This guide details the floorplan, socket list, and soldering procedure for the full **Dual-Mode 8-Bit Architecture**.
 
 ---
 
-## 1. The #1 Golden Rule: ALWAYS Use DIP IC Sockets
+## 1. Sockets & Hardware Parts Required
 
 > [!CAUTION]
-> **NEVER solder TTL ICs directly onto the perfboard!**
-> * Prolonged heat from a soldering iron (above 260°C for >3 seconds) can permanently degrade or destroy internal bipolar junctions.
-> * If a wiring mistake shorts an output pin, you cannot easily replace a soldered IC without damaging the copper pads.
-> * **Always solder IC Sockets** (14-pin and 16-pin DIP sockets) to the board first. The actual chips are pressed into the sockets only after all soldering and voltage tests are 100% complete.
+> **NEVER solder TTL ICs directly to the perfboard!** Always solder DIP sockets first.
+
+* **DIP IC Sockets**:
+  * 1× **24-Pin DIP Socket** (Skinny 0.3" pitch) $\to$ for **74LS181** (Commercial ALU)
+  * 1× **16-Pin DIP Socket** $\to$ for **74LS283** (4-Bit Adder)
+  * 4× **16-Pin DIP Sockets** $\to$ for **74LS151** (8:1 Multiplexers)
+  * 1× **16-Pin DIP Socket** $\to$ for **74LS85** (Magnitude Comparator)
+  * 2× **16-Pin DIP Sockets** (Optional) $\to$ for **74LS157** (Mode Steer MUXes)
+  * 2× **14-Pin DIP Sockets** $\to$ for **74LS86** (XOR Gates)
+  * 1× **14-Pin DIP Socket** $\to$ for **74LS08** (AND Gates)
+  * 1× **14-Pin DIP Socket** $\to$ for **74LS32** (OR Gates)
+  * 1× **14-Pin DIP Socket** $\to$ for **74LS04** (NOT Gates)
+* **Board Dimensions**: 1 large perfboard (e.g., $12\text{ cm} \times 18\text{ cm}$ or $15\text{ cm} \times 20\text{ cm}$) or two medium perfboards linked with header pins.
+* **Passives**: 0.1 µF ceramic capacitors (one per socket), 10 kΩ pull-down resistor SIP arrays, 330 Ω LED resistors.
+* **Indicators**: 8× Blue/Green LEDs ($Y_7..Y_0$), 1× Green LED ("PASS"), 1× Red LED ("FAIL").
 
 ---
 
-## 2. Floorplanning & Component Layout
+## 2. Perfboard Floorplan
 
-Before heating up your soldering iron, place all components onto the perfboard without soldering to check spacing.
+Plan the component placement with all signals flowing cleanly from **Left (Inputs) $\to$ Center (Processing) $\to$ Right (Telemetry & Outputs)**:
 
 ```
-+-------------------------------------------------------------------------+
-| [POWER JACK]  [PWR LED]        +5V POWER BUS RAIL                       |
-|                                                                         |
-|  +-------+     +----------+     +----------+     +-------------------+  |
-|  | DIP   |     | 74LS283  |     | 74LS08   |     | 74LS151 (MUX 0)   |  |
-|  | SW (A)|     | (Adder)  |     | (AND)    |     | 74LS151 (MUX 1)   |  |
-|  +-------+     +----------+     +----------+     | 74LS151 (MUX 2)   |  |
-|  | DIP   |     | 74LS86   |     | 74LS32   |     | 74LS151 (MUX 3)   |  |
-|  | SW (B)|     | (XOR)    |     | (OR)     |     +-------------------+  |
-|  +-------+     +----------+     +----------+               |            |
-|  | OPCODE|                      | 74LS04   |         [4x LEDs + Res]    |
-|  | SWITCH|                      | (NOT)    |         (Result Y3..Y0)    |
-|  +-------+                      +----------+                            |
-|                                                                         |
-|                                GND BUS RAIL                             |
-+-------------------------------------------------------------------------+
++------------------------------------------------------------------------------------------------+
+| [5V DC JACK] [POWER SWITCH & LED]              +5V POWER BUS RAIL                              |
+|                                                                                                |
+| +--------+  +-------------------+  +-------------------+  +-----------------+  +-------------+ |
+| | DIP SW |  | 74LS283 (Adder)   |  | 74LS08 (AND Gate) |  | 74LS151 (MUX 0) |  | [8-Bit LED  | |
+| | (A7..0)|  | 74LS86 (XOR #1)   |  | 74LS32 (OR Gate)  |  | 74LS151 (MUX 1) |  |  Bus Y7..0] | |
+| +--------+  +-------------------+  +-------------------+  | 74LS151 (MUX 2) |  +-------------+ |
+| | DIP SW |                                                | 74LS151 (MUX 3) |                  |
+| | (B7..0)|  +-------------------------------------------+ +-----------------+  +-------------+ |
+| +--------+  | 74LS181 (Commercial 4-Bit ALU)            |                      | 🟢 PASS LED | |
+| | OPCODE |  | (Upper 4 bits in Compute / Reference in   |  +-----------------+ | 🔴 FAIL LED | |
+| | & MODE |  |  Verify Mode)                             |  | 74LS85 (4-Bit   | +-------------+ |
+| +--------+  +-------------------------------------------+  |  Comparator)    |                 |
+|                                                            +-----------------+                 |
+|                                                GND BUS RAIL                                    |
++------------------------------------------------------------------------------------------------+
 ```
 
-### Layout Guidelines:
-1. **Signal Flow Direction (Left to Right)**:
-   * **Left edge**: Power terminal/jack, DIP switches, and pull-down resistor arrays.
-   * **Middle section**: Arithmetic unit (Adder, XOR) and logic gates (AND, OR, NOT).
-   * **Right section**: The 4 Multiplexer ICs and the final output LEDs.
-2. **Orientation**: Align all IC sockets with their notch/pin 1 facing the same direction (e.g., all pointing Left or Up). This avoids accidentally inserting an IC backwards.
-3. **Keep Spacing**: Leave at least 2 to 3 rows of holes between IC sockets so you have room to route wires and solder decoupling capacitors.
+---
+
+## 3. Step-by-Step Soldering Execution
+
+### Step 1: Power Rails & Sockets First
+1. Solder bare tinned bus wire along the top for $+5\text{ V}$ and along the bottom for $\text{GND}$.
+2. Insert all DIP sockets with their notch pointing towards the **LEFT**.
+3. Bend two corner pins of each socket slightly outward on the solder side to hold them mechanically before soldering.
+4. Solder all socket pins cleanly.
+5. Solder a **$0.1\ \mu\text{F}$ decoupling capacitor directly across the $V_{CC}$ and $\text{GND}$ pins** of every socket.
+
+### Step 2: Input Controls & Pull-Downs
+1. Mount the 8-bit DIP switches for Operands A and B, plus the control switches.
+2. Solder SIP resistor arrays (or 10 kΩ resistors) from each switch line to $\text{GND}$.
+3. Route input lines to their respective sockets using insulated 30 AWG Kynar wire.
+
+### Step 3: Arithmetic & Logic Interconnections
+1. Solder the XOR subtraction gating around the 74LS283 adder.
+2. Route the 4 candidate function results ($A+B$, $A-B$, AND, OR, XOR, NOT, CLEAR) into the data inputs of the four 74LS151 MUX sockets.
+3. Wire the 74LS181 inputs and control lines.
+4. Wire the Custom ALU outputs ($Y_3..Y_0$) and 74LS181 outputs ($F_3..F_0$) to the 74LS85 comparator inputs.
+
+### Step 4: Output Indicators
+1. Solder the 8 output LEDs with 330 Ω current-limiting resistors to GND.
+2. Solder the Green "PASS" LED to 74LS85 Pin 6 ($A=B$).
+3. Solder the Red "FAIL" LED to the inverted output of Pin 6.
 
 ---
 
-## 3. Power Grid & Decoupling (Solder First!)
+## 4. The Pre-Power "Smoke Test" Checklist
 
-1. **Power Bus Rails**:
-   * Solder bare tinned copper wire or thick solid wire along the top for $+5\text{ V}$ and along the bottom for $\text{GND}$.
-   * Distribute power to every IC socket:
-     * Red insulated wire to Pin 14 (for 14-pin ICs) or Pin 16 (for 16-pin ICs).
-     * Black insulated wire to Pin 7 (for 14-pin ICs) or Pin 8 (for 16-pin ICs).
-2. **Decoupling Capacitors ($0.1\ \mu\text{F}$ Ceramic "104")**:
-   * Solder a $0.1\ \mu\text{F}$ capacitor directly between the $V_{CC}$ and $\text{GND}$ pins of **every single IC socket**.
-   * Keep the capacitor leads as short as possible.
-   > **Why?** TTL gates draw sharp current spikes during switching. Without decoupling capacitors, power rail noise can cause phantom switching and glitches.
+Before placing any IC into a socket:
 
----
-
-## 4. Wiring Technique: Point-to-Point Routing
-
-For a clean, professional underside on a perfboard:
-
-* **Recommended Wire**: Use **30 AWG Kynar (Wire-Wrap) wire** or thin solid-core insulated hookup wire.
-  * Thin insulation melts cleanly with a light touch or strips easily.
-  * Wires lay flat against the board and do not create bulky tangles.
-* **Color-Coding**:
-  * **Red**: $+5\text{ V}$ Power
-  * **Black**: Ground (0V)
-  * **Blue**: Data Lines (Operands $A$ and $B$)
-  * **Yellow**: Opcode Select Lines ($S_2, S_1, S_0$)
-  * **Green**: Arithmetic Carry & Status signals
-* **Routing Tip**: Route wires along the natural grid channels on the solder side. Strip only 2–3 mm of insulation at each end, insert into the hole beside the target pin, and bridge with a tiny drop of solder.
-
----
-
-## 5. Pre-Power Testing Checklist (Do NOT Skip!)
-
-Before inserting any IC into its socket:
-
-1. **Visual Inspection**:
-   * Check the underside under good light with a magnifying glass for **solder bridges** (accidental solder touching adjacent pins).
-2. **Continuity & Short-Circuit Check (Multimeter)**:
-   * Set multimeter to Continuity / Resistance ($\Omega$) mode.
-   * Place probes between $+5\text{ V}$ rail and $\text{GND}$ rail.
-   * **Result must NOT beep** (infinite resistance or > 1 kΩ). If it beeps, you have a dead short—find and fix it before applying power!
-3. **Socket Voltage Verification (The Smoke Test)**:
-   * Connect your 5V power supply to the empty board.
-   * Check the Power LED is lit.
-   * With multimeter in DC Voltage mode, touch black probe to GND and measure:
-     * Pin 14 of 14-pin sockets: Must read **+4.8 V to +5.2 V**.
-     * Pin 16 of 16-pin sockets: Must read **+4.8 V to +5.2 V**.
-     * Pin 7 / Pin 8: Must read **0.0 V**.
-4. **Insert the ICs**:
-   * **TURN OFF POWER**.
-   * Carefully insert each IC into its corresponding socket, verifying the notch orientation.
-   * Power on and run the verification test cases!
+1. **Short Circuit Check**: Measure resistance between $+5\text{ V}$ and $\text{GND}$ rails with a multimeter. It must read open or $>1\text{ k}\Omega$.
+2. **Voltage Verification**: Plug in 5V power with all sockets empty:
+   * Measure Pin 24 of the 74LS181 socket: Must read $+5.0\text{ V}$.
+   * Measure Pin 16 of all 16-pin sockets: Must read $+5.0\text{ V}$.
+   * Measure Pin 14 of all 14-pin sockets: Must read $+5.0\text{ V}$.
+   * Measure all Ground pins: Must read $0.0\text{ V}$.
+3. **Insert Chips**: Disconnect power, carefully press all ICs into their sockets matching the notch orientation, and power on!

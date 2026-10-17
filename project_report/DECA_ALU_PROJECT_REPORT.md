@@ -1,162 +1,129 @@
-# Minor Project Report: 4-Bit ALU with Register Bank and Reconfigurable Architecture
+# Minor Project Report: Dual-Mode 8-Bit Reconfigurable ALU with 74LS181 Golden Reference & ESP32-S3 HIL Testbench
 
 **Course**: Digital Electronics & Computer Architecture (DECA)  
-**Project Title**: Design, Simulation, and Hardware Prototyping of a 4-Bit Arithmetic Logic Unit (ALU) with Register Bank  
+**Project Title**: Design, Simulation, and Hardware Prototyping of a Dual-Mode 8-Bit Reconfigurable Arithmetic Logic Unit (ALU) with Commercial IC Verification and IoT Telemetry  
 **Author**: Shubh Kashyap  
 
 ---
 
 ## 1. Abstract
 
-This project presents the comprehensive design, software simulation, and physical hardware realization of a 4-bit Arithmetic Logic Unit (ALU) integrated with a clocked register bank and control unit. The physical prototype is constructed using standard Transistor-Transistor Logic (74LS series) Integrated Circuits, incorporating an arithmetic full adder/subtractor, discrete logic gates, and 8-to-1 multiplexers for operational selection. The circuit supports 8 operations: Addition, Subtraction (using two's complement arithmetic), bitwise AND, bitwise OR, bitwise XOR, bitwise NOT, Increment, and Clear. A dual-stage prototyping methodology was employed: the system was initially verified on a solderless breadboard before migration to a permanent, solder-assembled dot-matrix PCB (perfboard) with socketed ICs. Furthermore, the complete processor datapath—including operand registers, accumulator, clock generation, and status flags (Carry, Zero, Sign)—is modeled and simulated in Logisim Evolution. The design demonstrates core digital principles including modular datapath design, propagation delay considerations, and hardware-software co-verification.
+This project presents the design, software modeling, hardware implementation, and automated verification of an advanced **Dual-Mode Reconfigurable Arithmetic Logic Unit (ALU)**. The physical circuit bridges foundational gate-level digital design with industrial semiconductor validation methodologies. The hardware consists of a **Custom 4-Bit Discrete ALU** (constructed using a 74LS283 4-bit adder, 74LS86 XOR gates, 74LS08/32/04 logic gates, and four 74LS151 8:1 multiplexers) integrated alongside a commercial **74LS181 4-Bit ALU IC** and a **74LS85 4-Bit Magnitude Comparator**. 
+
+A single mode control line switches the architecture between two distinct operating regimes:
+1. **Mode 0 (8-Bit Compute Mode)**: Cascades the Custom 4-Bit ALU (handling the lower nibble $D_0–D_3$) with the 74LS181 (handling the upper nibble $D_4–D_7$) through carry propagation ($C_4 \to C_n$), forming an authentic 8-bit hybrid computer datapath driving an 8-bit output bus.
+2. **Mode 1 (4-Bit Real-Time Hardware Verification Mode)**: Both ALUs execute identical instructions on matching 4-bit inputs in parallel. The 74LS85 comparator verifies equivalence in real time, driving visual Pass/Fail indicators.
+
+An **ESP32-S3 N16R8 microcontroller** acts as an automated Hardware-in-the-Loop (HIL) testbench, hosting an asynchronous WebSockets telemetry dashboard over a self-contained Wi-Fi Access Point and executing an automated test pattern sweep of 2,048 vectors. The complete sequential datapath—including 8-bit registers, clocking, and status flags (Carry, Zero, Sign)—is modeled and simulated in Logisim Evolution.
 
 ---
 
-## 2. Introduction & Architectural Overview
-
-The Arithmetic Logic Unit (ALU) is the fundamental computational core of every central processing unit (CPU). It executes elementary mathematical and logical instructions dictated by the control unit. In modern computer architecture, ALUs are embedded within complex pipelined datapaths; however, understanding discrete gate-level operation, bit-slicing, and control decoding is essential for digital systems design.
-
-The system is structured into four primary functional units:
-1. **Input Interface**: 4-bit Operands $A$ and $B$, conditioned with pull-down resistor arrays, and a 3-bit Opcode selector ($S_2, S_1, S_0$).
-2. **Arithmetic Core**: 4-bit binary full adder (74LS283) paired with conditional two's complement inversion gates (74LS86) for addition and subtraction.
-3. **Logic Array**: Parallel combinational logic array providing bitwise AND (74LS08), OR (74LS32), XOR (74LS86), and NOT (74LS04) operations.
-4. **Operation Multiplexer**: A bank of four 8-to-1 data selectors (74LS151) routing the designated result to the 4-bit output bus ($Y_3 Y_2 Y_1 Y_0$).
-5. **Sequential Storage (Simulation)**: Clock-driven edge-triggered D-flip-flop registers for operand retention and result accumulation.
+## 2. System Architecture & Dual Operating Modes
 
 ```
-                  +-----------------------------------+
-                  |   4-Bit Operand A & Operand B    |
-                  +-----------------+-----------------+
-                                    |
-          +-------------------------+-------------------------+
-          |                         |                         |
-          v                         v                         v
-+--------------------+    +--------------------+    +--------------------+
-|  Arithmetic Core   |    |    Logic Array     |    |   Special Logic    |
-| (74LS283 + 74LS86) |    | (AND, OR, XOR, NOT)|    |   (INC / CLEAR)    |
-+---------+----------+    +---------+----------+    +---------+----------+
-          |                         |                         |
-          |       8 Candidate Result Signals (Bits 0..3)      |
-          +-------------------------+-------------------------+
-                                    |
-                                    v
-                  +-----------------------------------+
-                  |  4x 74LS151 8:1 Multiplexer Bank  | <-- Opcode (S2 S1 S0)
-                  +-----------------+-----------------+
-                                    |
-                                    v
-                  +-----------------------------------+
-                  | 4-Bit Output Bus + Status Flags   |
-                  +-----------------------------------+
+                                [ MODE SWITCH ]
+                           (0 = COMPUTE, 1 = VERIFY)
+                                       |
+                 +---------------------+---------------------+
+                 |                                           |
+                 v                                           v
+       [ 74LS157 Multiplexer #1 ]                  [ 74LS157 Multiplexer #2 ]
+       Mode 0: A[7..4] | Mode 1: A[3..0]           Mode 0: B[7..4] | Mode 1: B[3..0]
+                 |                                           |
+                 +---------------------+---------------------+
+                                       |
+                                       v
+                             [ 74LS181 Inputs ]
+                               (Upper Nibble /
+                              Golden Reference)
+                                       |
+  [ Custom 4-Bit ALU ]                 |
+  (Adder + Gates + MUX)                |
+  Inputs: A[3..0], B[3..0]             |
+           |                           |
+           v                           v
+     Lower Nibble Y[3..0]         Upper Nibble Y[7..4]
+           |                           |
+           +------------+--------------+
+                        |
+                        +-------------> [ 74LS85 Comparator ] (Mode 1: Equivalence)
+                        |                      |
+                        v                      v
+               [ 8-Bit Output Bus ]      🟢 PASS / 🔴 FAIL
 ```
 
----
+### 2.1 Mode 0: 8-Bit Hybrid Datapath (Compute Mode)
+In Compute Mode, the system functions as an 8-bit ALU:
+* The **Custom 4-Bit ALU** processes the lower 4 bits ($A_{3..0}, B_{3..0}$) and generates lower result bits $Y_{3..0}$ along with an intermediate carry-out $C_4$.
+* The $C_4$ carry signal is routed directly to the active-low carry-in ($\overline{C_n}$) of the **74LS181**.
+* The 74LS181 processes the upper 4 bits ($A_{7..4}, B_{7..4}$), producing upper result bits $Y_{7..4}$ and the final 8-bit carry-out flag $C_8$.
+* The complete 8-bit word is driven onto the 8 output LEDs and captured in the accumulator register.
 
-## 3. Operations & Truth Table
-
-The 3-bit control code ($S_2, S_1, S_0$) specifies 8 distinct operations:
-
-| Opcode ($S_2 S_1 S_0$) | Operation | Category | Mathematical Function | Carry Out ($C_{out}$) Behavior |
-| :---: | :--- | :--- | :--- | :--- |
-| `000` | **ADD** | Arithmetic | $Y = A + B$ | $1$ if $A + B > 15$ (Overflow) |
-| `001` | **SUB** | Arithmetic | $Y = A - B = A + \overline{B} + 1$ | $1$ if $A \ge B$ (No borrow); $0$ if borrow |
-| `010` | **AND** | Logical | $Y_i = A_i \cdot B_i$ | Not asserted ($0$) |
-| `011` | **OR** | Logical | $Y_i = A_i + B_i$ | Not asserted ($0$) |
-| `100` | **XOR** | Logical | $Y_i = A_i \oplus B_i$ | Not asserted ($0$) |
-| `101` | **NOT A** | Logical | $Y_i = \overline{A_i}$ | Not asserted ($0$) |
-| `110` | **INC A** | Arithmetic | $Y = A + 1$ | $1$ if $A = 15$ ($1111_2 + 1$) |
-| `111` | **CLEAR** | Control | $Y_i = 0$ | $0$ |
+### 2.2 Mode 1: Real-Time Hardware-in-the-Loop Verification (Verify Mode)
+In Verify Mode, the system mimics an industrial ASIC/VLSI test fixture:
+* The input steering stage routes the identical 4-bit operands ($A_{3..0}, B_{3..0}$) and identical opcode to **both** ALUs simultaneously.
+* The Custom ALU (Device Under Test) and the 74LS181 (Certified Golden Model) execute the operation in parallel.
+* The 4-bit output of the Custom ALU ($Y_{3..0}$) and the 4-bit output of the 74LS181 ($F_{3..0}$) feed into the 74LS85 4-bit magnitude comparator.
+* If both outputs match on all 4 bits, Pin 6 ($A=B$) goes HIGH, illuminating the **Green "PASS / VERIFIED" LED**. If any gate or timing discrepancy occurs, the **Red "MISMATCH" LED** is triggered.
 
 ---
 
-## 4. Mathematical Formulations & Circuit Derivations
+## 3. Operation Truth Table & Opcode Mapping
 
-### 4.1 Two's Complement Subtraction
-Binary subtraction of $B$ from $A$ is converted into two's complement addition:
-$$A - B = A + (-B) = A + \overline{B} + 1$$
+A synchronized 3-bit Opcode ($S_2, S_1, S_0$) governs both execution units:
 
-To implement both addition and subtraction on a single 74LS283 adder without hardware duplication, a conditional inversion control signal $SUB$ is used:
-$$SUB = \overline{S_2} \cdot \overline{S_1} \cdot S_0$$
-For each bit $i \in \{0, 1, 2, 3\}$, the modified operand $B'_i$ is:
-$$B'_i = B_i \oplus SUB$$
-When $SUB = 0$ (Addition): $B'_i = B_i \oplus 0 = B_i$, and Carry-In $C_{in} = SUB = 0$.  
-When $SUB = 1$ (Subtraction): $B'_i = B_i \oplus 1 = \overline{B_i}$, and Carry-In $C_{in} = SUB = 1$.
-
-### 4.2 Carry vs. Borrow Distinction
-In standard two's complement binary adders:
-* For addition, $C_{out} = 1$ indicates a true arithmetic carry out of the 4th bit.
-* For subtraction, the adder computes $A + (15 - B) + 1 = A - B + 16$.
-  * If $A \ge B$, the result is $\ge 16$, generating an end-around carry ($C_{out} = 1$, representing **no borrow**).
-  * If $A < B$, the result is $< 16$, producing no carry ($C_{out} = 0$, representing **borrow required**).
-  * True Borrow Flag $= \overline{C_{out}}$.
-
-### 4.3 Incrementer Formulation
-For the increment operation ($A + 1$):
-* $Y_0 = \overline{A_0}$
-* $Y_1 = A_1 \oplus A_0$
-* $Y_2 = A_2 \oplus (A_1 \cdot A_0)$
-* $Y_3 = A_3 \oplus (A_2 \cdot A_1 \cdot A_0)$
+| Opcode | Operation | Custom ALU Source | 74LS181 Mode ($M$) | 74LS181 Select ($S_3 S_2 S_1 S_0$) | Carry-In ($\overline{C_n}$) |
+| :---: | :--- | :--- | :---: | :---: | :---: |
+| `000` | **ADD** ($A + B$) | 74LS283 Adder Sum | `0` (Arithmetic) | `1 0 0 1` | `1` (No carry) |
+| `001` | **SUB** ($A - B$) | 74LS283 2's Comp Sub | `0` (Arithmetic) | `0 1 1 0` | `0` (Active carry) |
+| `010` | **AND** ($A \cdot B$) | 74LS08 Quad AND | `1` (Logic) | `1 1 1 0` | X |
+| `011` | **OR** ($A + B$) | 74LS32 Quad OR | `1` (Logic) | `1 0 1 1` | X |
+| `100` | **XOR** ($A \oplus B$) | 74LS86 Quad XOR | `1` (Logic) | `1 0 0 1` | X |
+| `101` | **NOT A** ($\overline{A}$) | 74LS04 Hex Inverter | `1` (Logic) | `0 0 0 0` | X |
+| `110` | **INC A** ($A + 1$) | Incrementer logic | `0` (Arithmetic) | `1 1 1 1` | `0` (Active carry) |
+| `111` | **CLEAR** (`0000`) | Tied to GND | `1` (Logic) | `1 1 0 0` | X |
 
 ---
 
-## 5. Hardware Implementation & Bill of Materials
+## 4. Hardware Implementation & Bill of Materials
 
-### 5.1 Component List
-* **74LS283**: 4-bit binary full adder with lookahead carry.
-* **74LS86** (2 ICs): Quad 2-input XOR gates (IC #1: conditional subtraction inverter; IC #2: logic XOR).
-* **74LS08**: Quad 2-input AND gates.
-* **74LS32**: Quad 2-input OR gates.
-* **74LS04**: Hex inverters.
-* **74LS151 / 74HCT151** (4 ICs): 8-to-1 data selectors/multiplexers.
-* **Passive Components**: 10 kΩ pull-down DIP resistor network, 330 Ω LED current-limiting resistors, 0.1 µF ceramic bypass capacitors.
-
-### 5.2 Breadboard to Perfboard Migration
-To ensure high physical reliability:
-1. **IC Sockets**: Solderless 14-pin and 16-pin dual-wipe DIP sockets were soldered onto the dot-matrix PCB. Chips are never soldered directly to prevent thermal stress.
-2. **Noise Immunity**: 0.1 µF bypass capacitors are positioned directly across pins $V_{CC}$ and $\text{GND}$ of each socket to decouple high-frequency switching transients.
-3. **Floating Inputs**: All mechanical DIP switch outputs incorporate 10 kΩ pull-down resistors to define valid logic LOW states when open.
+| Component | Part Number | Package | Quantity | Functional Purpose |
+| :--- | :--- | :---: | :---: | :--- |
+| **4-Bit Binary Adder** | 74LS283 | 16-pin DIP | 1 | Custom ALU arithmetic core |
+| **Commercial 4-Bit ALU** | 74LS181 | 24-pin DIP | 1 | Upper nibble (Compute) / Golden reference (Verify) |
+| **4-Bit Magnitude Comparator** | 74LS85 | 16-pin DIP | 1 | Hardware equivalence checking |
+| **Quad 2-Input XOR** | 74LS86 | 14-pin DIP | 2 | IC #1: Subtraction inversion; IC #2: Bitwise XOR |
+| **Quad 2-Input AND** | 74LS08 | 14-pin DIP | 1 | Bitwise AND logic |
+| **Quad 2-Input OR** | 74LS32 | 14-pin DIP | 1 | Bitwise OR logic |
+| **Hex Inverter** | 74LS04 | 14-pin DIP | 1 | Bitwise NOT logic |
+| **8:1 Multiplexer** | 74LS151 | 16-pin DIP | 4 | Bit-slice output operation selection |
+| **Microcontroller Testbench** | ESP32-S3 N16R8 | DevKit | 1 | Web telemetry, ATPG verification engine |
+| **Bypass Capacitors** | Ceramic 104 | Radial | 12 | 0.1 µF power supply noise decoupling |
 
 ---
 
-## 6. Simulation & Verification Results
+## 5. ESP32-S3 Hardware-in-the-Loop Testbench
 
-### 6.1 Demonstration Test Vectors
-The circuit was verified across all functional modes:
-
-| Test # | Vector ($A, B$) | Opcode | Expected $Y$ | Observed $Y$ | Carry | Status |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 1 | $A=0101, B=0011$ | `000` (ADD) | `1000` (8) | `1000` | 0 | PASS |
-| 2 | $A=1111, B=0001$ | `000` (ADD) | `0000` (0) | `0000` | 1 | PASS |
-| 3 | $A=0111, B=0010$ | `001` (SUB) | `0101` (5) | `0101` | 1 (No borrow) | PASS |
-| 4 | $A=0010, B=0101$ | `001` (SUB) | `1101` (-3 in 2's comp) | `1101` | 0 (Borrow) | PASS |
-| 5 | $A=1100, B=1010$ | `010` (AND) | `1000` | `1000` | 0 | PASS |
-| 6 | $A=1100, B=1010$ | `011` (OR) | `1110` | `1110` | 0 | PASS |
-| 7 | $A=1100, B=1010$ | `100` (XOR) | `0110` | `0110` | 0 | PASS |
-| 8 | $A=1010, B=XXXX$ | `101` (NOT) | `0101` | `0101` | 0 | PASS |
-| 9 | $A=0110, B=XXXX$ | `110` (INC) | `0111` | `0111` | 0 | PASS |
-| 10| $A=1111, B=XXXX$ | `111` (CLEAR)| `0000` | `0000` | 0 | PASS |
+The **ESP32-S3 N16R8** (240 MHz dual-core, 16 MB Flash, 8 MB Octal PSRAM) interfaces with the breadboard ALU:
+1. **Level-Shifting Protection**: 74LS IC outputs operate at 5.0 V; simple resistor dividers ($1\text{ k}\Omega + 2\text{ k}\Omega$) condition all 8 output lines and status flags to safe 3.3 V logic levels for the ESP32 GPIOs.
+2. **Wi-Fi Telemetry Server**: The ESP32 hosts a local Wi-Fi Access Point (`ALU-Testbench-AP`). Any browser connecting to `192.168.4.1` receives a responsive web dashboard streaming 8-bit bus states, binary/hex/dec conversions, and real-time PASS/FAIL badges.
+3. **Automated Test Pattern Generator (ATPG)**: Clicking "Run 2,048-Vector Test Suite" triggers a high-speed verification sweep across all possible operand combinations ($16 \times 16 \times 8 = 2048$), comparing the hardware output against calculated results in under 50 ms.
 
 ---
 
-## 7. Viva-Voce Preparation Questions & Model Answers
+## 6. Viva-Voce Questions & Model Answers
 
-### Q1: Why did you use 8-to-1 multiplexers instead of logic gates for output selection?
-**Answer**: Multiplexers provide a clean, standardized, and modular method to select among multiple candidate functions without creating bus contention or requiring complex tri-state bus logic. With four 74LS151 ICs, each bit of the output is independently steered by the 3-bit opcode, reducing gate count and propagation delay uncertainty.
+### Q1: What makes your ALU architecture "Dual-Mode"?
+**Answer**: Our system features a hardware Mode Switch. In Mode 0 (Compute), the Custom 4-Bit ALU and the 74LS181 are cascaded in series via carry propagation ($C_4 \to C_n$) to form an 8-bit hybrid computer datapath. In Mode 1 (Verify), both ALUs operate in parallel on the same 4-bit inputs, feeding their outputs into a 74LS85 comparator to verify custom circuit correctness against the commercial standard.
 
-### Q2: How does the same adder circuit perform both addition and subtraction?
-**Answer**: By exploiting two's complement arithmetic ($A - B = A + \overline{B} + 1$). The subtrahend $B$ is selectively inverted using XOR gates controlled by the $SUB$ line ($B \oplus 1 = \overline{B}$), and the same $SUB$ line is connected to the adder's carry-in ($C_0$). Thus, setting $SUB=1$ simultaneously inverts $B$ and adds $1$.
+### Q2: What is the purpose of the 74LS85 comparator in your circuit?
+**Answer**: The 74LS85 performs real-time hardware equivalence checking between our custom discrete ALU and the 74LS181 golden reference model. When all 4 output bits match identically, Pin 6 ($A=B$) goes HIGH, illuminating the Green "PASS" LED. If any gate fails or an unexpected glitch occurs, Pin 6 drops LOW, triggering the Red "MISMATCH" LED.
 
-### Q3: Why is Carry-Out ($C_{out}$) active HIGH when subtracting larger numbers from smaller numbers?
-**Answer**: In two's complement subtraction, $C_{out} = 1$ signifies that the result did not underflow (i.e., $A \ge B$), meaning **no borrow was needed**. If $A < B$, an underflow occurs and $C_{out} = 0$, indicating a borrow. Therefore, the actual borrow signal is $\overline{C_{out}}$.
+### Q3: How does carry propagation work between the Custom ALU and the 74LS181?
+**Answer**: The 74LS283 adder in the Custom ALU produces an active-high carry-out ($C_4$). The 74LS181 uses active-low carry inputs ($\overline{C_n}$) in active-high data mode. In addition mode, $C_4$ connects directly to enable multi-nibble carry ripple from bit 3 to bit 4, generating the final 8-bit carry flag ($C_8$).
 
-### Q4: Why are pull-down resistors necessary on DIP switches?
-**Answer**: When a mechanical switch is open, the input terminal is disconnected and floating. TTL logic treats floating inputs unpredictably (often drifting to logic HIGH due to internal emitter pull-up), while CMOS inputs oscillate rapidly and consume high power. A 10 kΩ pull-down resistor forces the node reliably to Ground (0V) when the switch is open.
+### Q4: Why is the ESP32-S3 N16R8 ideal for this testbench?
+**Answer**: The ESP32-S3 provides up to 45 GPIOs, allowing simultaneous parallel connection to all 8 result bits, operand monitoring lines, opcode selectors, and status flags without external shift registers. Its 16 MB Flash and dual-core processor allow Core 0 to handle high-speed pin telemetry while Core 1 runs the Wi-Fi AP and WebSockets server.
 
-### Q5: What is the purpose of decoupling capacitors across the IC power pins?
-**Answer**: When TTL gates switch states, both output transistors momentarily conduct, creating short transient current spikes on the power rail. A 0.1 µF ceramic capacitor placed adjacent to each IC socket acts as a local reservoir to supply these transients, preventing voltage drops and inductive ringing from glitching neighboring gates.
-
----
-
-## 8. Conclusion
-
-The 4-bit Arithmetic Logic Unit successfully executes 8 fundamental arithmetic and logical operations, verifying the foundational principles of computer datapath engineering. The transition from software simulation in Logisim Evolution to modular breadboard testing, and finally to a permanent, socketed perfboard prototype, provided valuable experience in noise decoupling, logic family interfacing, and practical hardware debugging.
+### Q5: Why did you prototype on breadboard before soldering onto a plain perfboard?
+**Answer**: Breadboarding allows iterative verification of individual functional blocks (adder, logic gates, multiplexers) and debugging of signal paths with a logic probe or oscilloscope. Once verified, migrating to socketed perfboard eliminates intermittent jumper contact resistance and provides a permanent, vibration-resistant hardware instrument.
