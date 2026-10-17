@@ -72,6 +72,9 @@ This project implements a **Dual-Mode Reconfigurable Hardware Architecture** tha
 ## 📂 Repository File Index & Navigation
 
 ### 1. Hardware Prototyping & Schematics (`hardware_docs/`)
+* [**PIN_TO_PIN_WIRING_GUIDE.md**](file:///c:/Users/SHUBH%20KASHYAP/OneDrive/Desktop/PROGRAMMING/DECA%20minor%20project/hardware_docs/PIN_TO_PIN_WIRING_GUIDE.md): **Master Pin-to-Pin Wiring Manual** (Exhaustive pin-by-pin lookup for all 12 ICs, DIP switches, ESP32, and Arduino R4).
+* [**CIRCUIT_DIAGRAM.svg**](file:///c:/Users/SHUBH%20KASHYAP/OneDrive/Desktop/PROGRAMMING/DECA%20minor%20project/hardware_docs/CIRCUIT_DIAGRAM.svg): **High-Resolution Vector Circuit Schematic** (Open in browser, printable vector diagram with every IC pin and signal bus).
+* [**CIRCUIT_DIAGRAM.md**](file:///c:/Users/SHUBH%20KASHYAP/OneDrive/Desktop/PROGRAMMING/DECA%20minor%20project/hardware_docs/CIRCUIT_DIAGRAM.md): Detailed architectural schematic, pin-level ASCII subcircuits, and complete 24-wire breadboard assembly netlist.
 * [**PINOUTS_AND_SCHEMATICS.md**](file:///c:/Users/SHUBH%20KASHYAP/OneDrive/Desktop/PROGRAMMING/DECA%20minor%20project/hardware_docs/PINOUTS_AND_SCHEMATICS.md): Complete pinout diagrams for 74LS181, 74LS85, 74LS283, 74LS86, 74LS08, 74LS32, 74LS04, 74LS151, MUX mapping, and Boolean equations.
 * [**BREADBOARD_ASSEMBLY_GUIDE.md**](file:///c:/Users/SHUBH%20KASHYAP/OneDrive/Desktop/PROGRAMMING/DECA%20minor%20project/hardware_docs/BREADBOARD_ASSEMBLY_GUIDE.md): Step-by-step modular breadboard wiring plan with checkpoint tests for each IC stage.
 * [**PERFBOARD_SOLDERING_GUIDE.md**](file:///c:/Users/SHUBH%20KASHYAP/OneDrive/Desktop/PROGRAMMING/DECA%20minor%20project/hardware_docs/PERFBOARD_SOLDERING_GUIDE.md): Guide for transferring the circuit to a permanent dot-matrix PCB (using DIP sockets, bus rails, and pre-power smoke tests).
