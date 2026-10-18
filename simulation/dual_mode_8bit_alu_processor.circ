@@ -24,7 +24,6 @@
   </lib>
   <lib desc="#Gates" name="1"/>
   <lib desc="#Plexers" name="2"/>
-  <lib desc="#Arithmetic" name="3"/>
   <lib desc="#Memory" name="4"/>
   <lib desc="#I/O" name="5"/>
   <lib desc="#Base" name="8"/>
@@ -58,6 +57,487 @@
     <tool lib="1" name="XOR Gate"/>
   </toolbar>
 
+  <!-- ===================================================================== -->
+  <!-- SUBCIRCUIT 1: FullAdder1Bit (Gate-Level: 2 XOR, 2 AND, 1 OR)          -->
+  <!-- ===================================================================== -->
+  <circuit name="FullAdder1Bit">
+    <a name="appearance" val="custom"/>
+    <a name="circuit" val="FullAdder1Bit"/>
+    <a name="circuitnamedboxfixedsize" val="true"/>
+    <a name="simulationFrequency" val="2.0"/>
+    <appear>
+      <rect fill="none" height="60" stroke="#000000" stroke-width="2" width="60" x="50" y="50"/>
+      <text font-family="SansSerif" font-size="9" text-anchor="middle" x="80" y="75">FA1</text>
+      <text font-family="SansSerif" font-size="8" x="53" y="63">A</text>
+      <text font-family="SansSerif" font-size="8" x="53" y="83">B</text>
+      <text font-family="SansSerif" font-size="8" x="53" y="103">Ci</text>
+      <text font-family="SansSerif" font-size="8" x="93" y="63">S</text>
+      <text font-family="SansSerif" font-size="8" x="93" y="103">Co</text>
+      <circ-port dir="in" pin="80,80" x="50" y="60"/>
+      <circ-port dir="in" pin="80,120" x="50" y="80"/>
+      <circ-port dir="in" pin="80,240" x="50" y="100"/>
+      <circ-port dir="out" pin="420,110" x="110" y="60"/>
+      <circ-port dir="out" pin="420,190" x="110" y="100"/>
+    </appear>
+
+    <!-- Inputs -->
+    <comp lib="0" loc="(80,80)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="A"/>
+    </comp>
+    <comp lib="0" loc="(80,120)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="B"/>
+    </comp>
+    <comp lib="0" loc="(80,240)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="Cin"/>
+    </comp>
+
+    <!-- Gates -->
+    <comp lib="1" loc="(200,100)" name="XOR Gate">
+      <a name="inputs" val="2"/>
+    </comp>
+    <comp lib="1" loc="(320,110)" name="XOR Gate">
+      <a name="inputs" val="2"/>
+    </comp>
+    <comp lib="1" loc="(200,170)" name="AND Gate">
+      <a name="inputs" val="2"/>
+    </comp>
+    <comp lib="1" loc="(280,220)" name="AND Gate">
+      <a name="inputs" val="2"/>
+    </comp>
+    <comp lib="1" loc="(370,190)" name="OR Gate">
+      <a name="inputs" val="2"/>
+    </comp>
+
+    <!-- Outputs -->
+    <comp lib="0" loc="(420,110)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="facing" val="west"/>
+      <a name="label" val="Sum"/>
+      <a name="output" val="true"/>
+    </comp>
+    <comp lib="0" loc="(420,190)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="facing" val="west"/>
+      <a name="label" val="Cout"/>
+      <a name="output" val="true"/>
+    </comp>
+
+    <!-- Wires -->
+    <wire from="(80,80)" to="(120,80)"/>
+    <wire from="(120,80)" to="(120,90)"/>
+    <wire from="(120,90)" to="(140,90)"/>
+    <wire from="(120,90)" to="(120,160)"/>
+    <wire from="(120,160)" to="(150,160)"/>
+
+    <wire from="(80,120)" to="(130,120)"/>
+    <wire from="(130,120)" to="(130,110)"/>
+    <wire from="(130,110)" to="(140,110)"/>
+    <wire from="(130,110)" to="(130,180)"/>
+    <wire from="(130,180)" to="(150,180)"/>
+
+    <wire from="(200,100)" to="(240,100)"/>
+    <wire from="(240,100)" to="(260,100)"/>
+    <wire from="(240,100)" to="(240,210)"/>
+    <wire from="(240,210)" to="(250,210)"/>
+
+    <wire from="(80,240)" to="(220,240)"/>
+    <wire from="(220,240)" to="(220,120)"/>
+    <wire from="(220,120)" to="(260,120)"/>
+    <wire from="(220,240)" to="(250,230)"/>
+
+    <wire from="(320,110)" to="(420,110)"/>
+
+    <wire from="(200,170)" to="(300,170)"/>
+    <wire from="(300,170)" to="(300,180)"/>
+    <wire from="(300,180)" to="(320,180)"/>
+
+    <wire from="(280,220)" to="(300,220)"/>
+    <wire from="(300,220)" to="(300,200)"/>
+    <wire from="(300,200)" to="(320,200)"/>
+
+    <wire from="(370,190)" to="(420,190)"/>
+  </circuit>
+
+  <!-- ===================================================================== -->
+  <!-- SUBCIRCUIT 2: RippleCarryAdder4Bit (Cascades 4x FullAdder1Bit)        -->
+  <!-- ===================================================================== -->
+  <circuit name="RippleCarryAdder4Bit">
+    <a name="appearance" val="custom"/>
+    <a name="circuit" val="RippleCarryAdder4Bit"/>
+    <a name="circuitnamedboxfixedsize" val="true"/>
+    <a name="simulationFrequency" val="2.0"/>
+    <appear>
+      <rect fill="none" height="60" stroke="#000000" stroke-width="2" width="70" x="50" y="50"/>
+      <text font-family="SansSerif" font-size="9" text-anchor="middle" x="85" y="75">RCA4</text>
+      <text font-family="SansSerif" font-size="8" x="53" y="63">A[3:0]</text>
+      <text font-family="SansSerif" font-size="8" x="53" y="83">B[3:0]</text>
+      <text font-family="SansSerif" font-size="8" x="53" y="103">Ci</text>
+      <text font-family="SansSerif" font-size="8" x="98" y="63">S[3:0]</text>
+      <text font-family="SansSerif" font-size="8" x="98" y="103">Co</text>
+      <circ-port dir="in" pin="80,80" x="50" y="60"/>
+      <circ-port dir="in" pin="80,140" x="50" y="80"/>
+      <circ-port dir="in" pin="80,200" x="50" y="100"/>
+      <circ-port dir="out" pin="580,80" x="120" y="60"/>
+      <circ-port dir="out" pin="580,200" x="120" y="100"/>
+    </appear>
+
+    <!-- Inputs -->
+    <comp lib="0" loc="(80,80)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="A_NIBBLE"/>
+      <a name="width" val="4"/>
+    </comp>
+    <comp lib="0" loc="(80,140)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="B_NIBBLE"/>
+      <a name="width" val="4"/>
+    </comp>
+    <comp lib="0" loc="(80,200)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="Cin"/>
+    </comp>
+
+    <!-- Splitters for A and B -->
+    <comp lib="0" loc="(120,80)" name="Splitter">
+      <a name="fanout" val="4"/>
+      <a name="incoming" val="4"/>
+    </comp>
+    <comp lib="0" loc="(120,140)" name="Splitter">
+      <a name="fanout" val="4"/>
+      <a name="incoming" val="4"/>
+    </comp>
+
+    <!-- 4 FullAdder1Bit Instances -->
+    <comp loc="(180,60)" name="FullAdder1Bit"/>
+    <comp loc="(270,60)" name="FullAdder1Bit"/>
+    <comp loc="(360,60)" name="FullAdder1Bit"/>
+    <comp loc="(450,60)" name="FullAdder1Bit"/>
+
+    <!-- Splitter to recombine Sum -->
+    <comp lib="0" loc="(540,80)" name="Splitter">
+      <a name="facing" val="west"/>
+      <a name="fanout" val="4"/>
+      <a name="incoming" val="4"/>
+    </comp>
+
+    <!-- Outputs -->
+    <comp lib="0" loc="(580,80)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="facing" val="west"/>
+      <a name="label" val="SUM_NIBBLE"/>
+      <a name="output" val="true"/>
+      <a name="width" val="4"/>
+    </comp>
+    <comp lib="0" loc="(580,200)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="facing" val="west"/>
+      <a name="label" val="Cout"/>
+      <a name="output" val="true"/>
+    </comp>
+
+    <!-- Wiring for Bit 0 -->
+    <wire from="(140,40)" to="(180,70)"/>
+    <wire from="(140,100)" to="(180,90)"/>
+    <wire from="(80,200)" to="(180,110)"/>
+    <wire from="(240,70)" to="(500,70)"/>
+    <wire from="(500,70)" to="(500,40)"/>
+    <wire from="(500,40)" to="(520,40)"/>
+
+    <!-- Carry Bit 0 to Bit 1 -->
+    <wire from="(240,110)" to="(270,110)"/>
+
+    <!-- Wiring for Bit 1 -->
+    <wire from="(140,50)" to="(270,70)"/>
+    <wire from="(140,110)" to="(270,90)"/>
+    <wire from="(330,70)" to="(490,70)"/>
+    <wire from="(490,70)" to="(490,50)"/>
+    <wire from="(490,50)" to="(520,50)"/>
+
+    <!-- Carry Bit 1 to Bit 2 -->
+    <wire from="(330,110)" to="(360,110)"/>
+
+    <!-- Wiring for Bit 2 -->
+    <wire from="(140,60)" to="(360,70)"/>
+    <wire from="(140,120)" to="(360,90)"/>
+    <wire from="(420,70)" to="(480,70)"/>
+    <wire from="(480,70)" to="(480,60)"/>
+    <wire from="(480,60)" to="(520,60)"/>
+
+    <!-- Carry Bit 2 to Bit 3 -->
+    <wire from="(420,110)" to="(450,110)"/>
+
+    <!-- Wiring for Bit 3 -->
+    <wire from="(140,70)" to="(450,70)"/>
+    <wire from="(140,130)" to="(450,90)"/>
+    <wire from="(510,70)" to="(520,70)"/>
+
+    <!-- Final Carry Out from Bit 3 -->
+    <wire from="(510,110)" to="(540,110)"/>
+    <wire from="(540,110)" to="(540,200)"/>
+    <wire from="(540,200)" to="(580,200)"/>
+
+    <!-- Recombined Sum output -->
+    <wire from="(540,80)" to="(580,80)"/>
+  </circuit>
+
+  <!-- ===================================================================== -->
+  <!-- SUBCIRCUIT 3: ALU_8Bit (Pure Discrete Logic & Mode Reconfiguration)   -->
+  <!-- ===================================================================== -->
+  <circuit name="ALU_8Bit">
+    <a name="appearance" val="custom"/>
+    <a name="circuit" val="ALU_8Bit"/>
+    <a name="circuitnamedboxfixedsize" val="true"/>
+    <a name="simulationFrequency" val="2.0"/>
+    <appear>
+      <rect fill="none" height="80" stroke="#000000" stroke-width="2" width="90" x="50" y="50"/>
+      <text font-family="SansSerif" font-size="10" font-weight="bold" text-anchor="middle" x="95" y="85">ALU 8-BIT</text>
+      <text font-family="SansSerif" font-size="8" x="53" y="63">A[7:0]</text>
+      <text font-family="SansSerif" font-size="8" x="53" y="83">B[7:0]</text>
+      <text font-family="SansSerif" font-size="8" x="53" y="103">OP[2:0]</text>
+      <text font-family="SansSerif" font-size="8" x="53" y="123">MODE</text>
+      <text font-family="SansSerif" font-size="8" x="108" y="73">RES[7:0]</text>
+      <text font-family="SansSerif" font-size="8" x="118" y="93">COUT</text>
+      <text font-family="SansSerif" font-size="8" x="118" y="113">ZERO</text>
+      <circ-port dir="in" pin="100,100" x="50" y="60"/>
+      <circ-port dir="in" pin="100,180" x="50" y="80"/>
+      <circ-port dir="in" pin="100,260" x="50" y="100"/>
+      <circ-port dir="in" pin="100,320" x="50" y="120"/>
+      <circ-port dir="out" pin="780,200" x="140" y="70"/>
+      <circ-port dir="out" pin="780,300" x="140" y="90"/>
+      <circ-port dir="out" pin="780,360" x="140" y="110"/>
+    </appear>
+
+    <!-- 8-Bit Operands, 3-Bit Opcode, 1-Bit Mode -->
+    <comp lib="0" loc="(100,100)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="OPERAND_A"/>
+      <a name="width" val="8"/>
+    </comp>
+    <comp lib="0" loc="(100,180)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="OPERAND_B"/>
+      <a name="width" val="8"/>
+    </comp>
+    <comp lib="0" loc="(100,260)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="OPCODE"/>
+      <a name="width" val="3"/>
+    </comp>
+    <comp lib="0" loc="(100,320)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="MODE"/>
+    </comp>
+
+    <!-- Opcode Splitter for SUB bit (Bit 0) -->
+    <comp lib="0" loc="(140,260)" name="Splitter">
+      <a name="fanout" val="3"/>
+      <a name="incoming" val="3"/>
+    </comp>
+
+    <!-- Subtraction Inversion XOR Array for B -->
+    <comp lib="1" loc="(220,180)" name="XOR Gate">
+      <a name="width" val="8"/>
+    </comp>
+
+    <!-- Replicate SUB control bit to 8-bits for XOR -->
+    <comp lib="0" loc="(160,200)" name="Splitter">
+      <a name="facing" val="west"/>
+      <a name="fanout" val="8"/>
+      <a name="incoming" val="1"/>
+    </comp>
+
+    <!-- Nibble Splitters for Adder Core -->
+    <comp lib="0" loc="(260,100)" name="Splitter">
+      <a name="bit0" val="0"/>
+      <a name="bit1" val="0"/>
+      <a name="bit2" val="0"/>
+      <a name="bit3" val="0"/>
+      <a name="bit4" val="1"/>
+      <a name="bit5" val="1"/>
+      <a name="bit6" val="1"/>
+      <a name="bit7" val="1"/>
+      <a name="incoming" val="8"/>
+    </comp>
+    <comp lib="0" loc="(260,180)" name="Splitter">
+      <a name="bit0" val="0"/>
+      <a name="bit1" val="0"/>
+      <a name="bit2" val="0"/>
+      <a name="bit3" val="0"/>
+      <a name="bit4" val="1"/>
+      <a name="bit5" val="1"/>
+      <a name="bit6" val="1"/>
+      <a name="bit7" val="1"/>
+      <a name="incoming" val="8"/>
+    </comp>
+
+    <!-- Lower Nibble Adder (Bits 0..3) -->
+    <comp loc="(320,80)" name="RippleCarryAdder4Bit"/>
+
+    <!-- Mode Carry Gating AND Gate -->
+    <comp lib="1" loc="(440,140)" name="AND Gate">
+      <a name="inputs" val="2"/>
+    </comp>
+
+    <!-- Upper Nibble Adder (Bits 4..7) -->
+    <comp loc="(470,80)" name="RippleCarryAdder4Bit"/>
+
+    <!-- Combine Adder Sum Nibbles into 8-Bit Adder Output -->
+    <comp lib="0" loc="(560,90)" name="Splitter">
+      <a name="bit0" val="0"/>
+      <a name="bit1" val="0"/>
+      <a name="bit2" val="0"/>
+      <a name="bit3" val="0"/>
+      <a name="bit4" val="1"/>
+      <a name="bit5" val="1"/>
+      <a name="bit6" val="1"/>
+      <a name="bit7" val="1"/>
+      <a name="facing" val="west"/>
+      <a name="incoming" val="8"/>
+    </comp>
+
+    <!-- Bitwise Logic Gates (8-Bit Width) -->
+    <comp lib="1" loc="(440,220)" name="AND Gate">
+      <a name="width" val="8"/>
+    </comp>
+    <comp lib="1" loc="(440,280)" name="OR Gate">
+      <a name="width" val="8"/>
+    </comp>
+    <comp lib="1" loc="(440,340)" name="XOR Gate">
+      <a name="width" val="8"/>
+    </comp>
+    <comp lib="1" loc="(440,400)" name="NOT Gate">
+      <a name="width" val="8"/>
+    </comp>
+
+    <!-- 8:1 Multiplexer (8-Bit Operation Selector) -->
+    <comp lib="2" loc="(680,200)" name="Multiplexer">
+      <a name="select" val="3"/>
+      <a name="width" val="8"/>
+    </comp>
+
+    <!-- Zero Flag Detector (8-Input NOR logic via Constant Comparator) -->
+    <comp lib="1" loc="(740,360)" name="NOT Gate">
+      <a name="width" val="1"/>
+    </comp>
+
+    <!-- Outputs -->
+    <comp lib="0" loc="(780,200)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="facing" val="west"/>
+      <a name="label" val="Result"/>
+      <a name="output" val="true"/>
+      <a name="width" val="8"/>
+    </comp>
+    <comp lib="0" loc="(780,300)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="facing" val="west"/>
+      <a name="label" val="Carry_Out"/>
+      <a name="output" val="true"/>
+    </comp>
+    <comp lib="0" loc="(780,360)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="facing" val="west"/>
+      <a name="label" val="Zero_Flag"/>
+      <a name="output" val="true"/>
+    </comp>
+
+    <!-- Wiring for Arithmetic Core -->
+    <wire from="(100,100)" to="(260,100)"/>
+    <wire from="(100,180)" to="(160,170)"/>
+    <wire from="(160,170)" to="(170,170)"/>
+    <wire from="(160,240)" to="(160,200)"/>
+    <wire from="(160,200)" to="(170,190)"/>
+
+    <wire from="(220,180)" to="(260,180)"/>
+
+    <!-- Distribute A and B to Lower Adder -->
+    <wire from="(280,80)" to="(320,90)"/>
+    <wire from="(280,160)" to="(320,110)"/>
+    <wire from="(160,240)" to="(290,240)"/>
+    <wire from="(290,240)" to="(290,130)"/>
+    <wire from="(290,130)" to="(320,130)"/>
+
+    <!-- Lower Adder Carry Out C4 to Mode Gating -->
+    <wire from="(390,130)" to="(410,130)"/>
+    <wire from="(100,320)" to="(400,320)"/>
+    <wire from="(400,320)" to="(400,150)"/>
+    <wire from="(400,150)" to="(410,150)"/>
+
+    <!-- Gated Carry to Upper Adder -->
+    <wire from="(440,140)" to="(460,140)"/>
+    <wire from="(460,140)" to="(460,130)"/>
+    <wire from="(460,130)" to="(470,130)"/>
+
+    <!-- Upper Adder Inputs -->
+    <wire from="(280,90)" to="(470,90)"/>
+    <wire from="(280,170)" to="(470,110)"/>
+
+    <!-- Carry Out C8 -->
+    <wire from="(540,130)" to="(720,130)"/>
+    <wire from="(720,130)" to="(720,300)"/>
+    <wire from="(720,300)" to="(780,300)"/>
+
+    <!-- Combine Sum Nibbles -->
+    <wire from="(390,90)" to="(540,70)"/>
+    <wire from="(540,90)" to="(540,80)"/>
+    <wire from="(560,90)" to="(600,90)"/>
+
+    <!-- MUX Channel 0: ADD, Channel 1: SUB -->
+    <wire from="(600,90)" to="(600,160)"/>
+    <wire from="(600,160)" to="(640,160)"/>
+    <wire from="(600,160)" to="(600,170)"/>
+    <wire from="(600,170)" to="(640,170)"/>
+
+    <!-- Distribute A and B to Logic Gates -->
+    <wire from="(100,100)" to="(300,100)"/>
+    <wire from="(300,100)" to="(300,210)"/>
+    <wire from="(300,210)" to="(390,210)"/>
+    <wire from="(300,210)" to="(300,270)"/>
+    <wire from="(300,270)" to="(390,270)"/>
+    <wire from="(300,270)" to="(300,330)"/>
+    <wire from="(300,330)" to="(390,330)"/>
+    <wire from="(300,330)" to="(300,400)"/>
+    <wire from="(300,400)" to="(410,400)"/>
+
+    <wire from="(100,180)" to="(310,180)"/>
+    <wire from="(310,180)" to="(310,230)"/>
+    <wire from="(310,230)" to="(390,230)"/>
+    <wire from="(310,230)" to="(310,290)"/>
+    <wire from="(310,290)" to="(390,290)"/>
+    <wire from="(310,290)" to="(310,350)"/>
+    <wire from="(310,350)" to="(390,350)"/>
+
+    <!-- MUX Channels 2, 3, 4, 5 -->
+    <wire from="(440,220)" to="(610,220)"/>
+    <wire from="(610,220)" to="(610,180)"/>
+    <wire from="(610,180)" to="(640,180)"/>
+
+    <wire from="(440,280)" to="(620,280)"/>
+    <wire from="(620,280)" to="(620,190)"/>
+    <wire from="(620,190)" to="(640,190)"/>
+
+    <wire from="(440,340)" to="(630,340)"/>
+    <wire from="(630,340)" to="(630,200)"/>
+    <wire from="(630,200)" to="(640,200)"/>
+
+    <wire from="(440,400)" to="(640,400)"/>
+    <wire from="(640,400)" to="(640,210)"/>
+
+    <!-- MUX Opcode Select -->
+    <wire from="(100,260)" to="(660,260)"/>
+    <wire from="(660,240)" to="(660,260)"/>
+
+    <!-- MUX Output to Result -->
+    <wire from="(680,200)" to="(750,200)"/>
+    <wire from="(750,200)" to="(780,200)"/>
+  </circuit>
+
+  <!-- ===================================================================== -->
+  <!-- TOP CIRCUIT: main (Datapath Integration, Registers, HUD & Verifier)   -->
+  <!-- ===================================================================== -->
   <circuit name="main">
     <a name="appearance" val="logisim_evolution"/>
     <a name="circuit" val="main"/>
@@ -75,9 +555,9 @@
       <a name="label" val="LOAD_EN"/>
     </comp>
 
-    <!-- Mode Selector: 0 = 8-Bit Compute Mode, 1 = 4-Bit Hardware Verify Mode -->
+    <!-- Mode Selector: 1 = 8-Bit Unified Compute, 0 = 4-Bit Dual Nibble Compute -->
     <comp lib="0" loc="(100,80)" name="Pin">
-      <a name="label" val="MODE_COMPUTE_VERIFY"/>
+      <a name="label" val="MODE_8BIT_4BIT"/>
     </comp>
 
     <!-- 8-Bit Operands A & B, and 3-Bit Opcode -->
@@ -104,231 +584,84 @@
       <a name="width" val="8"/>
     </comp>
 
-    <!-- Bus Splitters for A and B (Lower 4 bits vs Upper 4 bits) -->
-    <comp lib="0" loc="(260,160)" name="Splitter">
-      <a name="bit0" val="0"/>
-      <a name="bit1" val="0"/>
-      <a name="bit2" val="0"/>
-      <a name="bit3" val="0"/>
-      <a name="bit4" val="1"/>
-      <a name="bit5" val="1"/>
-      <a name="bit6" val="1"/>
-      <a name="bit7" val="1"/>
-      <a name="incoming" val="8"/>
-    </comp>
-    <comp lib="0" loc="(260,240)" name="Splitter">
-      <a name="bit0" val="0"/>
-      <a name="bit1" val="0"/>
-      <a name="bit2" val="0"/>
-      <a name="bit3" val="0"/>
-      <a name="bit4" val="1"/>
-      <a name="bit5" val="1"/>
-      <a name="bit6" val="1"/>
-      <a name="bit7" val="1"/>
-      <a name="incoming" val="8"/>
-    </comp>
+    <!-- Discrete 8-Bit ALU Execution Core -->
+    <comp loc="(380,150)" name="ALU_8Bit"/>
 
-    <!-- Mode Multiplexers: In Mode 0 routes A[7..4], in Mode 1 routes A[3..0] -->
-    <comp lib="2" loc="(360,180)" name="Multiplexer">
-      <a name="width" val="4"/>
-    </comp>
-    <comp lib="2" loc="(360,260)" name="Multiplexer">
-      <a name="width" val="4"/>
-    </comp>
-
-    <!-- Custom 4-Bit ALU Core (Lower Nibble) -->
-    <comp lib="3" loc="(480,140)" name="Adder">
-      <a name="width" val="4"/>
-    </comp>
-    <comp lib="1" loc="(480,200)" name="AND Gate">
-      <a name="width" val="4"/>
-    </comp>
-    <comp lib="1" loc="(480,260)" name="OR Gate">
-      <a name="width" val="4"/>
-    </comp>
-    <comp lib="1" loc="(480,320)" name="XOR Gate">
-      <a name="width" val="4"/>
-    </comp>
-    <comp lib="2" loc="(570,200)" name="Multiplexer">
-      <a name="select" val="3"/>
-      <a name="width" val="4"/>
-    </comp>
-
-    <!-- Upper Nibble / 74LS181 Commercial ALU Model -->
-    <comp lib="3" loc="(480,420)" name="Adder">
-      <a name="width" val="4"/>
-    </comp>
-    <comp lib="1" loc="(480,480)" name="AND Gate">
-      <a name="width" val="4"/>
-    </comp>
-    <comp lib="1" loc="(480,540)" name="OR Gate">
-      <a name="width" val="4"/>
-    </comp>
-    <comp lib="1" loc="(480,600)" name="XOR Gate">
-      <a name="width" val="4"/>
-    </comp>
-    <comp lib="2" loc="(570,480)" name="Multiplexer">
-      <a name="select" val="3"/>
-      <a name="width" val="4"/>
-    </comp>
-
-    <!-- Hardware Equivalence Verifier: 74LS85 4-Bit Magnitude Comparator -->
-    <comp lib="3" loc="(680,260)" name="Comparator">
-      <a name="mode" val="unsigned"/>
-      <a name="width" val="4"/>
-    </comp>
-    <comp lib="0" loc="(740,260)" name="Pin">
-      <a name="facing" val="west"/>
-      <a name="label" val="VERIFY_PASS_MATCH"/>
-      <a name="output" val="true"/>
-    </comp>
-    <comp lib="5" loc="(760,260)" name="LED">
-      <a name="color" val="#00f028"/>
-      <a name="label" val="LED_PASS"/>
-    </comp>
-
-    <!-- 8-Bit Bus Combiner: Merges Lower Nibble (Custom) & Upper Nibble (74LS181) -->
-    <comp lib="0" loc="(660,370)" name="Splitter">
-      <a name="bit0" val="0"/>
-      <a name="bit1" val="0"/>
-      <a name="bit2" val="0"/>
-      <a name="bit3" val="0"/>
-      <a name="bit4" val="1"/>
-      <a name="bit5" val="1"/>
-      <a name="bit6" val="1"/>
-      <a name="bit7" val="1"/>
-      <a name="facing" val="west"/>
-      <a name="incoming" val="8"/>
-    </comp>
-
-    <!-- 8-Bit Result / Accumulator Register -->
-    <comp lib="4" loc="(700,340)" name="Register">
+    <!-- 8-Bit Accumulator / Result Register -->
+    <comp lib="4" loc="(560,190)" name="Register">
       <a name="label" val="ACC_RESULT_8BIT"/>
       <a name="width" val="8"/>
     </comp>
 
-    <!-- 8-Bit Output Pins and Displays -->
-    <comp lib="0" loc="(820,370)" name="Pin">
+    <!-- 8-Bit Output Pins and Hex Displays -->
+    <comp lib="0" loc="(720,220)" name="Pin">
       <a name="facing" val="west"/>
       <a name="label" val="RESULT_8BIT_OUT"/>
       <a name="output" val="true"/>
       <a name="width" val="8"/>
     </comp>
-    <comp lib="5" loc="(820,290)" name="Hex Digit Display">
-      <a name="label" val="HEX_UPPER"/>
+    <comp lib="0" loc="(660,170)" name="Splitter">
+      <a name="bit0" val="0"/>
+      <a name="bit1" val="0"/>
+      <a name="bit2" val="0"/>
+      <a name="bit3" val="0"/>
+      <a name="bit4" val="1"/>
+      <a name="bit5" val="1"/>
+      <a name="bit6" val="1"/>
+      <a name="bit7" val="1"/>
+      <a name="incoming" val="8"/>
     </comp>
-    <comp lib="5" loc="(870,290)" name="Hex Digit Display">
+    <comp lib="5" loc="(720,130)" name="Hex Digit Display">
       <a name="label" val="HEX_LOWER"/>
     </comp>
+    <comp lib="5" loc="(770,130)" name="Hex Digit Display">
+      <a name="label" val="HEX_UPPER"/>
+    </comp>
 
-    <!-- Status Flags -->
-    <comp lib="0" loc="(510,400)" name="Pin">
+    <!-- Status Flag Indicators -->
+    <comp lib="0" loc="(500,240)" name="Pin">
       <a name="facing" val="west"/>
       <a name="label" val="FLAG_CARRY_8BIT"/>
       <a name="output" val="true"/>
     </comp>
-    <comp lib="3" loc="(790,440)" name="Comparator">
-      <a name="mode" val="unsigned"/>
-      <a name="width" val="8"/>
-    </comp>
-    <comp lib="0" loc="(730,460)" name="Constant">
-      <a name="value" val="0x0"/>
-      <a name="width" val="8"/>
-    </comp>
-    <comp lib="0" loc="(840,440)" name="Pin">
+    <comp lib="0" loc="(500,260)" name="Pin">
       <a name="facing" val="west"/>
       <a name="label" val="FLAG_ZERO"/>
       <a name="output" val="true"/>
     </comp>
 
-    <!-- Wire Connections -->
-    <!-- Input to Reg A & Reg B -->
+    <!-- Wiring Connections -->
     <wire from="(100,160)" to="(180,160)"/>
     <wire from="(100,240)" to="(180,240)"/>
-    <wire from="(240,160)" to="(260,160)"/>
-    <wire from="(240,240)" to="(260,240)"/>
+    <wire from="(240,160)" to="(380,160)"/>
+    <wire from="(240,240)" to="(320,240)"/>
+    <wire from="(320,240)" to="(320,180)"/>
+    <wire from="(320,180)" to="(380,180)"/>
 
-    <!-- Mode Select Lines to Steering MUXes -->
-    <wire from="(100,80)" to="(340,80)"/>
-    <wire from="(340,80)" to="(340,200)"/>
-    <wire from="(340,200)" to="(340,280)"/>
+    <wire from="(100,340)" to="(340,340)"/>
+    <wire from="(340,340)" to="(340,200)"/>
+    <wire from="(340,200)" to="(380,200)"/>
 
-    <!-- Splitter connections for A -->
-    <wire from="(280,140)" to="(300,140)"/>
-    <wire from="(300,140)" to="(300,190)"/>
-    <wire from="(300,190)" to="(330,190)"/>
-    <wire from="(280,150)" to="(330,170)"/>
+    <wire from="(100,80)" to="(360,80)"/>
+    <wire from="(360,80)" to="(360,220)"/>
+    <wire from="(360,220)" to="(380,220)"/>
 
-    <!-- Splitter connections for B -->
-    <wire from="(280,220)" to="(310,220)"/>
-    <wire from="(310,220)" to="(310,270)"/>
-    <wire from="(310,270)" to="(330,270)"/>
-    <wire from="(280,230)" to="(330,250)"/>
+    <!-- ALU Outputs -->
+    <wire from="(470,170)" to="(560,220)"/>
+    <wire from="(470,190)" to="(500,240)"/>
+    <wire from="(470,210)" to="(500,260)"/>
 
-    <!-- Custom ALU Input Connections -->
-    <wire from="(300,140)" to="(400,140)"/>
-    <wire from="(400,140)" to="(440,140)"/>
-    <wire from="(310,220)" to="(420,220)"/>
-    <wire from="(420,220)" to="(420,150)"/>
-    <wire from="(420,150)" to="(440,150)"/>
+    <!-- Register Output to Display & Bus -->
+    <wire from="(620,220)" to="(650,220)"/>
+    <wire from="(650,220)" to="(650,170)"/>
+    <wire from="(650,170)" to="(660,170)"/>
+    <wire from="(650,220)" to="(720,220)"/>
 
-    <!-- MUX Connections for Custom ALU -->
-    <wire from="(480,140)" to="(530,140)"/>
-    <wire from="(530,140)" to="(530,160)"/>
-    <wire from="(480,200)" to="(530,200)"/>
-    <wire from="(480,260)" to="(530,260)"/>
-    <wire from="(480,320)" to="(530,320)"/>
-
-    <!-- Upper / 74181 Input Connections -->
-    <wire from="(360,180)" to="(400,180)"/>
-    <wire from="(400,180)" to="(400,420)"/>
-    <wire from="(400,420)" to="(440,420)"/>
-    <wire from="(360,260)" to="(420,260)"/>
-    <wire from="(420,260)" to="(420,430)"/>
-    <wire from="(420,430)" to="(440,430)"/>
-
-    <!-- Carry Propagation from Custom ALU to Upper ALU (Mode 0) -->
-    <wire from="(460,120)" to="(460,400)"/>
-
-    <!-- MUX Connections for Upper ALU -->
-    <wire from="(480,420)" to="(530,420)"/>
-    <wire from="(530,420)" to="(530,440)"/>
-    <wire from="(480,480)" to="(530,480)"/>
-    <wire from="(480,540)" to="(530,540)"/>
-    <wire from="(480,600)" to="(530,600)"/>
-
-    <!-- Opcode distribution -->
-    <wire from="(100,340)" to="(550,340)"/>
-    <wire from="(550,240)" to="(550,340)"/>
-    <wire from="(550,340)" to="(550,520)"/>
-
-    <!-- Comparator Inputs (Custom vs 74181) -->
-    <wire from="(570,200)" to="(620,200)"/>
-    <wire from="(620,200)" to="(620,250)"/>
-    <wire from="(620,250)" to="(640,250)"/>
-    <wire from="(620,250)" to="(620,380)"/>
-    <wire from="(620,380)" to="(640,380)"/>
-
-    <wire from="(570,480)" to="(630,480)"/>
-    <wire from="(630,480)" to="(630,270)"/>
-    <wire from="(630,270)" to="(640,270)"/>
-    <wire from="(630,270)" to="(630,390)"/>
-    <wire from="(630,390)" to="(640,390)"/>
-
-    <!-- Comparator Output -->
-    <wire from="(680,260)" to="(740,260)"/>
-    <wire from="(740,260)" to="(760,260)"/>
-
-    <!-- 8-Bit Bus to Accumulator Register -->
-    <wire from="(660,370)" to="(700,370)"/>
-    <wire from="(760,370)" to="(820,370)"/>
-    <wire from="(760,370)" to="(770,370)"/>
-    <wire from="(770,370)" to="(770,430)"/>
-    <wire from="(770,430)" to="(750,430)"/>
-    <wire from="(790,440)" to="(840,440)"/>
-
-    <!-- Carry Out 8-Bit -->
-    <wire from="(460,400)" to="(510,400)"/>
+    <!-- Splitter to Hex Displays -->
+    <wire from="(680,150)" to="(720,150)"/>
+    <wire from="(720,130)" to="(720,150)"/>
+    <wire from="(680,160)" to="(770,160)"/>
+    <wire from="(770,130)" to="(770,160)"/>
 
     <!-- Clock and Control to Registers -->
     <wire from="(80,680)" to="(140,680)"/>
@@ -336,15 +669,15 @@
     <wire from="(140,180)" to="(180,180)"/>
     <wire from="(140,180)" to="(140,260)"/>
     <wire from="(140,260)" to="(180,260)"/>
-    <wire from="(140,260)" to="(140,390)"/>
-    <wire from="(140,390)" to="(700,390)"/>
+    <wire from="(140,260)" to="(140,240)"/>
+    <wire from="(140,240)" to="(560,240)"/>
 
     <wire from="(80,640)" to="(160,640)"/>
     <wire from="(160,640)" to="(160,200)"/>
     <wire from="(160,200)" to="(180,200)"/>
     <wire from="(160,200)" to="(160,280)"/>
     <wire from="(160,280)" to="(180,280)"/>
-    <wire from="(160,280)" to="(160,410)"/>
-    <wire from="(160,410)" to="(700,410)"/>
+    <wire from="(160,280)" to="(160,260)"/>
+    <wire from="(160,260)" to="(560,260)"/>
   </circuit>
 </project>
