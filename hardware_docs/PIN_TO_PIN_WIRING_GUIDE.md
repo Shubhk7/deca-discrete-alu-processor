@@ -1,612 +1,437 @@
 # Master Pin-to-Pin Interconnection Guide
-## Complete Benchtop Wiring Instruction Set: Reconfigurable 8-Bit / 4-Bit Gate-Level Discrete ALU
+## Benchtop Physical Wiring Manual: Dual-Mode Discrete & Silicon ALU Processor
+### Exact 12-IC Inventory + 3-Board Infrastructure (ESP32-S3 + Arduino UNO R4 WiFi + Arduino UNO R4 Minima)
 
-This document serves as the **exhaustive physical benchtop wiring manual** for the discrete 74HCT gate-level ALU. Every physical pin across all 27 Integrated Circuits (ICs), DIP switches, microcontrollers, and resistor networks is cataloged in exact numerical sequence with source, destination, and wire color recommendations.
-
----
-
-## Master Bill of Integrated Circuits (ICs)
-
-| IC Designator | Part Number | Logic Function | Package |
-| :--- | :--- | :--- | :---: |
-| **XOR1** | 74HCT86 | Quad 2-Input XOR (Adder Sum Stages: Bit 0, Bit 1) | 14-Pin DIP |
-| **XOR2** | 74HCT86 | Quad 2-Input XOR (Adder Sum Stages: Bit 2, Bit 3) | 14-Pin DIP |
-| **XOR3** | 74HCT86 | Quad 2-Input XOR (Adder Sum Stages: Bit 4, Bit 5) | 14-Pin DIP |
-| **XOR4** | 74HCT86 | Quad 2-Input XOR (Adder Sum Stages: Bit 6, Bit 7) | 14-Pin DIP |
-| **XOR5** | 74HCT86 | Quad 2-Input XOR (Subtraction Conditional Inversion: $B[3:0] \oplus SUB$) | 14-Pin DIP |
-| **XOR6** | 74HCT86 | Quad 2-Input XOR (Subtraction Conditional Inversion: $B[7:4] \oplus SUB$) | 14-Pin DIP |
-| **AND1** | 74HCT08 | Quad 2-Input AND (Adder Carry Generate/Propagate: Bit 0, Bit 1) | 14-Pin DIP |
-| **AND2** | 74HCT08 | Quad 2-Input AND (Adder Carry Generate/Propagate: Bit 2, Bit 3) | 14-Pin DIP |
-| **AND3** | 74HCT08 | Quad 2-Input AND (Adder Carry Generate/Propagate: Bit 4, Bit 5) | 14-Pin DIP |
-| **AND4** | 74HCT08 | Quad 2-Input AND (Adder Carry Generate/Propagate: Bit 6, Bit 7) | 14-Pin DIP |
-| **AND5** | 74HCT08 | Quad 2-Input AND (Bitwise Logic Operation: $A[3:0] \cdot B[3:0]$) | 14-Pin DIP |
-| **AND6** | 74HCT08 | Quad 2-Input AND (Bitwise Logic: $A[6:4] \cdot B[6:4]$ + Mode Carry Gate) | 14-Pin DIP |
-| **OR1** | 74HCT32 | Quad 2-Input OR (Adder Carry Chain: Lower Nibble $C_1, C_2, C_3, C_4$) | 14-Pin DIP |
-| **OR2** | 74HCT32 | Quad 2-Input OR (Adder Carry Chain: Upper Nibble $C_5, C_6, C_7, C_8$) | 14-Pin DIP |
-| **OR3** | 74HCT32 | Quad 2-Input OR (Bitwise Logic Operation: $A[3:0] + B[3:0]$) | 14-Pin DIP |
-| **OR4** | 74HCT32 | Quad 2-Input OR (Bitwise Logic Operation: $A[7:4] + B[7:4]$) | 14-Pin DIP |
-| **NOT1** | 74HCT04 | Hex Inverter (Bitwise Logic Operation: $\overline{A[5:0]}$) | 14-Pin DIP |
-| **NOT2** | 74HCT04 | Hex Inverter (Bitwise Logic Operation: $\overline{A[7:6]}$ + Control Inverters) | 14-Pin DIP |
-| **MUX1** | 74HCT151 | 8-to-1 Multiplexer (Selects Bit 0 Result $Y_0$) | 16-Pin DIP |
-| **MUX2** | 74HCT151 | 8-to-1 Multiplexer (Selects Bit 1 Result $Y_1$) | 16-Pin DIP |
-| **MUX3** | 74HCT151 | 8-to-1 Multiplexer (Selects Bit 2 Result $Y_2$) | 16-Pin DIP |
-| **MUX4** | 74HCT151 | 8-to-1 Multiplexer (Selects Bit 3 Result $Y_3$) | 16-Pin DIP |
-| **MUX5** | 74HCT151 | 8-to-1 Multiplexer (Selects Bit 4 Result $Y_4$) | 16-Pin DIP |
-| **MUX6** | 74HCT151 | 8-to-1 Multiplexer (Selects Bit 5 Result $Y_5$) | 16-Pin DIP |
-| **MUX7** | 74HCT151 | 8-to-1 Multiplexer (Selects Bit 6 Result $Y_6$) | 16-Pin DIP |
-| **MUX8** | 74HCT151 | 8-to-1 Multiplexer (Selects Bit 7 Result $Y_7$) | 16-Pin DIP |
-| **BUF1** | 74HCT245 | Octal Bus Transceiver (Drives Clean Buffered 8-Bit Output Bus $Y_{OUT}[7:0]$) | 20-Pin DIP |
+This document is the **definitive physical benchtop assembly manual** for the Dual-Mode Discrete & Silicon ALU Processor. Every physical pin across all 12 Integrated Circuits (ICs), DIP switch arrays, resistor networks, status LEDs, and microcontroller development boards is cataloged in exact numerical sequence with source, destination, and recommended wire color codes.
 
 ---
 
-# SECTION 1: Adder Gate ICs (XOR1–4, AND1–4, OR1–2)
+## 1. Master Bill of Integrated Circuits (Exact Physical Inventory)
 
-Every 1-bit full adder slice evaluates:
-$$X_k = A_k \oplus B'_k, \quad S_k = X_k \oplus C_k, \quad G_k = A_k \cdot B'_k, \quad P_k = C_k \cdot X_k, \quad C_{k+1} = G_k + P_k$$
-
-### XOR1: 74HCT86 (Adder Sum XOR Stages: Bit 0, Bit 1)
-* **Function**: Computes partial sum $X_0, X_1$ and final sum $S_0, S_1$.
-* **Pin 14 ($V_{CC}$)**: +5V Power Rail | **Pin 7 (GND)**: 0V Ground Rail
-
-| Pin | Name | Connected To (Source / Destination) | Function / Notes |
-| :---: | :--- | :--- | :--- |
-| **1** | 1A | **DIP Switch $A_0$** (Input Bus $A_0$) | Bit 0 Operand A input |
-| **2** | 1B | **XOR5 Pin 3 ($B'_0$)** | Bit 0 conditioned Operand B |
-| **3** | 1Y | **XOR1 Pin 4 (2A), AND1 Pin 5 (2B), MUX1 Pin 15 ($D_4$)** | $X_0 = A_0 \oplus B'_0$ (Partial sum & XOR op) |
-| **4** | 2A | **XOR1 Pin 3 (1Y / $X_0$)** | Partial sum input to Stage 2 |
-| **5** | 2B | **$SUB$ Control Line ($C_{in0}$)** | Carry-in to Bit 0 ($SUB = 1$ on subtraction) |
-| **6** | 2Y | **MUX1 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Final Sum $S_0$ (ADD / SUB result bit 0) |
-| **7** | GND | **0V Ground Rail** | Power supply ground |
-| **8** | 3Y | **XOR1 Pin 12 (4A), AND1 Pin 13 (4B), MUX2 Pin 15 ($D_4$)** | $X_1 = A_1 \oplus B'_1$ (Partial sum & XOR op) |
-| **9** | 3A | **DIP Switch $A_1$** (Input Bus $A_1$) | Bit 1 Operand A input |
-| **10** | 3B | **XOR5 Pin 6 ($B'_1$)** | Bit 1 conditioned Operand B |
-| **11** | 4Y | **MUX2 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Final Sum $S_1$ (ADD / SUB result bit 1) |
-| **12** | 4A | **XOR1 Pin 8 (3Y / $X_1$)** | Partial sum input to Stage 2 |
-| **13** | 4B | **OR1 Pin 3 ($C_1$)** | Carry-in from Bit 0 |
-| **14** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
+| IC Designator | Chip Model | Logic Function & Architectural Role | Package | Breadboard Location |
+| :--- | :--- | :--- | :---: | :---: |
+| **IC1** | **74xx283** | 4-Bit Binary Full Adder with Fast Carry (Lower Nibble ADD/SUB Core) | 16-Pin DIP | Breadboard 2 |
+| **IC2** | **74xx86** | Quad 2-Input Exclusive-OR Gate (Conditional Subtraction Inversion: $B \oplus SUB$) | 14-Pin DIP | Breadboard 2 |
+| **IC3** | **74xx86** | Quad 2-Input Exclusive-OR Gate (Bitwise XOR Logic Array: $A \oplus B$) | 14-Pin DIP | Breadboard 2 |
+| **IC4** | **74xx08** | Quad 2-Input AND Gate (Bitwise AND Logic Array: $A \cdot B$) | 14-Pin DIP | Breadboard 2 |
+| **IC5** | **74xx32** | Quad 2-Input OR Gate (Bitwise OR Logic Array: $A + B$) | 14-Pin DIP | Breadboard 2 |
+| **IC6** | **74xx04** | Hex Inverter (Bitwise NOT Array: $\bar{A}$ + Carry Inversion $C_4 \to \bar{C}_n$) | 14-Pin DIP | Breadboard 2 |
+| **IC7** | **74xx151** | 8:1 Multiplexer (Operation Selector for Custom ALU Bit 0: $Y_0$) | 16-Pin DIP | Breadboard 3 |
+| **IC8** | **74xx151** | 8:1 Multiplexer (Operation Selector for Custom ALU Bit 1: $Y_1$) | 16-Pin DIP | Breadboard 3 |
+| **IC9** | **74xx151** | 8:1 Multiplexer (Operation Selector for Custom ALU Bit 2: $Y_2$) | 16-Pin DIP | Breadboard 3 |
+| **IC10** | **74xx151** | 8:1 Multiplexer (Operation Selector for Custom ALU Bit 3: $Y_3$) | 16-Pin DIP | Breadboard 3 |
+| **IC11** | **74LS181N** | 4-Bit Bipolar ALU (Upper Nibble in Mode 0 / Silicon Target in Mode 1) | 24-Pin DIP (0.6") | Breadboard 4 |
+| **IC12** | **74xx85** | 4-Bit Magnitude Comparator (Hardware Equivalence Verifier: $Y_{custom}$ vs $F_{181}$) | 16-Pin DIP | Breadboard 4 |
 
 ---
 
-### XOR2: 74HCT86 (Adder Sum XOR Stages: Bit 2, Bit 3)
-* **Function**: Computes partial sum $X_2, X_3$ and final sum $S_2, S_3$.
-* **Pin 14 ($V_{CC}$)**: +5V Power Rail | **Pin 7 (GND)**: 0V Ground Rail
+## 2. Power Distribution & Star Grounding Architecture
 
-| Pin | Name | Connected To (Source / Destination) | Function / Notes |
-| :---: | :--- | :--- | :--- |
-| **1** | 1A | **DIP Switch $A_2$** (Input Bus $A_2$) | Bit 2 Operand A input |
-| **2** | 1B | **XOR5 Pin 8 ($B'_2$)** | Bit 2 conditioned Operand B |
-| **3** | 1Y | **XOR2 Pin 4 (2A), AND2 Pin 5 (2B), MUX3 Pin 15 ($D_4$)** | $X_2 = A_2 \oplus B'_2$ (Partial sum & XOR op) |
-| **4** | 2A | **XOR2 Pin 3 (1Y / $X_2$)** | Partial sum input to Stage 2 |
-| **5** | 2B | **OR1 Pin 6 ($C_2$)** | Carry-in from Bit 1 |
-| **6** | 2Y | **MUX3 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Final Sum $S_2$ (ADD / SUB result bit 2) |
-| **7** | GND | **0V Ground Rail** | Power supply ground |
-| **8** | 3Y | **XOR2 Pin 12 (4A), AND2 Pin 13 (4B), MUX4 Pin 15 ($D_4$)** | $X_3 = A_3 \oplus B'_3$ (Partial sum & XOR op) |
-| **9** | 3A | **DIP Switch $A_3$** (Input Bus $A_3$) | Bit 3 Operand A input |
-| **10** | 3B | **XOR5 Pin 11 ($B'_3$)** | Bit 3 conditioned Operand B |
-| **11** | 4Y | **MUX4 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Final Sum $S_3$ (ADD / SUB result bit 3) |
-| **12** | 4A | **XOR2 Pin 8 (3Y / $X_3$)** | Partial sum input to Stage 2 |
-| **13** | 4B | **OR1 Pin 8 ($C_3$)** | Carry-in from Bit 2 |
-| **14** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
+### 2.1 Power Source Wiring (Arduino UNO R4 Minima Dedicated Station)
+* **Arduino UNO R4 Minima** is the sole power provider for the breadboard logic rails (+5V @ up to 1.2A via USB-C).
+* **Arduino UNO R4 WiFi** and **ESP32-S3** are powered via their own dedicated USB-C cables. **Their 5V/VIN pins MUST NOT be connected to the breadboard 5V rail!**
+
+| Board / Rail | Pin / Terminal | Connected To | Function / Description | Wire Color |
+| :--- | :--- | :--- | :--- | :--- |
+| **Arduino UNO R4 Minima** | `5V` Pin | Breadboard +5V Master Power Rail (Board 1..4) | Master clean +5V supply rail | **RED (Heavy 20 AWG)** |
+| **Arduino UNO R4 Minima** | `GND` Pin | Breadboard Common Ground Bus (Board 1..4) | Master 0V reference | **BLACK (Heavy 20 AWG)** |
+| **Arduino UNO R4 WiFi** | `GND` Pin | Breadboard Common Ground Bus | Bond to star ground plane | **BLACK (22 AWG)** |
+| **ESP32-S3 N16R8** | `GND` Pin | Breadboard Common Ground Bus | Bond to star ground plane | **BLACK (22 AWG)** |
+| **Main Rail Entry** | Top/Bottom Rails | $100\ \mu\text{F}$ 25V Electrolytic Capacitor across +5V and GND | Low-frequency ripple suppression | Radial Can |
+| **IC Sockets (All 12)**| Across VCC & GND | $0.1\ \mu\text{F}$ Monolithic Ceramic Capacitor (x12) | High-frequency transient bypass | Yellow Ceramic (104) |
 
 ---
 
-### XOR3: 74HCT86 (Adder Sum XOR Stages: Bit 4, Bit 5)
-* **Function**: Computes partial sum $X_4, X_5$ and final sum $S_4, S_5$.
-* **Pin 14 ($V_{CC}$)**: +5V Power Rail | **Pin 7 (GND)**: 0V Ground Rail
-
-| Pin | Name | Connected To (Source / Destination) | Function / Notes |
-| :---: | :--- | :--- | :--- |
-| **1** | 1A | **DIP Switch $A_4$** (Input Bus $A_4$) | Bit 4 Operand A input |
-| **2** | 1B | **XOR6 Pin 3 ($B'_4$)** | Bit 4 conditioned Operand B |
-| **3** | 1Y | **XOR3 Pin 4 (2A), AND3 Pin 5 (2B), MUX5 Pin 15 ($D_4$)** | $X_4 = A_4 \oplus B'_4$ (Partial sum & XOR op) |
-| **4** | 2A | **XOR3 Pin 3 (1Y / $X_4$)** | Partial sum input to Stage 2 |
-| **5** | 2B | **AND6 Pin 11 ($C_{in4}$)** | Gated Carry-in from Mode Gate |
-| **6** | 2Y | **MUX5 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Final Sum $S_4$ (ADD / SUB result bit 4) |
-| **7** | GND | **0V Ground Rail** | Power supply ground |
-| **8** | 3Y | **XOR3 Pin 12 (4A), AND3 Pin 13 (4B), MUX6 Pin 15 ($D_4$)** | $X_5 = A_5 \oplus B'_5$ (Partial sum & XOR op) |
-| **9** | 3A | **DIP Switch $A_5$** (Input Bus $A_5$) | Bit 5 Operand A input |
-| **10** | 3B | **XOR6 Pin 6 ($B'_5$)** | Bit 5 conditioned Operand B |
-| **11** | 4Y | **MUX6 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Final Sum $S_5$ (ADD / SUB result bit 5) |
-| **12** | 4A | **XOR3 Pin 8 (3Y / $X_5$)** | Partial sum input to Stage 2 |
-| **13** | 4B | **OR2 Pin 3 ($C_5$)** | Carry-in from Bit 4 |
-| **14** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
+## 3. IC-by-IC Master Pin-to-Pin Interconnection Tables
 
 ---
 
-### XOR4: 74HCT86 (Adder Sum XOR Stages: Bit 6, Bit 7)
-* **Function**: Computes partial sum $X_6, X_7$ and final sum $S_6, S_7$.
-* **Pin 14 ($V_{CC}$)**: +5V Power Rail | **Pin 7 (GND)**: 0V Ground Rail
+### IC1: 74xx283 (4-Bit Binary Full Adder with Fast Carry) — 16-Pin DIP
+* **Location**: Breadboard 2 | **Power**: Pin 16 $\to$ +5V Rail, Pin 8 $\to$ GND Rail
+* **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 16 and Pin 8.
 
-| Pin | Name | Connected To (Source / Destination) | Function / Notes |
-| :---: | :--- | :--- | :--- |
-| **1** | 1A | **DIP Switch $A_6$** (Input Bus $A_6$) | Bit 6 Operand A input |
-| **2** | 1B | **XOR6 Pin 8 ($B'_6$)** | Bit 6 conditioned Operand B |
-| **3** | 1Y | **XOR4 Pin 4 (2A), AND4 Pin 5 (2B), MUX7 Pin 15 ($D_4$)** | $X_6 = A_6 \oplus B'_6$ (Partial sum & XOR op) |
-| **4** | 2A | **XOR4 Pin 3 (1Y / $X_6$)** | Partial sum input to Stage 2 |
-| **5** | 2B | **OR2 Pin 6 ($C_6$)** | Carry-in from Bit 5 |
-| **6** | 2Y | **MUX7 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Final Sum $S_6$ (ADD / SUB result bit 6) |
-| **7** | GND | **0V Ground Rail** | Power supply ground |
-| **8** | 3Y | **XOR4 Pin 12 (4A), AND4 Pin 13 (4B), MUX8 Pin 15 ($D_4$)** | $X_7 = A_7 \oplus B'_7$ (Partial sum & XOR op) |
-| **9** | 3A | **DIP Switch $A_7$** (Input Bus $A_7$) | Bit 7 Operand A input (MSB) |
-| **10** | 3B | **XOR6 Pin 11 ($B'_7$)** | Bit 7 conditioned Operand B |
-| **11** | 4Y | **MUX8 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Final Sum $S_7$ (ADD / SUB result bit 7) |
-| **12** | 4A | **XOR4 Pin 8 (3Y / $X_7$)** | Partial sum input to Stage 2 |
-| **13** | 4B | **OR2 Pin 8 ($C_7$)** | Carry-in from Bit 6 |
-| **14** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
-
----
-
-### AND1: 74HCT08 (Adder Carry Generate & Propagate: Bit 0, Bit 1)
-* **Function**: Generates carry components $G_0, P_0, G_1, P_1$.
-* **Pin 14 ($V_{CC}$)**: +5V Power Rail | **Pin 7 (GND)**: 0V Ground Rail
-
-| Pin | Name | Connected To (Source / Destination) | Function / Notes |
-| :---: | :--- | :--- | :--- |
-| **1** | 1A | **DIP Switch $A_0$** | Bit 0 Operand A |
-| **2** | 1B | **XOR5 Pin 3 ($B'_0$)** | Bit 0 conditioned Operand B |
-| **3** | 1Y | **OR1 Pin 1 (1A)** | $G_0 = A_0 \cdot B'_0$ (Carry generate 0) |
-| **4** | 2A | **$SUB$ Control Line ($C_{in0}$)** | Initial Carry-in to Bit 0 |
-| **5** | 2B | **XOR1 Pin 3 ($X_0$)** | Bit 0 propagate signal |
-| **6** | 2Y | **OR1 Pin 2 (1B)** | $P_0 = C_{in0} \cdot X_0$ (Carry propagate 0) |
-| **7** | GND | **0V Ground Rail** | Power supply ground |
-| **8** | 3Y | **OR1 Pin 4 (2A)** | $G_1 = A_1 \cdot B'_1$ (Carry generate 1) |
-| **9** | 3A | **DIP Switch $A_1$** | Bit 1 Operand A |
-| **10** | 3B | **XOR5 Pin 6 ($B'_1$)** | Bit 1 conditioned Operand B |
-| **11** | 4Y | **OR1 Pin 5 (2B)** | $P_1 = C_1 \cdot X_1$ (Carry propagate 1) |
-| **12** | 4A | **OR1 Pin 3 ($C_1$)** | Carry ripple from Bit 0 |
-| **13** | 4B | **XOR1 Pin 8 ($X_1$)** | Bit 1 propagate signal |
-| **14** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
+| Pin | Pin Name | Connected To (Exact Source / Destination) | Signal Function / Notes | Wire Color |
+| :---: | :---: | :--- | :--- | :---: |
+| **1** | $\Sigma_1$ | **IC8 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Bit 1 ADD / SUB Result ($S_1$) | Blue |
+| **2** | $B_2$ | **IC2 Pin 6 (2Y)** | Bit 1 Conditioned Operand $B'_1 = B_1 \oplus SUB$ | Green |
+| **3** | $A_2$ | **Input Bus $A_1$ (DIP SW A Pin 2 / ESP32 GPIO 2 via 4.7kΩ)** | Bit 1 Operand A input | Yellow |
+| **4** | $\Sigma_0$ | **IC7 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Bit 0 ADD / SUB Result ($S_0$) | Blue |
+| **5** | $A_1$ | **Input Bus $A_0$ (DIP SW A Pin 1 / ESP32 GPIO 1 via 4.7kΩ)** | Bit 0 Operand A input | Yellow |
+| **6** | $B_1$ | **IC2 Pin 3 (1Y)** | Bit 0 Conditioned Operand $B'_0 = B_0 \oplus SUB$ | Green |
+| **7** | $C_0$ | **$SUB$ Line (Opcode DIP SW Pin 1 / ESP32 GPIO 18 via 4.7kΩ)** | Carry-in for lower nibble ($C_0 = 1$ on subtraction) | Violet |
+| **8** | GND | **Breadboard Common Ground Rail** | 0V Power Ground | Black |
+| **9** | $C_4$ | **IC6 Pin 11 (5A)** | Raw Carry Out from Bit 3 (fed to inverter for 74LS181) | Orange |
+| **10** | $\Sigma_3$ | **IC10 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Bit 3 ADD / SUB Result ($S_3$) | Blue |
+| **11** | $B_4$ | **IC2 Pin 11 (4Y)** | Bit 3 Conditioned Operand $B'_3 = B_3 \oplus SUB$ | Green |
+| **12** | $A_4$ | **Input Bus $A_3$ (DIP SW A Pin 4 / ESP32 GPIO 5 via 4.7kΩ)** | Bit 3 Operand A input | Yellow |
+| **13** | $\Sigma_2$ | **IC9 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Bit 2 ADD / SUB Result ($S_2$) | Blue |
+| **14** | $A_3$ | **Input Bus $A_2$ (DIP SW A Pin 3 / ESP32 GPIO 4 via 4.7kΩ)** | Bit 2 Operand A input | Yellow |
+| **15** | $B_3$ | **IC2 Pin 8 (3Y)** | Bit 2 Conditioned Operand $B'_2 = B_2 \oplus SUB$ | Green |
+| **16** | $V_{CC}$ | **Breadboard +5V Master Power Rail** | +5V Logic Supply | Red |
 
 ---
 
-### AND2: 74HCT08 (Adder Carry Generate & Propagate: Bit 2, Bit 3)
-* **Function**: Generates carry components $G_2, P_2, G_3, P_3$.
-* **Pin 14 ($V_{CC}$)**: +5V Power Rail | **Pin 7 (GND)**: 0V Ground Rail
+### IC2: 74xx86 (Quad 2-Input XOR Gate #1) — Subtraction Inverter — 14-Pin DIP
+* **Location**: Breadboard 2 | **Power**: Pin 14 $\to$ +5V Rail, Pin 7 $\to$ GND Rail
+* **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 14 and Pin 7.
+* **Function**: Inverts Operand B when $SUB = 1$: $B'_i = B_i \oplus SUB$.
 
-| Pin | Name | Connected To (Source / Destination) | Function / Notes |
-| :---: | :--- | :--- | :--- |
-| **1** | 1A | **DIP Switch $A_2$** | Bit 2 Operand A |
-| **2** | 1B | **XOR5 Pin 8 ($B'_2$)** | Bit 2 conditioned Operand B |
-| **3** | 1Y | **OR1 Pin 9 (3A)** | $G_2 = A_2 \cdot B'_2$ (Carry generate 2) |
-| **4** | 2A | **OR1 Pin 6 ($C_2$)** | Carry ripple from Bit 1 |
-| **5** | 2B | **XOR2 Pin 3 ($X_2$)** | Bit 2 propagate signal |
-| **6** | 2Y | **OR1 Pin 10 (3B)** | $P_2 = C_2 \cdot X_2$ (Carry propagate 2) |
-| **7** | GND | **0V Ground Rail** | Power supply ground |
-| **8** | 3Y | **OR1 Pin 12 (4A)** | $G_3 = A_3 \cdot B'_3$ (Carry generate 3) |
-| **9** | 3A | **DIP Switch $A_3$** | Bit 3 Operand A |
-| **10** | 3B | **XOR5 Pin 11 ($B'_3$)** | Bit 3 conditioned Operand B |
-| **11** | 4Y | **OR1 Pin 13 (4B)** | $P_3 = C_3 \cdot X_3$ (Carry propagate 3) |
-| **12** | 4A | **OR1 Pin 8 ($C_3$)** | Carry ripple from Bit 2 |
-| **13** | 4B | **XOR2 Pin 8 ($X_3$)** | Bit 3 propagate signal |
-| **14** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
-
----
-
-### AND3: 74HCT08 (Adder Carry Generate & Propagate: Bit 4, Bit 5)
-* **Function**: Generates carry components $G_4, P_4, G_5, P_5$.
-* **Pin 14 ($V_{CC}$)**: +5V Power Rail | **Pin 7 (GND)**: 0V Ground Rail
-
-| Pin | Name | Connected To (Source / Destination) | Function / Notes |
-| :---: | :--- | :--- | :--- |
-| **1** | 1A | **DIP Switch $A_4$** | Bit 4 Operand A |
-| **2** | 1B | **XOR6 Pin 3 ($B'_4$)** | Bit 4 conditioned Operand B |
-| **3** | 1Y | **OR2 Pin 1 (1A)** | $G_4 = A_4 \cdot B'_4$ (Carry generate 4) |
-| **4** | 2A | **AND6 Pin 11 ($C_{in4}$)** | Gated Carry-in from Mode Gate |
-| **5** | 2B | **XOR3 Pin 3 ($X_4$)** | Bit 4 propagate signal |
-| **6** | 2Y | **OR2 Pin 2 (1B)** | $P_4 = C_{in4} \cdot X_4$ (Carry propagate 4) |
-| **7** | GND | **0V Ground Rail** | Power supply ground |
-| **8** | 3Y | **OR2 Pin 4 (2A)** | $G_5 = A_5 \cdot B'_5$ (Carry generate 5) |
-| **9** | 3A | **DIP Switch $A_5$** | Bit 5 Operand A |
-| **10** | 3B | **XOR6 Pin 6 ($B'_5$)** | Bit 5 conditioned Operand B |
-| **11** | 4Y | **OR2 Pin 5 (2B)** | $P_5 = C_5 \cdot X_5$ (Carry propagate 5) |
-| **12** | 4A | **OR2 Pin 3 ($C_5$)** | Carry ripple from Bit 4 |
-| **13** | 4B | **XOR3 Pin 8 ($X_5$)** | Bit 5 propagate signal |
-| **14** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
+| Pin | Pin Name | Connected To (Exact Source / Destination) | Signal Function / Notes | Wire Color |
+| :---: | :---: | :--- | :--- | :---: |
+| **1** | 1A | **Input Bus $B_0$ (DIP SW B Pin 1 / ESP32 GPIO 10 via 4.7kΩ)** | Bit 0 Operand B raw input | Green |
+| **2** | 1B | **$SUB$ Line (Opcode S0 line)** | Subtraction mode control signal | Violet |
+| **3** | 1Y | **IC1 Pin 6 ($B_1$)** | Conditioned Bit 0: $B'_0 = B_0 \oplus SUB$ | White |
+| **4** | 2A | **Input Bus $B_1$ (DIP SW B Pin 2 / ESP32 GPIO 11 via 4.7kΩ)** | Bit 1 Operand B raw input | Green |
+| **5** | 2B | **$SUB$ Line (Opcode S0 line)** | Subtraction mode control signal | Violet |
+| **6** | 2Y | **IC1 Pin 2 ($B_2$)** | Conditioned Bit 1: $B'_1 = B_1 \oplus SUB$ | White |
+| **7** | GND | **Breadboard Common Ground Rail** | 0V Power Ground | Black |
+| **8** | 3Y | **IC1 Pin 15 ($B_3$)** | Conditioned Bit 2: $B'_2 = B_2 \oplus SUB$ | White |
+| **9** | 3A | **Input Bus $B_2$ (DIP SW B Pin 3 / ESP32 GPIO 12 via 4.7kΩ)** | Bit 2 Operand B raw input | Green |
+| **10** | 3B | **$SUB$ Line (Opcode S0 line)** | Subtraction mode control signal | Violet |
+| **11** | 4Y | **IC1 Pin 11 ($B_4$)** | Conditioned Bit 3: $B'_3 = B_3 \oplus SUB$ | White |
+| **12** | 4A | **Input Bus $B_3$ (DIP SW B Pin 4 / ESP32 GPIO 13 via 4.7kΩ)** | Bit 3 Operand B raw input | Green |
+| **13** | 4B | **$SUB$ Line (Opcode S0 line)** | Subtraction mode control signal | Violet |
+| **14** | $V_{CC}$ | **Breadboard +5V Master Power Rail** | +5V Logic Supply | Red |
 
 ---
 
-### AND4: 74HCT08 (Adder Carry Generate & Propagate: Bit 6, Bit 7)
-* **Function**: Generates carry components $G_6, P_6, G_7, P_7$ (and Logic AND Bit 7).
-* **Pin 14 ($V_{CC}$)**: +5V Power Rail | **Pin 7 (GND)**: 0V Ground Rail
+### IC3: 74xx86 (Quad 2-Input XOR Gate #2) — Bitwise XOR Logic Array — 14-Pin DIP
+* **Location**: Breadboard 2 | **Power**: Pin 14 $\to$ +5V Rail, Pin 7 $\to$ GND Rail
+* **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 14 and Pin 7.
+* **Function**: Computes $A_i \oplus B_i$ for lower nibble.
 
-| Pin | Name | Connected To (Source / Destination) | Function / Notes |
-| :---: | :--- | :--- | :--- |
-| **1** | 1A | **DIP Switch $A_6$** | Bit 6 Operand A |
-| **2** | 1B | **XOR6 Pin 8 ($B'_6$)** | Bit 6 conditioned Operand B |
-| **3** | 1Y | **OR2 Pin 9 (3A)** | $G_6 = A_6 \cdot B'_6$ (Carry generate 6) |
-| **4** | 2A | **OR2 Pin 6 ($C_6$)** | Carry ripple from Bit 5 |
-| **5** | 2B | **XOR4 Pin 3 ($X_6$)** | Bit 6 propagate signal |
-| **6** | 2Y | **OR2 Pin 10 (3B)** | $P_6 = C_6 \cdot X_6$ (Carry propagate 6) |
-| **7** | GND | **0V Ground Rail** | Power supply ground |
-| **8** | 3Y | **OR2 Pin 12 (4A) AND MUX8 Pin 2 ($D_2$)** | $G_7 = A_7 \cdot B'_7$ (Carry gen 7 & AND Op Bit 7) |
-| **9** | 3A | **DIP Switch $A_7$** | Bit 7 Operand A |
-| **10** | 3B | **XOR6 Pin 11 ($B'_7$)** | Bit 7 conditioned Operand B |
-| **11** | 4Y | **OR2 Pin 13 (4B)** | $P_7 = C_7 \cdot X_7$ (Carry propagate 7) |
-| **12** | 4A | **OR2 Pin 8 ($C_7$)** | Carry ripple from Bit 6 |
-| **13** | 4B | **XOR4 Pin 8 ($X_7$)** | Bit 7 propagate signal |
-| **14** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
-
----
-
-### OR1: 74HCT32 (Adder Carry Chain: Lower Nibble $C_1, C_2, C_3, C_4$)
-* **Function**: Combines Generate and Propagate terms to ripple carry across bits 0..3.
-* **Pin 14 ($V_{CC}$)**: +5V Power Rail | **Pin 7 (GND)**: 0V Ground Rail
-
-| Pin | Name | Connected To (Source / Destination) | Function / Notes |
-| :---: | :--- | :--- | :--- |
-| **1** | 1A | **AND1 Pin 3 ($G_0$)** | Carry generate bit 0 |
-| **2** | 1B | **AND1 Pin 6 ($P_0$)** | Carry propagate bit 0 |
-| **3** | 1Y | **XOR1 Pin 13 (4B) and AND1 Pin 12 (4A)** | $C_1 = G_0 + P_0$ (Carry out of Bit 0) |
-| **4** | 2A | **AND1 Pin 8 ($G_1$)** | Carry generate bit 1 |
-| **5** | 2B | **AND1 Pin 11 ($P_1$)** | Carry propagate bit 1 |
-| **6** | 2Y | **XOR2 Pin 5 (2B) and AND2 Pin 4 (2A)** | $C_2 = G_1 + P_1$ (Carry out of Bit 1) |
-| **7** | GND | **0V Ground Rail** | Power supply ground |
-| **8** | 3Y | **XOR2 Pin 13 (4B) and AND2 Pin 12 (4A)** | $C_3 = G_2 + P_2$ (Carry out of Bit 2) |
-| **9** | 3A | **AND2 Pin 3 ($G_2$)** | Carry generate bit 2 |
-| **10** | 3B | **AND2 Pin 6 ($P_2$)** | Carry propagate bit 2 |
-| **11** | 4Y | **AND6 Pin 12 (4A)** | $C_4 = G_3 + P_3$ (Lower Nibble Carry Out) |
-| **12** | 4A | **AND2 Pin 8 ($G_3$)** | Carry generate bit 3 |
-| **13** | 4B | **AND2 Pin 11 ($P_3$)** | Carry propagate bit 3 |
-| **14** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
+| Pin | Pin Name | Connected To (Exact Source / Destination) | Signal Function / Notes | Wire Color |
+| :---: | :---: | :--- | :--- | :---: |
+| **1** | 1A | **Input Bus $A_0$** | Bit 0 Operand A | Yellow |
+| **2** | 1B | **Input Bus $B_0$** | Bit 0 Operand B | Green |
+| **3** | 1Y | **IC7 Pin 15 ($D_4$)** | Bit 0 XOR Result ($A_0 \oplus B_0$) to MUX0 | Gray |
+| **4** | 2A | **Input Bus $A_1$** | Bit 1 Operand A | Yellow |
+| **5** | 2B | **Input Bus $B_1$** | Bit 1 Operand B | Green |
+| **6** | 2Y | **IC8 Pin 15 ($D_4$)** | Bit 1 XOR Result ($A_1 \oplus B_1$) to MUX1 | Gray |
+| **7** | GND | **Breadboard Common Ground Rail** | 0V Power Ground | Black |
+| **8** | 3Y | **IC9 Pin 15 ($D_4$)** | Bit 2 XOR Result ($A_2 \oplus B_2$) to MUX2 | Gray |
+| **9** | 3A | **Input Bus $A_2$** | Bit 2 Operand A | Yellow |
+| **10** | 3B | **Input Bus $B_2$** | Bit 2 Operand B | Green |
+| **11** | 4Y | **IC10 Pin 15 ($D_4$)** | Bit 3 XOR Result ($A_3 \oplus B_3$) to MUX3 | Gray |
+| **12** | 4A | **Input Bus $A_3$** | Bit 3 Operand A | Yellow |
+| **13** | 4B | **Input Bus $B_3$** | Bit 3 Operand B | Green |
+| **14** | $V_{CC}$ | **Breadboard +5V Master Power Rail** | +5V Logic Supply | Red |
 
 ---
 
-### OR2: 74HCT32 (Adder Carry Chain: Upper Nibble $C_5, C_6, C_7, C_8$)
-* **Function**: Combines Generate and Propagate terms to ripple carry across bits 4..7.
-* **Pin 14 ($V_{CC}$)**: +5V Power Rail | **Pin 7 (GND)**: 0V Ground Rail
+### IC4: 74xx08 (Quad 2-Input AND Gate) — Bitwise AND Logic Array — 14-Pin DIP
+* **Location**: Breadboard 2 | **Power**: Pin 14 $\to$ +5V Rail, Pin 7 $\to$ GND Rail
+* **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 14 and Pin 7.
+* **Function**: Computes $A_i \cdot B_i$ for lower nibble.
 
-| Pin | Name | Connected To (Source / Destination) | Function / Notes |
-| :---: | :--- | :--- | :--- |
-| **1** | 1A | **AND3 Pin 3 ($G_4$)** | Carry generate bit 4 |
-| **2** | 1B | **AND3 Pin 6 ($P_4$)** | Carry propagate bit 4 |
-| **3** | 1Y | **XOR3 Pin 13 (4B) and AND3 Pin 12 (4A)** | $C_5 = G_4 + P_4$ (Carry out of Bit 4) |
-| **4** | 2A | **AND3 Pin 8 ($G_5$)** | Carry generate bit 5 |
-| **5** | 2B | **AND3 Pin 11 ($P_5$)** | Carry propagate bit 5 |
-| **6** | 2Y | **XOR4 Pin 5 (2B) and AND4 Pin 4 (2A)** | $C_6 = G_5 + P_5$ (Carry out of Bit 5) |
-| **7** | GND | **0V Ground Rail** | Power supply ground |
-| **8** | 3Y | **XOR4 Pin 13 (4B) and AND4 Pin 12 (4A)** | $C_7 = G_6 + P_6$ (Carry out of Bit 6) |
-| **9** | 3A | **AND4 Pin 3 ($G_6$)** | Carry generate bit 6 |
-| **10** | 3B | **AND4 Pin 6 ($P_6$)** | Carry propagate bit 6 |
-| **11** | 4Y | **Arduino R4 Pin A0 & ESP32 GPIO 26 (via divider)** | $C_8 = G_7 + P_7$ (Final 8-Bit Carry Out) |
-| **12** | 4A | **AND4 Pin 8 ($G_7$)** | Carry generate bit 7 |
-| **13** | 4B | **AND4 Pin 11 ($P_7$)** | Carry propagate bit 7 |
-| **14** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
-
----
-
-# SECTION 2: Subtraction Inversion ICs (XOR5, XOR6)
-
-During subtraction ($SUB = 1$), operand $B$ is bitwise inverted ($B'_k = B_k \oplus 1 = \overline{B_k}$) and $C_{in0} = 1$, creating 2's complement: $A - B = A + \overline{B} + 1$.
-
-### XOR5: 74HCT86 (Subtraction Inverter for Lower Nibble $B[3:0]$)
-* **Pin 14 ($V_{CC}$)**: +5V Power Rail | **Pin 7 (GND)**: 0V Ground Rail
-
-| Pin | Name | Connected To (Source / Destination) | Function / Notes |
-| :---: | :--- | :--- | :--- |
-| **1** | 1A | **$SUB$ Control Signal (Opcode switch $S_0$)** | Active HIGH on Opcode 001 |
-| **2** | 1B | **DIP Switch $B_0$** (Input Bus $B_0$) | Raw Operand B Bit 0 |
-| **3** | 1Y | **XOR1 Pin 2 and AND1 Pin 2** | $B'_0 = B_0 \oplus SUB$ |
-| **4** | 2A | **$SUB$ Control Signal** | Tied to Pin 1 |
-| **5** | 2B | **DIP Switch $B_1$** (Input Bus $B_1$) | Raw Operand B Bit 1 |
-| **6** | 2Y | **XOR1 Pin 10 and AND1 Pin 10** | $B'_1 = B_1 \oplus SUB$ |
-| **7** | GND | **0V Ground Rail** | Power supply ground |
-| **8** | 3Y | **XOR2 Pin 2 and AND2 Pin 2** | $B'_2 = B_2 \oplus SUB$ |
-| **9** | 3A | **DIP Switch $B_2$** (Input Bus $B_2$) | Raw Operand B Bit 2 |
-| **10** | 3B | **$SUB$ Control Signal** | Tied to Pin 1 |
-| **11** | 4Y | **XOR2 Pin 10 and AND2 Pin 10** | $B'_3 = B_3 \oplus SUB$ |
-| **12** | 4A | **DIP Switch $B_3$** (Input Bus $B_3$) | Raw Operand B Bit 3 |
-| **13** | 4B | **$SUB$ Control Signal** | Tied to Pin 1 |
-| **14** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
+| Pin | Pin Name | Connected To (Exact Source / Destination) | Signal Function / Notes | Wire Color |
+| :---: | :---: | :--- | :--- | :---: |
+| **1** | 1A | **Input Bus $A_0$** | Bit 0 Operand A | Yellow |
+| **2** | 1B | **Input Bus $B_0$** | Bit 0 Operand B | Green |
+| **3** | 1Y | **IC7 Pin 2 ($D_2$)** | Bit 0 AND Result ($A_0 \cdot B_0$) to MUX0 | Brown |
+| **4** | 2A | **Input Bus $A_1$** | Bit 1 Operand A | Yellow |
+| **5** | 2B | **Input Bus $B_1$** | Bit 1 Operand B | Green |
+| **6** | 2Y | **IC8 Pin 2 ($D_2$)** | Bit 1 AND Result ($A_1 \cdot B_1$) to MUX1 | Brown |
+| **7** | GND | **Breadboard Common Ground Rail** | 0V Power Ground | Black |
+| **8** | 3Y | **IC9 Pin 2 ($D_2$)** | Bit 2 AND Result ($A_2 \cdot B_2$) to MUX2 | Brown |
+| **9** | 3A | **Input Bus $A_2$** | Bit 2 Operand A | Yellow |
+| **10** | 3B | **Input Bus $B_2$** | Bit 2 Operand B | Green |
+| **11** | 4Y | **IC10 Pin 2 ($D_2$)** | Bit 3 AND Result ($A_3 \cdot B_3$) to MUX3 | Brown |
+| **12** | 4A | **Input Bus $A_3$** | Bit 3 Operand A | Yellow |
+| **13** | 4B | **Input Bus $B_3$** | Bit 3 Operand B | Green |
+| **14** | $V_{CC}$ | **Breadboard +5V Master Power Rail** | +5V Logic Supply | Red |
 
 ---
 
-### XOR6: 74HCT86 (Subtraction Inverter for Upper Nibble $B[7:4]$)
-* **Pin 14 ($V_{CC}$)**: +5V Power Rail | **Pin 7 (GND)**: 0V Ground Rail
+### IC5: 74xx32 (Quad 2-Input OR Gate) — Bitwise OR Logic Array — 14-Pin DIP
+* **Location**: Breadboard 2 | **Power**: Pin 14 $\to$ +5V Rail, Pin 7 $\to$ GND Rail
+* **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 14 and Pin 7.
+* **Function**: Computes $A_i + B_i$ for lower nibble.
 
-| Pin | Name | Connected To (Source / Destination) | Function / Notes |
-| :---: | :--- | :--- | :--- |
-| **1** | 1A | **$SUB$ Control Signal (Opcode switch $S_0$)** | Active HIGH on Opcode 001 |
-| **2** | 1B | **DIP Switch $B_4$** (Input Bus $B_4$) | Raw Operand B Bit 4 |
-| **3** | 1Y | **XOR3 Pin 2 and AND3 Pin 2** | $B'_4 = B_4 \oplus SUB$ |
-| **4** | 2A | **$SUB$ Control Signal** | Tied to Pin 1 |
-| **5** | 2B | **DIP Switch $B_5$** (Input Bus $B_5$) | Raw Operand B Bit 5 |
-| **6** | 2Y | **XOR3 Pin 10 and AND3 Pin 10** | $B'_5 = B_5 \oplus SUB$ |
-| **7** | GND | **0V Ground Rail** | Power supply ground |
-| **8** | 3Y | **XOR4 Pin 2 and AND4 Pin 2** | $B'_6 = B_6 \oplus SUB$ |
-| **9** | 3A | **DIP Switch $B_6$** (Input Bus $B_6$) | Raw Operand B Bit 6 |
-| **10** | 3B | **$SUB$ Control Signal** | Tied to Pin 1 |
-| **11** | 4Y | **XOR4 Pin 10 and AND4 Pin 10** | $B'_7 = B_7 \oplus SUB$ |
-| **12** | 4A | **DIP Switch $B_7$** (Input Bus $B_7$) | Raw Operand B Bit 7 |
-| **13** | 4B | **$SUB$ Control Signal** | Tied to Pin 1 |
-| **14** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
-
----
-
-# SECTION 3: Logic Operation Gate ICs (AND5–6, OR3–4, NOT1–2)
-
-### AND5: 74HCT08 (Bitwise Logic AND for Bits 0..3)
-* **Pin 14 ($V_{CC}$)**: +5V Power Rail | **Pin 7 (GND)**: 0V Ground Rail
-
-| Pin | Name | Connected To (Source / Destination) | Function / Notes |
-| :---: | :--- | :--- | :--- |
-| **1** | 1A | **DIP Switch $A_0$** | Bit 0 input A |
-| **2** | 1B | **DIP Switch $B_0$** | Bit 0 input B |
-| **3** | 1Y | **MUX1 Pin 2 ($D_2$)** | $A_0 \cdot B_0$ (Logic AND Bit 0) |
-| **4** | 2A | **DIP Switch $A_1$** | Bit 1 input A |
-| **5** | 2B | **DIP Switch $B_1$** | Bit 1 input B |
-| **6** | 2Y | **MUX2 Pin 2 ($D_2$)** | $A_1 \cdot B_1$ (Logic AND Bit 1) |
-| **7** | GND | **0V Ground Rail** | Power supply ground |
-| **8** | 3Y | **MUX3 Pin 2 ($D_2$)** | $A_2 \cdot B_2$ (Logic AND Bit 2) |
-| **9** | 3A | **DIP Switch $A_2$** | Bit 2 input A |
-| **10** | 3B | **DIP Switch $B_2$** | Bit 2 input B |
-| **11** | 4Y | **MUX4 Pin 2 ($D_2$)** | $A_3 \cdot B_3$ (Logic AND Bit 3) |
-| **12** | 4A | **DIP Switch $A_3$** | Bit 3 input A |
-| **13** | 4B | **DIP Switch $B_3$** | Bit 3 input B |
-| **14** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
+| Pin | Pin Name | Connected To (Exact Source / Destination) | Signal Function / Notes | Wire Color |
+| :---: | :---: | :--- | :--- | :---: |
+| **1** | 1A | **Input Bus $A_0$** | Bit 0 Operand A | Yellow |
+| **2** | 1B | **Input Bus $B_0$** | Bit 0 Operand B | Green |
+| **3** | 1Y | **IC7 Pin 1 ($D_3$)** | Bit 0 OR Result ($A_0 + B_0$) to MUX0 | Purple |
+| **4** | 2A | **Input Bus $A_1$** | Bit 1 Operand A | Yellow |
+| **5** | 2B | **Input Bus $B_1$** | Bit 1 Operand B | Green |
+| **6** | 2Y | **IC8 Pin 1 ($D_3$)** | Bit 1 OR Result ($A_1 + B_1$) to MUX1 | Purple |
+| **7** | GND | **Breadboard Common Ground Rail** | 0V Power Ground | Black |
+| **8** | 3Y | **IC9 Pin 1 ($D_3$)** | Bit 2 OR Result ($A_2 + B_2$) to MUX2 | Purple |
+| **9** | 3A | **Input Bus $A_2$** | Bit 2 Operand A | Yellow |
+| **10** | 3B | **Input Bus $B_2$** | Bit 2 Operand B | Green |
+| **11** | 4Y | **IC10 Pin 1 ($D_3$)** | Bit 3 OR Result ($A_3 + B_3$) to MUX3 | Purple |
+| **12** | 4A | **Input Bus $A_3$** | Bit 3 Operand A | Yellow |
+| **13** | 4B | **Input Bus $B_3$** | Bit 3 Operand B | Green |
+| **14** | $V_{CC}$ | **Breadboard +5V Master Power Rail** | +5V Logic Supply | Red |
 
 ---
 
-### AND6: 74HCT08 (Bitwise Logic AND for Bits 4..6 + Mode Carry Gate)
-* **Pin 14 ($V_{CC}$)**: +5V Power Rail | **Pin 7 (GND)**: 0V Ground Rail
+### IC6: 74xx04 (Hex Inverter) — Bitwise NOT & Carry Inversion — 14-Pin DIP
+* **Location**: Breadboard 2 | **Power**: Pin 14 $\to$ +5V Rail, Pin 7 $\to$ GND Rail
+* **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 14 and Pin 7.
 
-| Pin | Name | Connected To (Source / Destination) | Function / Notes |
-| :---: | :--- | :--- | :--- |
-| **1** | 1A | **DIP Switch $A_4$** | Bit 4 input A |
-| **2** | 1B | **DIP Switch $B_4$** | Bit 4 input B |
-| **3** | 1Y | **MUX5 Pin 2 ($D_2$)** | $A_4 \cdot B_4$ (Logic AND Bit 4) |
-| **4** | 2A | **DIP Switch $A_5$** | Bit 5 input A |
-| **5** | 2B | **DIP Switch $B_5$** | Bit 5 input B |
-| **6** | 2Y | **MUX6 Pin 2 ($D_2$)** | $A_5 \cdot B_5$ (Logic AND Bit 5) |
-| **7** | GND | **0V Ground Rail** | Power supply ground |
-| **8** | 3Y | **MUX7 Pin 2 ($D_2$)** | $A_6 \cdot B_6$ (Logic AND Bit 6) |
-| **9** | 3A | **DIP Switch $A_6$** | Bit 6 input A |
-| **10** | 3B | **DIP Switch $B_6$** | Bit 6 input B |
-| **11** | 4Y | **XOR3 Pin 5 (2B) and AND3 Pin 4 (2A)** | **Gated Carry ($C_{in4} = C_4 \cdot MODE$)** |
-| **12** | 4A | **OR1 Pin 11 ($C_4$)** | Lower Nibble Carry Out |
-| **13** | 4B | **Mode Toggle Switch (MODE line)** | 1 = 8-Bit Cascade, 0 = Dual 4-Bit |
-| **14** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
-
-*(Note on Bit 7 AND: $A_7 \cdot B_7$ is generated directly by `AND4 Pin 8` and routed to MUX8 Pin 2).*
-
----
-
-### OR3: 74HCT32 (Bitwise Logic OR for Bits 0..3)
-* **Pin 14 ($V_{CC}$)**: +5V Power Rail | **Pin 7 (GND)**: 0V Ground Rail
-
-| Pin | Name | Connected To (Source / Destination) | Function / Notes |
-| :---: | :--- | :--- | :--- |
-| **1** | 1A | **DIP Switch $A_0$** | Bit 0 input A |
-| **2** | 1B | **DIP Switch $B_0$** | Bit 0 input B |
-| **3** | 1Y | **MUX1 Pin 1 ($D_3$)** | $A_0 + B_0$ (Logic OR Bit 0) |
-| **4** | 2A | **DIP Switch $A_1$** | Bit 1 input A |
-| **5** | 2B | **DIP Switch $B_1$** | Bit 1 input B |
-| **6** | 2Y | **MUX2 Pin 1 ($D_3$)** | $A_1 + B_1$ (Logic OR Bit 1) |
-| **7** | GND | **0V Ground Rail** | Power supply ground |
-| **8** | 3Y | **MUX3 Pin 1 ($D_3$)** | $A_2 + B_2$ (Logic OR Bit 2) |
-| **9** | 3A | **DIP Switch $A_2$** | Bit 2 input A |
-| **10** | 3B | **DIP Switch $B_2$** | Bit 2 input B |
-| **11** | 4Y | **MUX4 Pin 1 ($D_3$)** | $A_3 + B_3$ (Logic OR Bit 3) |
-| **12** | 4A | **DIP Switch $A_3$** | Bit 3 input A |
-| **13** | 4B | **DIP Switch $B_3$** | Bit 3 input B |
-| **14** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
+| Pin | Pin Name | Connected To (Exact Source / Destination) | Signal Function / Notes | Wire Color |
+| :---: | :---: | :--- | :--- | :---: |
+| **1** | 1A | **Input Bus $A_0$** | Bit 0 Operand A | Yellow |
+| **2** | 1Y | **IC7 Pin 14 ($D_5$)** | Bit 0 Inverted ($\overline{A_0}$) to MUX0 | White |
+| **3** | 2A | **Input Bus $A_1$** | Bit 1 Operand A | Yellow |
+| **4** | 2Y | **IC8 Pin 14 ($D_5$)** | Bit 1 Inverted ($\overline{A_1}$) to MUX1 | White |
+| **5** | 3A | **Input Bus $A_2$** | Bit 2 Operand A | Yellow |
+| **6** | 3Y | **IC9 Pin 14 ($D_5$)** | Bit 2 Inverted ($\overline{A_2}$) to MUX2 | White |
+| **7** | GND | **Breadboard Common Ground Rail** | 0V Power Ground | Black |
+| **8** | 4Y | **IC10 Pin 14 ($D_5$)** | Bit 3 Inverted ($\overline{A_3}$) to MUX3 | White |
+| **9** | 4A | **Input Bus $A_3$** | Bit 3 Operand A | Yellow |
+| **10** | 5Y | **IC11 Pin 7 ($\bar{C}_n$, via Mode Switch)** | Inverted Carry: $\overline{C_4}$ (Active-LOW for 74LS181) | Orange |
+| **11** | 5A | **IC1 Pin 9 ($C_4$)** | Raw Carry-out from 74xx283 Adder | Orange |
+| **12** | 6Y | **NC (Unconnected)** | Spare Inverter Output | - |
+| **13** | 6A | **Breadboard Common Ground Rail** | Spare Input (Tied LOW to prevent floating oscillation) | Black |
+| **14** | $V_{CC}$ | **Breadboard +5V Master Power Rail** | +5V Logic Supply | Red |
 
 ---
 
-### OR4: 74HCT32 (Bitwise Logic OR for Bits 4..7)
-* **Pin 14 ($V_{CC}$)**: +5V Power Rail | **Pin 7 (GND)**: 0V Ground Rail
+### IC7: 74xx151 (8-to-1 Multiplexer) — Bit 0 Result Selector ($Y_0$) — 16-Pin DIP
+* **Location**: Breadboard 3 | **Power**: Pin 16 $\to$ +5V Rail, Pin 8 $\to$ GND Rail
+* **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 16 and Pin 8.
 
-| Pin | Name | Connected To (Source / Destination) | Function / Notes |
-| :---: | :--- | :--- | :--- |
-| **1** | 1A | **DIP Switch $A_4$** | Bit 4 input A |
-| **2** | 1B | **DIP Switch $B_4$** | Bit 4 input B |
-| **3** | 1Y | **MUX5 Pin 1 ($D_3$)** | $A_4 + B_4$ (Logic OR Bit 4) |
-| **4** | 2A | **DIP Switch $A_5$** | Bit 5 input A |
-| **5** | 2B | **DIP Switch $B_5$** | Bit 5 input B |
-| **6** | 2Y | **MUX6 Pin 1 ($D_3$)** | $A_5 + B_5$ (Logic OR Bit 5) |
-| **7** | GND | **0V Ground Rail** | Power supply ground |
-| **8** | 3Y | **MUX7 Pin 1 ($D_3$)** | $A_6 + B_6$ (Logic OR Bit 6) |
-| **9** | 3A | **DIP Switch $A_6$** | Bit 6 input A |
-| **10** | 3B | **DIP Switch $B_6$** | Bit 6 input B |
-| **11** | 4Y | **MUX8 Pin 1 ($D_3$)** | $A_7 + B_7$ (Logic OR Bit 7) |
-| **12** | 4A | **DIP Switch $A_7$** | Bit 7 input A |
-| **13** | 4B | **DIP Switch $B_7$** | Bit 7 input B |
-| **14** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
-
----
-
-### NOT1: 74HCT04 (Hex Inverter: Bitwise NOT for Bits 0..5)
-* **Pin 14 ($V_{CC}$)**: +5V Power Rail | **Pin 7 (GND)**: 0V Ground Rail
-
-| Pin | Name | Connected To (Source / Destination) | Function / Notes |
-| :---: | :--- | :--- | :--- |
-| **1** | 1A | **DIP Switch $A_0$** | Bit 0 input |
-| **2** | 1Y | **MUX1 Pin 14 ($D_5$)** | $\overline{A_0}$ (Logic NOT Bit 0) |
-| **3** | 2A | **DIP Switch $A_1$** | Bit 1 input |
-| **4** | 2Y | **MUX2 Pin 14 ($D_5$)** | $\overline{A_1}$ (Logic NOT Bit 1) |
-| **5** | 3A | **DIP Switch $A_2$** | Bit 2 input |
-| **6** | 3Y | **MUX3 Pin 14 ($D_5$)** | $\overline{A_2}$ (Logic NOT Bit 2) |
-| **7** | GND | **0V Ground Rail** | Power supply ground |
-| **8** | 4Y | **MUX4 Pin 14 ($D_5$)** | $\overline{A_3}$ (Logic NOT Bit 3) |
-| **9** | 4A | **DIP Switch $A_3$** | Bit 3 input |
-| **10** | 5Y | **MUX5 Pin 14 ($D_5$)** | $\overline{A_4}$ (Logic NOT Bit 4) |
-| **11** | 5A | **DIP Switch $A_4$** | Bit 4 input |
-| **12** | 6Y | **MUX6 Pin 14 ($D_5$)** | $\overline{A_5}$ (Logic NOT Bit 5) |
-| **13** | 6A | **DIP Switch $A_5$** | Bit 5 input |
-| **14** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
+| Pin | Pin Name | Connected To (Exact Source / Destination) | Signal Function / Notes | Wire Color |
+| :---: | :---: | :--- | :--- | :---: |
+| **1** | $D_3$ | **IC5 Pin 3 (1Y)** | Bitwise OR Result ($A_0 + B_0$) | Purple |
+| **2** | $D_2$ | **IC4 Pin 3 (1Y)** | Bitwise AND Result ($A_0 \cdot B_0$) | Brown |
+| **3** | $D_1$ | **IC1 Pin 4 ($\Sigma_0$)** | Subtraction Result ($A_0 - B_0$) | Blue |
+| **4** | $D_0$ | **IC1 Pin 4 ($\Sigma_0$)** | Addition Result ($A_0 + B_0$) | Blue |
+| **5** | Y | **IC12 Pin 10 ($A_0$), Arduino R4 D2, ESP32 GPIO 38 (via 1k/2.2k)** | **Custom ALU Bit 0 Output ($Y_0$)** | Blue |
+| **6** | W | **NC (Unconnected)** | Complementary Output (Unused) | - |
+| **7** | $\bar{E}$ / $\bar{G}$ | **Breadboard Common Ground Rail** | Strobe / Enable (Active-LOW, permanently enabled) | Black |
+| **8** | GND | **Breadboard Common Ground Rail** | 0V Power Ground | Black |
+| **9** | $S_2$ | **Opcode Bus $S_2$ (DIP SW Op Pin 3 / ESP32 GPIO 36 via 4.7kΩ)** | Opcode Select Bit 2 (MSB) | Gray |
+| **10** | $S_1$ | **Opcode Bus $S_1$ (DIP SW Op Pin 2 / ESP32 GPIO 35 via 4.7kΩ)** | Opcode Select Bit 1 | White |
+| **11** | $S_0$ | **Opcode Bus $S_0$ (DIP SW Op Pin 1 / ESP32 GPIO 18 via 4.7kΩ)** | Opcode Select Bit 0 (LSB) | Violet |
+| **12** | $D_7$ | **Input Bus $A_1$ (DIP SW A Pin 2)** | Hardwired SHR Bit 0 ($A_{i+1} = A_1$) | Yellow |
+| **13** | $D_6$ | **Breadboard Common Ground Rail** | Hardwired SHL Bit 0 ($A_{-1} = 0$) | Black |
+| **14** | $D_5$ | **IC6 Pin 2 (1Y)** | Bitwise NOT Result ($\overline{A_0}$) | White |
+| **15** | $D_4$ | **IC3 Pin 3 (1Y)** | Bitwise XOR Result ($A_0 \oplus B_0$) | Gray |
+| **16** | $V_{CC}$ | **Breadboard +5V Master Power Rail** | +5V Logic Supply | Red |
 
 ---
 
-### NOT2: 74HCT04 (Hex Inverter: Bitwise NOT for Bits 6..7 + Spares)
-* **Pin 14 ($V_{CC}$)**: +5V Power Rail | **Pin 7 (GND)**: 0V Ground Rail
+### IC8: 74xx151 (8-to-1 Multiplexer) — Bit 1 Result Selector ($Y_1$) — 16-Pin DIP
+* **Location**: Breadboard 3 | **Power**: Pin 16 $\to$ +5V Rail, Pin 8 $\to$ GND Rail
+* **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 16 and Pin 8.
 
-| Pin | Name | Connected To (Source / Destination) | Function / Notes |
-| :---: | :--- | :--- | :--- |
-| **1** | 1A | **DIP Switch $A_6$** | Bit 6 input |
-| **2** | 1Y | **MUX7 Pin 14 ($D_5$)** | $\overline{A_6}$ (Logic NOT Bit 6) |
-| **3** | 2A | **DIP Switch $A_7$** | Bit 7 input |
-| **4** | 2Y | **MUX8 Pin 14 ($D_5$)** | $\overline{A_7}$ (Logic NOT Bit 7) |
-| **5** | 3A | **0V Ground Rail** | Unused input (Tied to GND to prevent oscillation) |
-| **6** | 3Y | *Leave OPEN* | Unused output |
-| **7** | GND | **0V Ground Rail** | Power supply ground |
-| **8** | 4Y | *Leave OPEN* | Unused output |
-| **9** | 4A | **0V Ground Rail** | Unused input (Tied to GND) |
-| **10** | 5Y | *Leave OPEN* | Unused output |
-| **11** | 5A | **0V Ground Rail** | Unused input (Tied to GND) |
-| **12** | 6Y | *Leave OPEN* | Unused output |
-| **13** | 6A | **0V Ground Rail** | Unused input (Tied to GND) |
-| **14** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
-
----
-
-# SECTION 4: Mode Carry Gate (AND6 Gate 4)
-
-The 4-bit / 8-bit configurability is controlled by **Gate 4 of AND6**:
-* **Input 1 (Pin 12)**: Lower Nibble Carry Out ($C_4$ from OR1 Pin 11).
-* **Input 2 (Pin 13)**: Physical MODE Toggle Switch.
-  * When $MODE = 1$ (+5V): $C_{in4} = C_4 \cdot 1 = C_4$ $\implies$ Full 8-bit carry cascade.
-  * When $MODE = 0$ (0V): $C_{in4} = C_4 \cdot 0 = 0$ $\implies$ Dual independent 4-bit ALUs.
-* **Output (Pin 11)**: Connects to $C_{in4}$ on Upper Nibble Adder (`XOR3 Pin 5` and `AND3 Pin 4`).
+| Pin | Pin Name | Connected To (Exact Source / Destination) | Signal Function / Notes | Wire Color |
+| :---: | :---: | :--- | :--- | :---: |
+| **1** | $D_3$ | **IC5 Pin 6 (2Y)** | Bitwise OR Result ($A_1 + B_1$) | Purple |
+| **2** | $D_2$ | **IC4 Pin 6 (2Y)** | Bitwise AND Result ($A_1 \cdot B_1$) | Brown |
+| **3** | $D_1$ | **IC1 Pin 1 ($\Sigma_1$)** | Subtraction Result ($A_1 - B_1$) | Blue |
+| **4** | $D_0$ | **IC1 Pin 1 ($\Sigma_1$)** | Addition Result ($A_1 + B_1$) | Blue |
+| **5** | Y | **IC12 Pin 12 ($A_1$), Arduino R4 D3, ESP32 GPIO 39 (via 1k/2.2k)** | **Custom ALU Bit 1 Output ($Y_1$)** | Blue |
+| **6** | W | **NC (Unconnected)** | Complementary Output (Unused) | - |
+| **7** | $\bar{E}$ / $\bar{G}$ | **Breadboard Common Ground Rail** | Strobe / Enable (Active-LOW, permanently enabled) | Black |
+| **8** | GND | **Breadboard Common Ground Rail** | 0V Power Ground | Black |
+| **9** | $S_2$ | **Opcode Bus $S_2$** | Opcode Select Bit 2 (MSB) | Gray |
+| **10** | $S_1$ | **Opcode Bus $S_1$** | Opcode Select Bit 1 | White |
+| **11** | $S_0$ | **Opcode Bus $S_0$** | Opcode Select Bit 0 (LSB) | Violet |
+| **12** | $D_7$ | **Input Bus $A_2$ (DIP SW A Pin 3)** | Hardwired SHR Bit 1 ($A_{i+1} = A_2$) | Yellow |
+| **13** | $D_6$ | **Input Bus $A_0$ (DIP SW A Pin 1)** | Hardwired SHL Bit 1 ($A_{i-1} = A_0$) | Yellow |
+| **14** | $D_5$ | **IC6 Pin 4 (2Y)** | Bitwise NOT Result ($\overline{A_1}$) | White |
+| **15** | $D_4$ | **IC3 Pin 6 (2Y)** | Bitwise XOR Result ($A_1 \oplus B_1$) | Gray |
+| **16** | $V_{CC}$ | **Breadboard +5V Master Power Rail** | +5V Logic Supply | Red |
 
 ---
 
-# SECTION 5: MUX Array (8× 74HCT151: MUX1 through MUX8)
+### IC9: 74xx151 (8-to-1 Multiplexer) — Bit 2 Result Selector ($Y_2$) — 16-Pin DIP
+* **Location**: Breadboard 3 | **Power**: Pin 16 $\to$ +5V Rail, Pin 8 $\to$ GND Rail
+* **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 16 and Pin 8.
 
-All eight 74HCT151 ICs share common control lines:
-* **Pin 16 ($V_{CC}$)**: +5V Power Rail
-* **Pin 8 (GND)**: 0V Ground Rail
-* **Pin 7 ($\overline{\text{STROBE}}$)**: **Tie directly to 0V Ground Rail** (Active-LOW enable)
-* **Pin 11 ($A$ / Select $S_0$ LSB)**: Opcode Switch $S_0$
-* **Pin 10 ($B$ / Select $S_1$ Mid)**: Opcode Switch $S_1$
-* **Pin 9 ($C$ / Select $S_2$ MSB)**: Opcode Switch $S_2$
-* **Pin 6 ($\overline{Y}$)**: *Leave OPEN*
-
-### Complete Multiplexer Bit-Routing Map:
-
-| Pin | MUX1 (Bit 0) | MUX2 (Bit 1) | MUX3 (Bit 2) | MUX4 (Bit 3) | MUX5 (Bit 4) | MUX6 (Bit 5) | MUX7 (Bit 6) | MUX8 (Bit 7) | Opcode Mapped |
-| :---: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **4 ($D_0$)** | XOR1 Pin 6 ($S_0$) | XOR1 Pin 11 ($S_1$) | XOR2 Pin 6 ($S_2$) | XOR2 Pin 11 ($S_3$) | XOR3 Pin 6 ($S_4$) | XOR3 Pin 11 ($S_5$) | XOR4 Pin 6 ($S_6$) | XOR4 Pin 11 ($S_7$) | **ADD** ($A + B$) |
-| **3 ($D_1$)** | XOR1 Pin 6 ($S_0$) | XOR1 Pin 11 ($S_1$) | XOR2 Pin 6 ($S_2$) | XOR2 Pin 11 ($S_3$) | XOR3 Pin 6 ($S_4$) | XOR3 Pin 11 ($S_5$) | XOR4 Pin 6 ($S_6$) | XOR4 Pin 11 ($S_7$) | **SUB** ($A - B$) |
-| **2 ($D_2$)** | AND5 Pin 3 | AND5 Pin 6 | AND5 Pin 8 | AND5 Pin 11 | AND6 Pin 3 | AND6 Pin 6 | AND6 Pin 8 | AND4 Pin 8 | **AND** ($A \cdot B$) |
-| **1 ($D_3$)** | OR3 Pin 3 | OR3 Pin 6 | OR3 Pin 8 | OR3 Pin 11 | OR4 Pin 3 | OR4 Pin 6 | OR4 Pin 8 | OR4 Pin 11 | **OR** ($A + B$) |
-| **15 ($D_4$)**| XOR1 Pin 3 ($X_0$) | XOR1 Pin 8 ($X_1$) | XOR2 Pin 3 ($X_2$) | XOR2 Pin 8 ($X_3$) | XOR3 Pin 3 ($X_4$) | XOR3 Pin 8 ($X_5$) | XOR4 Pin 3 ($X_6$) | XOR4 Pin 8 ($X_7$) | **XOR** ($A \oplus B$) |
-| **14 ($D_5$)**| NOT1 Pin 2 ($\overline{A_0}$) | NOT1 Pin 4 ($\overline{A_1}$) | NOT1 Pin 6 ($\overline{A_2}$) | NOT1 Pin 8 ($\overline{A_3}$) | NOT1 Pin 10 ($\overline{A_4}$) | NOT1 Pin 12 ($\overline{A_5}$) | NOT2 Pin 2 ($\overline{A_6}$) | NOT2 Pin 4 ($\overline{A_7}$) | **NOT** ($\overline{A}$) |
-| **13 ($D_6$)**| **GND Rail (0)** | DIP Switch $A_0$ | DIP Switch $A_1$ | DIP Switch $A_2$ | DIP Switch $A_3$ | DIP Switch $A_4$ | DIP Switch $A_5$ | DIP Switch $A_6$ | **SHL** ($A \ll 1$) |
-| **12 ($D_7$)**| DIP Switch $A_1$ | DIP Switch $A_2$ | DIP Switch $A_3$ | DIP Switch $A_4$ | DIP Switch $A_5$ | DIP Switch $A_6$ | DIP Switch $A_7$ | **GND Rail (0)** | **SHR** ($A \gg 1$) |
-| **5 ($Y$)** | **BUF1 Pin 2 ($A_1$)** | **BUF1 Pin 3 ($A_2$)** | **BUF1 Pin 4 ($A_3$)** | **BUF1 Pin 5 ($A_4$)** | **BUF1 Pin 6 ($A_5$)** | **BUF1 Pin 7 ($A_6$)** | **BUF1 Pin 8 ($A_7$)** | **BUF1 Pin 9 ($A_8$)** | **Output Result** |
+| Pin | Pin Name | Connected To (Exact Source / Destination) | Signal Function / Notes | Wire Color |
+| :---: | :---: | :--- | :--- | :---: |
+| **1** | $D_3$ | **IC5 Pin 8 (3Y)** | Bitwise OR Result ($A_2 + B_2$) | Purple |
+| **2** | $D_2$ | **IC4 Pin 8 (3Y)** | Bitwise AND Result ($A_2 \cdot B_2$) | Brown |
+| **3** | $D_1$ | **IC1 Pin 13 ($\Sigma_2$)** | Subtraction Result ($A_2 - B_2$) | Blue |
+| **4** | $D_0$ | **IC1 Pin 13 ($\Sigma_2$)** | Addition Result ($A_2 + B_2$) | Blue |
+| **5** | Y | **IC12 Pin 13 ($A_2$), Arduino R4 D4, ESP32 GPIO 40 (via 1k/2.2k)** | **Custom ALU Bit 2 Output ($Y_2$)** | Blue |
+| **6** | W | **NC (Unconnected)** | Complementary Output (Unused) | - |
+| **7** | $\bar{E}$ / $\bar{G}$ | **Breadboard Common Ground Rail** | Strobe / Enable (Active-LOW, permanently enabled) | Black |
+| **8** | GND | **Breadboard Common Ground Rail** | 0V Power Ground | Black |
+| **9** | $S_2$ | **Opcode Bus $S_2$** | Opcode Select Bit 2 (MSB) | Gray |
+| **10** | $S_1$ | **Opcode Bus $S_1$** | Opcode Select Bit 1 | White |
+| **11** | $S_0$ | **Opcode Bus $S_0$** | Opcode Select Bit 0 (LSB) | Violet |
+| **12** | $D_7$ | **Input Bus $A_3$ (DIP SW A Pin 4)** | Hardwired SHR Bit 2 ($A_{i+1} = A_3$) | Yellow |
+| **13** | $D_6$ | **Input Bus $A_1$ (DIP SW A Pin 2)** | Hardwired SHL Bit 2 ($A_{i-1} = A_1$) | Yellow |
+| **14** | $D_5$ | **IC6 Pin 6 (3Y)** | Bitwise NOT Result ($\overline{A_2}$) | White |
+| **15** | $D_4$ | **IC3 Pin 8 (3Y)** | Bitwise XOR Result ($A_2 \oplus B_2$) | Gray |
+| **16** | $V_{CC}$ | **Breadboard +5V Master Power Rail** | +5V Logic Supply | Red |
 
 ---
 
-# SECTION 6: Output Bus Buffer (BUF1: 74HCT245)
+### IC10: 74xx151 (8-to-1 Multiplexer) — Bit 3 Result Selector ($Y_3$) — 16-Pin DIP
+* **Location**: Breadboard 3 | **Power**: Pin 16 $\to$ +5V Rail, Pin 8 $\to$ GND Rail
+* **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 16 and Pin 8.
 
-The 74HCT245 isolates the internal multiplexer outputs and provides strong capacitive line drive for downstream MCU connections:
-* **Pin 20 ($V_{CC}$)**: +5V Power Rail
-* **Pin 10 (GND)**: 0V Ground Rail
-* **Pin 1 (DIR)**: **Tie directly to +5V Rail** (Sets drive direction $A \to B$)
-* **Pin 19 ($\overline{\text{OE}}$)**: **Tie directly to 0V Ground Rail** (Active-LOW enable)
-
-| Pin | Name | Connected To (Source / Destination) | Functional Description |
-| :---: | :--- | :--- | :--- |
-| **2** | A1 | **MUX1 Pin 5 ($Y_0$)** | Raw ALU Result Bit 0 |
-| **3** | A2 | **MUX2 Pin 5 ($Y_1$)** | Raw ALU Result Bit 1 |
-| **4** | A3 | **MUX3 Pin 5 ($Y_2$)** | Raw ALU Result Bit 2 |
-| **5** | A4 | **MUX4 Pin 5 ($Y_3$)** | Raw ALU Result Bit 3 |
-| **6** | A5 | **MUX5 Pin 5 ($Y_4$)** | Raw ALU Result Bit 4 |
-| **7** | A6 | **MUX6 Pin 5 ($Y_5$)** | Raw ALU Result Bit 5 |
-| **8** | A7 | **MUX7 Pin 5 ($Y_6$)** | Raw ALU Result Bit 6 |
-| **9** | A8 | **MUX8 Pin 5 ($Y_7$)** | Raw ALU Result Bit 7 |
-| **10** | GND | **0V Ground Rail** | Power supply ground |
-| **11** | B8 | **Arduino R4 Pin D9 & ESP32 GPIO 3 (via divider)** | Buffered Output $Y_{OUT}7$ (MSB) |
-| **12** | B7 | **Arduino R4 Pin D8 & ESP32 GPIO 48 (via divider)** | Buffered Output $Y_{OUT}6$ |
-| **13** | B6 | **Arduino R4 Pin D7 & ESP32 GPIO 47 (via divider)** | Buffered Output $Y_{OUT}5$ |
-| **14** | B5 | **Arduino R4 Pin D6 & ESP32 GPIO 44 (via divider)** | Buffered Output $Y_{OUT}4$ |
-| **15** | B4 | **Arduino R4 Pin D5 & ESP32 GPIO 43 (via divider)** | Buffered Output $Y_{OUT}3$ |
-| **16** | B3 | **Arduino R4 Pin D4 & ESP32 GPIO 42 (via divider)** | Buffered Output $Y_{OUT}2$ |
-| **17** | B2 | **Arduino R4 Pin D3 & ESP32 GPIO 41 (via divider)** | Buffered Output $Y_{OUT}1$ |
-| **18** | B1 | **Arduino R4 Pin D2 & ESP32 GPIO 40 (via divider)** | Buffered Output $Y_{OUT}0$ (LSB) |
-| **19** | $\overline{\text{OE}}$ | **0V Ground Rail** | Output Enable (Active LOW) |
-| **20** | $V_{CC}$ | **+5V Power Rail** | Positive supply voltage |
+| Pin | Pin Name | Connected To (Exact Source / Destination) | Signal Function / Notes | Wire Color |
+| :---: | :---: | :--- | :--- | :---: |
+| **1** | $D_3$ | **IC5 Pin 11 (4Y)** | Bitwise OR Result ($A_3 + B_3$) | Purple |
+| **2** | $D_2$ | **IC4 Pin 11 (4Y)** | Bitwise AND Result ($A_3 \cdot B_3$) | Brown |
+| **3** | $D_1$ | **IC1 Pin 10 ($\Sigma_3$)** | Subtraction Result ($A_3 - B_3$) | Blue |
+| **4** | $D_0$ | **IC1 Pin 10 ($\Sigma_3$)** | Addition Result ($A_3 + B_3$) | Blue |
+| **5** | Y | **IC12 Pin 15 ($A_3$), Arduino R4 D5, ESP32 GPIO 41 (via 1k/2.2k)** | **Custom ALU Bit 3 Output ($Y_3$)** | Blue |
+| **6** | W | **NC (Unconnected)** | Complementary Output (Unused) | - |
+| **7** | $\bar{E}$ / $\bar{G}$ | **Breadboard Common Ground Rail** | Strobe / Enable (Active-LOW, permanently enabled) | Black |
+| **8** | GND | **Breadboard Common Ground Rail** | 0V Power Ground | Black |
+| **9** | $S_2$ | **Opcode Bus $S_2$** | Opcode Select Bit 2 (MSB) | Gray |
+| **10** | $S_1$ | **Opcode Bus $S_1$** | Opcode Select Bit 1 | White |
+| **11** | $S_0$ | **Opcode Bus $S_0$** | Opcode Select Bit 0 (LSB) | Violet |
+| **12** | $D_7$ | **Breadboard GND (Mode 1) / Input Bus $A_4$ (Mode 0)** | Hardwired SHR Bit 3 ($A_{i+1}$) | Black / Yellow |
+| **13** | $D_6$ | **Input Bus $A_2$ (DIP SW A Pin 3)** | Hardwired SHL Bit 3 ($A_{i-1} = A_2$) | Yellow |
+| **14** | $D_5$ | **IC6 Pin 8 (4Y)** | Bitwise NOT Result ($\overline{A_3}$) | White |
+| **15** | $D_4$ | **IC3 Pin 11 (4Y)** | Bitwise XOR Result ($A_3 \oplus B_3$) | Gray |
+| **16** | $V_{CC}$ | **Breadboard +5V Master Power Rail** | +5V Logic Supply | Red |
 
 ---
 
-# SECTION 7: Arduino UNO R4 WiFi Verification Interface
+### IC11: 74LS181N (4-Bit Bipolar Arithmetic Logic Unit) — 24-Pin DIP (0.6" Wide)
+* **Location**: Breadboard 4 | **Power**: Pin 24 / Pin 16 $\to$ +5V Rail, Pin 12 $\to$ GND Rail
+* **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 16 and Pin 12.
 
-The Arduino UNO R4 WiFi computes a C++ software golden model and displays real-time PASS/FAIL status on its onboard 12×8 LED Matrix and external status LEDs.
-
-| Arduino R4 Pin | Connected Source / Destination | Logic Level | Functional Description |
-| :---: | :--- | :---: | :--- |
-| **5V Pin** | **Breadboard +5V Power Rails** | +5.0V | Supplies main VCC power to all 27 ICs |
-| **GND Pin** | **Breadboard Ground Rails & ESP32 GND** | 0V | Common system ground reference |
-| **Pin D2** | **BUF1 Pin 18 ($Y_{OUT}0$)** | 5V TTL | Reads hardware result bit 0 |
-| **Pin D3** | **BUF1 Pin 17 ($Y_{OUT}1$)** | 5V TTL | Reads hardware result bit 1 |
-| **Pin D4** | **BUF1 Pin 16 ($Y_{OUT}2$)** | 5V TTL | Reads hardware result bit 2 |
-| **Pin D5** | **BUF1 Pin 15 ($Y_{OUT}3$)** | 5V TTL | Reads hardware result bit 3 |
-| **Pin D6** | **BUF1 Pin 14 ($Y_{OUT}4$)** | 5V TTL | Reads hardware result bit 4 |
-| **Pin D7** | **BUF1 Pin 13 ($Y_{OUT}5$)** | 5V TTL | Reads hardware result bit 5 |
-| **Pin D8** | **BUF1 Pin 12 ($Y_{OUT}6$)** | 5V TTL | Reads hardware result bit 6 |
-| **Pin D9** | **BUF1 Pin 11 ($Y_{OUT}7$)** | 5V TTL | Reads hardware result bit 7 |
-| **Pin D10** | **Opcode DIP Switch $S_0$** | 5V TTL | Reads Opcode LSB |
-| **Pin D11** | **Opcode DIP Switch $S_1$** | 5V TTL | Reads Opcode Mid bit |
-| **Pin D12** | **Opcode DIP Switch $S_2$** | 5V TTL | Reads Opcode MSB |
-| **Pin A0** | **OR2 Pin 11 ($C_8$)** | 5V TTL | Reads hardware carry-out flag |
-| **Pin A1** | **220 Ω Resistor $\to$ 🟢 Green PASS LED $\to$ GND** | 5V Out | Lit when Hardware == Software Golden Model |
-| **Pin A2** | **220 Ω Resistor $\to$ 🔴 Red FAIL LED $\to$ GND** | 5V Out | Lit when Hardware $\neq$ Software Golden Model |
-
----
-
-# SECTION 8: ESP32-S3 Voltage Divider Connections (5V $\to$ 3.3V)
-
-The ESP32-S3 N16R8 operates strictly at 3.3V CMOS logic. Every monitored 5V breadboard line passes through an independent **$1.0\text{ k}\Omega$ series / $2.2\text{ k}\Omega$ shunt** voltage divider:
-
-```
- Breadboard 5V Signal ───────[ 1.0 kΩ ]───────┬───────► ESP32-S3 GPIO Pin (3.3V Safe)
-                                              │
-                                         [ 2.2 kΩ ]
-                                              │
-                                             GND
-```
-
-| Monitored Signal | Breadboard Source Node | Divider Resistors | ESP32-S3 GPIO | Telemetry Channel |
-| :---: | :--- | :---: | :---: | :--- |
-| **$Y_{OUT}0$** | BUF1 Pin 18 | $1.0\text{ k}\Omega$ / $2.2\text{ k}\Omega$ | **GPIO 40** | Result Bus Bit 0 |
-| **$Y_{OUT}1$** | BUF1 Pin 17 | $1.0\text{ k}\Omega$ / $2.2\text{ k}\Omega$ | **GPIO 41** | Result Bus Bit 1 |
-| **$Y_{OUT}2$** | BUF1 Pin 16 | $1.0\text{ k}\Omega$ / $2.2\text{ k}\Omega$ | **GPIO 42** | Result Bus Bit 2 |
-| **$Y_{OUT}3$** | BUF1 Pin 15 | $1.0\text{ k}\Omega$ / $2.2\text{ k}\Omega$ | **GPIO 43** | Result Bus Bit 3 |
-| **$Y_{OUT}4$** | BUF1 Pin 14 | $1.0\text{ k}\Omega$ / $2.2\text{ k}\Omega$ | **GPIO 44** | Result Bus Bit 4 |
-| **$Y_{OUT}5$** | BUF1 Pin 13 | $1.0\text{ k}\Omega$ / $2.2\text{ k}\Omega$ | **GPIO 47** | Result Bus Bit 5 |
-| **$Y_{OUT}6$** | BUF1 Pin 12 | $1.0\text{ k}\Omega$ / $2.2\text{ k}\Omega$ | **GPIO 48** | Result Bus Bit 6 |
-| **$Y_{OUT}7$** | BUF1 Pin 11 | $1.0\text{ k}\Omega$ / $2.2\text{ k}\Omega$ | **GPIO 3** | Result Bus Bit 7 |
-| **Carry $C_8$** | OR2 Pin 11 | $1.0\text{ k}\Omega$ / $2.2\text{ k}\Omega$ | **GPIO 26** | Carry Out Flag |
-| **Mode Switch**| Mode Switch Contact | $1.0\text{ k}\Omega$ / $2.2\text{ k}\Omega$ | **GPIO 39** | Operational Mode Status |
-| **Opcode $S_0$**| DIP Opcode $S_0$ | $1.0\text{ k}\Omega$ / $2.2\text{ k}\Omega$ | **GPIO 10** | Function Select LSB |
-| **Opcode $S_1$**| DIP Opcode $S_1$ | $1.0\text{ k}\Omega$ / $2.2\text{ k}\Omega$ | **GPIO 11** | Function Select Mid |
-| **Opcode $S_2$**| DIP Opcode $S_2$ | $1.0\text{ k}\Omega$ / $2.2\text{ k}\Omega$ | **GPIO 12** | Function Select MSB |
+| Pin | Pin Name | Connected To (Exact Source / Destination) | Signal Function / Notes | Wire Color |
+| :---: | :---: | :--- | :--- | :---: |
+| **1** | $\bar{B}_0$ | **Mode Steering: Bus $B_4$ (Mode 0) / Bus $B_0$ (Mode 1)** | Operand B Bit 0 input to 74LS181 | Green |
+| **2** | $\bar{A}_0$ | **Mode Steering: Bus $A_4$ (Mode 0) / Bus $A_0$ (Mode 1)** | Operand A Bit 0 input to 74LS181 | Yellow |
+| **3** | $S_3$ | **Opcode Translation Bus $S_{181,3}$** | Select Line 3 (MSB) | White |
+| **4** | $S_2$ | **Opcode Translation Bus $S_{181,2}$** | Select Line 2 | White |
+| **5** | $S_1$ | **Opcode Translation Bus $S_{181,1}$** | Select Line 1 | White |
+| **6** | $S_0$ | **Opcode Translation Bus $S_{181,0}$** | Select Line 0 (LSB) | White |
+| **7** | $\bar{C}_n$ | **Mode Steering: IC6 Pin 10 ($\overline{C_4}$) in Mode 0 / +5V in Mode 1** | Carry-in (Active LOW; 0 = Carry present) | Orange |
+| **8** | $M$ | **Opcode Translation Bus $M_{181}$** | Mode Control (HIGH = Logic, LOW = Arithmetic) | Violet |
+| **9** | $\bar{F}_0$ | **Output Bus $Y_4$ (Mode 0) / IC12 Pin 9 ($B_0$, Mode 1)** | Function Output Bit 0 ($F_0$) | Blue |
+| **10** | $\bar{F}_1$ | **Output Bus $Y_5$ (Mode 0) / IC12 Pin 11 ($B_1$, Mode 1)** | Function Output Bit 1 ($F_1$) | Blue |
+| **11** | $\bar{F}_2$ | **Output Bus $Y_6$ (Mode 0) / IC12 Pin 14 ($B_2$, Mode 1)** | Function Output Bit 2 ($F_2$) | Blue |
+| **12** | GND | **Breadboard Common Ground Rail** | 0V Power Ground | Black |
+| **13** | $\bar{F}_3$ | **Output Bus $Y_7$ (Mode 0) / IC12 Pin 1 ($B_3$, Mode 1)** | Function Output Bit 3 ($F_3$) | Blue |
+| **14** | $A=B$ | **NC or 10kΩ Pull-up to +5V** | Open-collector zero compare (Unused) | - |
+| **15** | $\bar{P}$ | **NC (Unconnected)** | Carry Propagate (Lookahead generator link) | - |
+| **16** | $V_{CC}$ | **Breadboard +5V Master Power Rail** | +5V Logic Supply | Red |
+| **17** | $\bar{G}$ | **NC (Unconnected)** | Carry Generate (Lookahead generator link) | - |
+| **18** | $\bar{C}_{n+4}$ | **Amber LED via 330Ω to GND** | Final 8-Bit Carry-out Flag (Active LOW) | Amber |
+| **19** | $\bar{A}_1$ | **Mode Steering: Bus $A_5$ (Mode 0) / Bus $A_1$ (Mode 1)** | Operand A Bit 1 input to 74LS181 | Yellow |
+| **20** | $\bar{B}_1$ | **Mode Steering: Bus $B_5$ (Mode 0) / Bus $B_1$ (Mode 1)** | Operand B Bit 1 input to 74LS181 | Green |
+| **21** | $\bar{A}_2$ | **Mode Steering: Bus $A_6$ (Mode 0) / Bus $A_2$ (Mode 1)** | Operand A Bit 2 input to 74LS181 | Yellow |
+| **22** | $\bar{B}_2$ | **Mode Steering: Bus $B_6$ (Mode 0) / Bus $B_2$ (Mode 1)** | Operand B Bit 2 input to 74LS181 | Green |
+| **23** | $\bar{A}_3$ | **Mode Steering: Bus $A_7$ (Mode 0) / Bus $A_3$ (Mode 1)** | Operand A Bit 3 input to 74LS181 | Yellow |
+| **24** | $\bar{B}_3$ | **Mode Steering: Bus $B_7$ (Mode 0) / Bus $B_3$ (Mode 1)** | Operand B Bit 3 input to 74LS181 | Green |
 
 ---
 
-# SECTION 9: Hybrid Input Override Resistors (Remote Injection)
+### IC12: 74xx85 (4-Bit Magnitude Comparator) — 16-Pin DIP
+* **Location**: Breadboard 4 | **Power**: Pin 16 $\to$ +5V Rail, Pin 8 $\to$ GND Rail
+* **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 16 and Pin 8.
 
-To allow the ESP32-S3 to inject arbitrary test vectors over WebSockets without mechanical switch interference:
-* Every switch contact connects between $+5\text{V}$ and a $10\text{ k}\Omega$ pull-down to $\text{GND}$.
-* An override line connects from the ESP32 GPIO through a **$4.7\text{ k}\Omega$ current-limiting resistor** directly to the gate input node.
-* When DIP switches are left in the **OFF (Open)** position:
-  $$\text{ESP32 HIGH (3.3V)} \implies V_{in} = 3.3\text{ V} \times \frac{10\text{ k}\Omega}{4.7\text{ k}\Omega + 10\text{ k}\Omega} = 2.24\text{ V} \ge 2.0\text{ V} = V_{IH(\min)} \text{ for 74HCT}$$
-  $$\text{ESP32 LOW (0V)} \implies V_{in} = 0.0\text{ V} \le 0.8\text{ V} = V_{IL(\max)} \text{ for 74HCT}$$
+| Pin | Pin Name | Connected To (Exact Source / Destination) | Signal Function / Notes | Wire Color |
+| :---: | :---: | :--- | :--- | :---: |
+| **1** | $B_3$ | **IC11 Pin 13 ($\bar{F}_3$)** | Benchmark Input Word B Bit 3 (from 74LS181) | Blue |
+| **2** | $I_{A<B}$ | **Breadboard Common Ground Rail** | Cascading Expansion Input (Tied LOW) | Black |
+| **3** | $I_{A=B}$ | **Breadboard +5V Master Power Rail** | Cascading Expansion Input (Tied HIGH for 4-bit) | Red |
+| **4** | $I_{A>B}$ | **Breadboard Common Ground Rail** | Cascading Expansion Input (Tied LOW) | Black |
+| **5** | $Q_{A>B}$ | **NC (Unconnected)** | Output A > B (Unused) | - |
+| **6** | $Q_{A=B}$ | **Green PASS LED (via 330Ω), Arduino R4 D12, ESP32 GPIO 3 (via 1k/2.2k)** | **HARDWARE EQUIVALENCE PASS FLAG** (1 = Match) | **Bright Green** |
+| **7** | $Q_{A<B}$ | **NC (Unconnected)** | Output A < B (Unused) | - |
+| **8** | GND | **Breadboard Common Ground Rail** | 0V Power Ground | Black |
+| **9** | $B_0$ | **IC11 Pin 9 ($\bar{F}_0$)** | Benchmark Input Word B Bit 0 (from 74LS181) | Blue |
+| **10** | $A_0$ | **IC7 Pin 5 ($Y_0$)** | Custom ALU Test Input Word A Bit 0 | Blue |
+| **11** | $B_1$ | **IC11 Pin 10 ($\bar{F}_1$)** | Benchmark Input Word B Bit 1 (from 74LS181) | Blue |
+| **12** | $A_1$ | **IC8 Pin 5 ($Y_1$)** | Custom ALU Test Input Word A Bit 1 | Blue |
+| **13** | $A_2$ | **IC9 Pin 5 ($Y_2$)** | Custom ALU Test Input Word A Bit 2 | Blue |
+| **14** | $B_2$ | **IC11 Pin 11 ($\bar{F}_2$)** | Benchmark Input Word B Bit 2 (from 74LS181) | Blue |
+| **15** | $A_3$ | **IC10 Pin 5 ($Y_3$)** | Custom ALU Test Input Word A Bit 3 | Blue |
+| **16** | $V_{CC}$ | **Breadboard +5V Master Power Rail** | +5V Logic Supply | Red |
 
-| Injected Signal | ESP32-S3 GPIO | Override Resistor | Breadboard Destination Gate Input |
-| :---: | :---: | :---: | :--- |
-| **$A_0$ Override** | **GPIO 1** | $4.7\text{ k}\Omega$ | XOR1 Pin 1, AND1 Pin 1, AND5 Pin 1, OR3 Pin 1, NOT1 Pin 1 |
-| **$A_1$ Override** | **GPIO 2** | $4.7\text{ k}\Omega$ | XOR1 Pin 9, AND1 Pin 9, AND5 Pin 4, OR3 Pin 4, NOT1 Pin 3 |
-| **$A_2$ Override** | **GPIO 4** | $4.7\text{ k}\Omega$ | XOR2 Pin 1, AND2 Pin 1, AND5 Pin 9, OR3 Pin 9, NOT1 Pin 5 |
-| **$A_3$ Override** | **GPIO 5** | $4.7\text{ k}\Omega$ | XOR2 Pin 9, AND2 Pin 9, AND5 Pin 12, OR3 Pin 12, NOT1 Pin 9 |
-| **$B_0$ Override** | **GPIO 6** | $4.7\text{ k}\Omega$ | XOR5 Pin 2, AND5 Pin 2, OR3 Pin 2 |
-| **$B_1$ Override** | **GPIO 7** | $4.7\text{ k}\Omega$ | XOR5 Pin 5, AND5 Pin 5, OR3 Pin 5 |
-| **$B_2$ Override** | **GPIO 8** | $4.7\text{ k}\Omega$ | XOR5 Pin 9, AND5 Pin 10, OR3 Pin 10 |
-| **$B_3$ Override** | **GPIO 9** | $4.7\text{ k}\Omega$ | XOR5 Pin 12, AND5 Pin 13, OR3 Pin 13 |
-| **$A_4$ Override** | **GPIO 13** | $4.7\text{ k}\Omega$ | XOR3 Pin 1, AND3 Pin 1, AND6 Pin 1, OR4 Pin 1, NOT1 Pin 11 |
-| **$A_5$ Override** | **GPIO 14** | $4.7\text{ k}\Omega$ | XOR3 Pin 9, AND3 Pin 9, AND6 Pin 4, OR4 Pin 4, NOT1 Pin 13 |
-| **$A_6$ Override** | **GPIO 15** | $4.7\text{ k}\Omega$ | XOR4 Pin 1, AND4 Pin 1, AND6 Pin 9, OR4 Pin 9, NOT2 Pin 1 |
-| **$A_7$ Override** | **GPIO 16** | $4.7\text{ k}\Omega$ | XOR4 Pin 9, AND4 Pin 9, OR4 Pin 12, NOT2 Pin 3 |
-| **$B_4$ Override** | **GPIO 17** | $4.7\text{ k}\Omega$ | XOR6 Pin 2, AND6 Pin 2, OR4 Pin 2 |
-| **$B_5$ Override** | **GPIO 18** | $4.7\text{ k}\Omega$ | XOR6 Pin 5, AND6 Pin 5, OR4 Pin 5 |
-| **$B_6$ Override** | **GPIO 21** | $4.7\text{ k}\Omega$ | XOR6 Pin 9, AND6 Pin 10, OR4 Pin 10 |
-| **$B_7$ Override** | **GPIO 38** | $4.7\text{ k}\Omega$ | XOR6 Pin 12, AND4 Pin 10, OR4 Pin 13 |
+---
+
+## 4. Microcontroller Pinout & Benchtop Hookup Tables
+
+### 4.1 Arduino UNO R4 WiFi (Software Golden Model Oracle & 12×8 HUD)
+* **Power**: Independent USB-C from PC. **Do NOT connect 5V pin!** Only connect GND.
+* **Logic Level**: 5V Native TTL (Direct connection to breadboard signals).
+
+| Arduino Pin | Hardware Signal | Connected To (Breadboard Node) | Signal Function / Notes |
+| :---: | :---: | :--- | :--- |
+| **GND** | Star Ground | Breadboard Common Ground Bus | Equipotential 0V reference |
+| **D2** | $Y_0$ | IC7 Pin 5 | Custom ALU Output Bit 0 |
+| **D3** | $Y_1$ | IC8 Pin 5 | Custom ALU Output Bit 1 |
+| **D4** | $Y_2$ | IC9 Pin 5 | Custom ALU Output Bit 2 |
+| **D5** | $Y_3$ | IC10 Pin 5 | Custom ALU Output Bit 3 |
+| **D6** | $Y_4$ | IC11 Pin 9 | Upper Nibble / Silicon ALU Bit 0 |
+| **D7** | $Y_5$ | IC11 Pin 10 | Upper Nibble / Silicon ALU Bit 1 |
+| **D8** | $Y_6$ | IC11 Pin 11 | Upper Nibble / Silicon ALU Bit 2 |
+| **D9** | $Y_7$ | IC11 Pin 13 | Upper Nibble / Silicon ALU Bit 3 |
+| **D10** | PASS Output | $220\ \Omega \to$ Anode of 🟢 Green PASS LED | Software Golden Model Pass Indicator |
+| **D11** | FAIL Output | $220\ \Omega \to$ Anode of 🔴 Red FAIL LED | Software Golden Model Fail Indicator |
+| **D12** | HW Equiv In | IC12 Pin 6 ($Q_{A=B}$) | Direct read of hardware 74xx85 match flag |
+| **A0** | Opcode $S_0$ | Opcode Bus $S_0$ Node | Monitors active Opcode Bit 0 |
+| **A1** | Opcode $S_1$ | Opcode Bus $S_1$ Node | Monitors active Opcode Bit 1 |
+| **A2** | Opcode $S_2$ | Opcode Bus $S_2$ Node | Monitors active Opcode Bit 2 |
+| **A3** | Mode Switch | Mode Switch Node | Monitors Datapath Mode (0 = 8-Bit, 1 = Verify) |
+
+---
+
+### 4.2 ESP32-S3 N16R8 (IoT Dashboard, WebSockets & Remote Injection)
+* **Power**: Independent USB-C. **Do NOT connect 5V pin!** Only connect GND.
+* **Injection Signals**: Pass through **$4.7\text{ k}\Omega$ series override resistors**.
+* **Monitor Signals**: Pass through **$1.0\text{ k}\Omega$ (series) / $2.2\text{ k}\Omega$ (shunt)** voltage dividers.
+
+| ESP32 GPIO | Mode | Network Resistor | Connected To (Breadboard Node) | Architectural Function |
+| :---: | :---: | :--- | :--- | :--- |
+| **GND** | - | Direct | Breadboard Common Ground Bus | 0V Reference |
+| **GPIO 1** | Bidirectional | $4.7\text{ k}\Omega$ series | Input Bus $A_0$ | Inject / monitor Operand A Bit 0 |
+| **GPIO 2** | Bidirectional | $4.7\text{ k}\Omega$ series | Input Bus $A_1$ | Inject / monitor Operand A Bit 1 |
+| **GPIO 4** | Bidirectional | $4.7\text{ k}\Omega$ series | Input Bus $A_2$ | Inject / monitor Operand A Bit 2 |
+| **GPIO 5** | Bidirectional | $4.7\text{ k}\Omega$ series | Input Bus $A_3$ | Inject / monitor Operand A Bit 3 |
+| **GPIO 6** | Bidirectional | $4.7\text{ k}\Omega$ series | Input Bus $A_4$ | Inject / monitor Operand A Bit 4 |
+| **GPIO 7** | Bidirectional | $4.7\text{ k}\Omega$ series | Input Bus $A_5$ | Inject / monitor Operand A Bit 5 |
+| **GPIO 8** | Bidirectional | $4.7\text{ k}\Omega$ series | Input Bus $A_6$ | Inject / monitor Operand A Bit 6 |
+| **GPIO 9** | Bidirectional | $4.7\text{ k}\Omega$ series | Input Bus $A_7$ | Inject / monitor Operand A Bit 7 |
+| **GPIO 10** | Bidirectional | $4.7\text{ k}\Omega$ series | Input Bus $B_0$ | Inject / monitor Operand B Bit 0 |
+| **GPIO 11** | Bidirectional | $4.7\text{ k}\Omega$ series | Input Bus $B_1$ | Inject / monitor Operand B Bit 1 |
+| **GPIO 12** | Bidirectional | $4.7\text{ k}\Omega$ series | Input Bus $B_2$ | Inject / monitor Operand B Bit 2 |
+| **GPIO 13** | Bidirectional | $4.7\text{ k}\Omega$ series | Input Bus $B_3$ | Inject / monitor Operand B Bit 3 |
+| **GPIO 14** | Bidirectional | $4.7\text{ k}\Omega$ series | Input Bus $B_4$ | Inject / monitor Operand B Bit 4 |
+| **GPIO 15** | Bidirectional | $4.7\text{ k}\Omega$ series | Input Bus $B_5$ | Inject / monitor Operand B Bit 5 |
+| **GPIO 16** | Bidirectional | $4.7\text{ k}\Omega$ series | Input Bus $B_6$ | Inject / monitor Operand B Bit 6 |
+| **GPIO 17** | Bidirectional | $4.7\text{ k}\Omega$ series | Input Bus $B_7$ | Inject / monitor Operand B Bit 7 |
+| **GPIO 18** | Bidirectional | $4.7\text{ k}\Omega$ series | Opcode Bus $S_0$ ($SUB$) | Inject / monitor Opcode Bit 0 |
+| **GPIO 35** | Bidirectional | $4.7\text{ k}\Omega$ series | Opcode Bus $S_1$ | Inject / monitor Opcode Bit 1 |
+| **GPIO 36** | Bidirectional | $4.7\text{ k}\Omega$ series | Opcode Bus $S_2$ | Inject / monitor Opcode Bit 2 |
+| **GPIO 37** | Bidirectional | $4.7\text{ k}\Omega$ series | Mode Select Line | Inject / monitor Mode Switch |
+| **GPIO 38** | Input | $1\text{k}\Omega / 2.2\text{k}\Omega$ | Output Bus $Y_0$ (IC7 Pin 5) | Telemetry monitor Bit 0 |
+| **GPIO 39** | Input | $1\text{k}\Omega / 2.2\text{k}\Omega$ | Output Bus $Y_1$ (IC8 Pin 5) | Telemetry monitor Bit 1 |
+| **GPIO 40** | Input | $1\text{k}\Omega / 2.2\text{k}\Omega$ | Output Bus $Y_2$ (IC9 Pin 5) | Telemetry monitor Bit 2 |
+| **GPIO 41** | Input | $1\text{k}\Omega / 2.2\text{k}\Omega$ | Output Bus $Y_3$ (IC10 Pin 5) | Telemetry monitor Bit 3 |
+| **GPIO 42** | Input | $1\text{k}\Omega / 2.2\text{k}\Omega$ | Output Bus $Y_4$ (IC11 Pin 9) | Telemetry monitor Bit 4 |
+| **GPIO 47** | Input | $1\text{k}\Omega / 2.2\text{k}\Omega$ | Output Bus $Y_5$ (IC11 Pin 10) | Telemetry monitor Bit 5 |
+| **GPIO 48** | Input | $1\text{k}\Omega / 2.2\text{k}\Omega$ | Output Bus $Y_6$ (IC11 Pin 11) | Telemetry monitor Bit 6 |
+| **GPIO 21** | Input | $1\text{k}\Omega / 2.2\text{k}\Omega$ | Output Bus $Y_7$ (IC11 Pin 13) | Telemetry monitor Bit 7 |
+| **GPIO 3** | Input | $1\text{k}\Omega / 2.2\text{k}\Omega$ | IC12 Pin 6 ($Q_{A=B}$) | Telemetry monitor Hardware Match |
+
+---
+
+## 5. Visual Status Indicators & LED Wiring
+
+| Indicator | Color | Anode Resistor | Cathode | Triggering Event |
+| :--- | :---: | :---: | :---: | :--- |
+| **Output Bus $Y[7:0]$** | 8x Blue | $330\ \Omega$ series to $Y_i$ | Common GND | Real-time visual display of active data bits |
+| **Silicon Match LED** | Green | $330\ \Omega$ series to IC12 Pin 6 | Common GND | **Lights instantly when Custom ALU == 74LS181N** |
+| **Software PASS LED** | Green | $220\ \Omega$ series to Arduino D10 | Common GND | Lights when Arduino C++ Golden Model matches bus |
+| **Software FAIL LED** | Red | $220\ \Omega$ series to Arduino D11 | Common GND | Lights when Arduino C++ detects hardware mismatch |
+| **Carry-Out Flag LED** | Amber | $330\ \Omega$ series to IC11 Pin 18 | Common GND | Lights when arithmetic carry/borrow is generated |
+
+---
+
+## 6. Pre-Power Electrical Verification Checklist
+
+Before connecting USB-C power to any board, perform these four electrical tests with a digital multimeter:
+
+- [ ] **Test 1: Zero Power Rail Shorts**: Measure resistance between breadboard +5V Master Rail and Common GND. Verify reading is $> 10\text{ k}\Omega$ (charging capacitor behavior). If resistance is $< 100\ \Omega$, locate and resolve short immediately!
+- [ ] **Test 2: Equipotential Star Ground**: Measure resistance between Arduino Minima GND, Arduino WiFi GND, ESP32-S3 GND, and all breadboard GND rails. Verify $0.0\ \Omega$ across all nodes.
+- [ ] **Test 3: Power Isolation**: Verify that the 5V pin of Arduino UNO R4 WiFi and the 5V pin of ESP32-S3 are completely disconnected from the breadboard 5V rail.
+- [ ] **Test 4: Supply Voltage Verification**: Connect USB-C to Arduino Minima only. Measure voltage between +5V rail and GND rail. Verify reading is between $+4.95\text{ V}$ and $+5.10\text{ V}$.

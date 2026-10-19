@@ -1,560 +1,444 @@
 # Complete Hardware Circuit Schematic & Netlist
-## Reconfigurable 8-Bit / 4-Bit Gate-Level Discrete ALU with ESP32-S3 Web Dashboard & Arduino UNO R4 WiFi Software Verifier
+## Dual-Mode Discrete & Silicon ALU Processor (74xx Discrete + 74LS181N + 74xx85)
+### Heterogeneous 3-Board Infrastructure: ESP32-S3 N16R8, Arduino UNO R4 WiFi & Arduino UNO R4 Minima
+
+This document provides the exhaustive hardware circuit schematics, ASCII circuit blueprints, operational data flows, and a complete pin-by-pin netlist for the **Dual-Mode Discrete & Silicon ALU Processor**.
 
 ---
 
-## 1. High-Level Architectural Schematic
+## 1. Master System Block Diagram
 
 ```mermaid
 flowchart TD
-    subgraph Inputs ["1. Hybrid Input Stage (Operands & Control)"]
-        DIPA["DIP Switch A (8-Bit)<br/>A[7..0] + 10kΩ Pull-downs"]
-        DIPB["DIP Switch B (8-Bit)<br/>B[7..0] + 10kΩ Pull-downs"]
-        DIPOP["Opcode DIP Switch (3-Bit)<br/>S[2..0] + 10kΩ Pull-downs"]
-        MODESW["Mode Toggle Switch<br/>(1 = 8-Bit Cascade, 0 = Dual 4-Bit)"]
-        ESP_INJ["ESP32-S3 Remote Injection<br/>(4.7kΩ Override Resistors)"]
+    subgraph PowerStation ["1. Dedicated Clean Power Station (Arduino UNO R4 Minima)"]
+        MINIMA_5V["Arduino UNO R4 Minima 5V Pin (1.2A Clean USB-C Rail)"]
+        MINIMA_GND["Common Ground Bus (Equipotential Star GND)"]
+        DECOUP["0.1µF Ceramic per IC + 100µF Bulk Electrolytic"]
     end
 
-    subgraph Conditioning ["2. Arithmetic Conditioning Stage"]
-        SUBXOR["74HCT86 (XOR5 & XOR6)<br/>Conditional Inversion: B'[7..0] = B[7..0] ⊕ SUB<br/>SUB = Opcode 001"]
+    subgraph HybridInputs ["2. Hybrid Input Generation Stage"]
+        DIP_A["DIP Switch A (8-Bit: A[7:0]) + 10kΩ Pull-downs"]
+        DIP_B["DIP Switch B (8-Bit: B[7:0]) + 10kΩ Pull-downs"]
+        DIP_OP["DIP Switch Opcode (3-Bit: S[2:0]) + 10kΩ Pull-downs"]
+        DIP_MODE["Mode Toggle Switch (1=Mode 1 Verify, 0=Mode 0 8-Bit)"]
+        ESP_OVR["ESP32-S3 Remote Injection (19x 4.7kΩ Override Resistors)"]
     end
 
-    subgraph CoreALU ["3. Gate-Level Discrete ALU Core"]
-        direction TB
-        ADDER_LO["Lower 4-Bit Full Adder<br/>(XOR1-2, AND1-2, OR1)<br/>Inputs: A[3..0], B'[3..0], Cin=SUB"]
-        MODECARRY["Mode Carry Gate (AND6 Gate 4)<br/>Cin4 = C4 · MODE"]
-        ADDER_HI["Upper 4-Bit Full Adder<br/>(XOR3-4, AND3-4, OR2)<br/>Inputs: A[7..4], B'[7..4], Cin4"]
-        AND_BANK["Bitwise AND Array (AND5, AND6)<br/>A[7..0] · B[7..0]"]
-        OR_BANK["Bitwise OR Array (OR3, OR4)<br/>A[7..0] + B[7..0]"]
-        XOR_BANK["Bitwise XOR Array (Adder Stage 1)<br/>A[7..0] ⊕ B[7..0]"]
-        NOT_BANK["Bitwise NOT Array (NOT1, NOT2)<br/>NOT A[7..0]"]
-        SHL_BUS["Hardwired Shift Left (SHL)<br/>A[k-1] → Bit k, Bit 0 = 0"]
-        SHR_BUS["Hardwired Shift Right (SHR)<br/>A[k+1] → Bit k, Bit 7 = 0"]
+    subgraph CustomALU ["3. Lower Nibble Custom 4-Bit Discrete ALU Slice"]
+        IC2_XOR["IC2: 74xx86 Quad XOR<br/>B-Invert: B'[3:0] = B[3:0] ⊕ SUB"]
+        IC1_ADD["IC1: 74xx283 4-Bit Adder<br/>ADD / SUB Core (Cin = SUB)"]
+        IC3_XOR["IC3: 74xx86 Quad XOR<br/>Bitwise XOR: A[3:0] ⊕ B[3:0]"]
+        IC4_AND["IC4: 74xx08 Quad AND<br/>Bitwise AND: A[3:0] · B[3:0]"]
+        IC5_OR["IC5: 74xx32 Quad OR<br/>Bitwise OR: A[3:0] + B[3:0]"]
+        IC6_NOT["IC6: 74xx04 Hex Inverter<br/>Bitwise NOT: ~A[3:0] & Carry Invert"]
+        IC7_10_MUX["IC7..IC10: 4× 74xx151 8:1 MUXes<br/>Operation Select Y_custom[3:0]"]
     end
 
-    subgraph MuxArray ["4. Bit-Slice MUX Array (8× 74HCT151)"]
-        MUXBANK["8× 74HCT151 8:1 Multiplexers<br/>Select: S[2..0]<br/>Inputs: D0=ADD, D1=SUB, D2=AND, D3=OR,<br/>D4=XOR, D5=NOT, D6=SHL, D7=SHR"]
+    subgraph SiliconALU ["4. Upper Nibble / Benchmark Silicon ALU (74LS181N)"]
+        IC11_181["IC11: 74LS181N 4-Bit Bipolar ALU<br/>Mode 0: Upper Nibble (Y[7:4])<br/>Mode 1: Silicon Benchmark (F[3:0])"]
+        CASCADE_CARRY["Carry Link: IC1 C4 -> IC6 NOT -> IC11 /Cn (Mode 0)"]
     end
 
-    subgraph BufferStage ["5. Bus Drive Stage (74HCT245)"]
-        BUF["74HCT245 Octal Bus Transceiver<br/>Buffered 8-Bit Result Bus Y[7..0]"]
+    subgraph HardwareVerify ["5. Real-Time Hardware Equivalence (Mode 1)"]
+        IC12_COMP["IC12: 74xx85 4-Bit Magnitude Comparator<br/>Word A: Y_custom[3:0] vs Word B: F[3:0]"]
+        MATCH_LED["🟢 PASS LED (Hardware Match Pin 6)"]
     end
 
-    subgraph Verifier ["6. Software Golden Verifier (Arduino UNO R4 WiFi)"]
-        R4["Arduino UNO R4 WiFi<br/>- Reads Y[7..0] directly (5V TTL native)<br/>- Computes Golden Model in C++<br/>- Drives 12×8 LED Matrix HUD (✓ / ✗)<br/>- Drives Green PASS / Red FAIL LEDs (220Ω)"]
-        PASSLED["🟢 GREEN LED: VERIFIED MATCH"]
-        FAILLED["🔴 RED LED: MISMATCH DETECTED"]
+    subgraph SoftwareVerify ["6. Software Golden Model Verifier (Arduino UNO R4 WiFi)"]
+        R4_WIFI["Arduino UNO R4 WiFi<br/>- Native 5V TTL Bus Sniffer (Y[7:0])<br/>- Real-time C++ Golden Reference<br/>- Onboard 12×8 LED Matrix HUD (✓ / ✗)<br/>- Drives Ext Green PASS / Red FAIL LEDs"]
+        EXT_PASS["🟢 PASS LED"]
+        EXT_FAIL["🔴 FAIL LED"]
     end
 
-    subgraph Telemetry ["7. IoT Telemetry & Injection (ESP32-S3 N16R8)"]
-        ESP["ESP32-S3 N16R8<br/>- 1.0kΩ / 2.2kΩ Voltage Dividers (5V → 3.3V)<br/>- Reads Y[7..0], Carry, Opcode, Mode<br/>- Hosts Wi-Fi AP ('ALU-Testbench-AP')<br/>- Web Dashboard & WebSocket Telemetry<br/>- Automated 2,048-vector Test Generator"]
+    subgraph IoTTelemetry ["7. IoT Web Dashboard & Telemetry (ESP32-S3 N16R8)"]
+        ESP32["ESP32-S3 N16R8 (Dual-Core LX7)<br/>- 1.0kΩ / 2.2kΩ Voltage Dividers (5V -> 3.3V)<br/>- SoftAP Wi-Fi ('DECA-ALU')<br/>- WebSocket Live Bus Stream<br/>- Automated Regression Test Sweeper"]
     end
 
-    ESP_INJ -.-> DIPA
-    ESP_INJ -.-> DIPB
-    DIPB --> SUBXOR
-    DIPOP --> SUBXOR
-    DIPOP --> MUXBANK
+    MINIMA_5V --> CustomALU
+    MINIMA_5V --> SiliconALU
+    MINIMA_5V --> HardwareVerify
+    MINIMA_GND === R4_WIFI
+    MINIMA_GND === ESP32
 
-    DIPA --> ADDER_LO
-    DIPA --> ADDER_HI
-    SUBXOR --> ADDER_LO
-    SUBXOR --> ADDER_HI
+    ESP_OVR -.-> DIP_A
+    ESP_OVR -.-> DIP_B
+    ESP_OVR -.-> DIP_OP
 
-    ADDER_LO -- "Lower Carry C4" --> MODECARRY
-    MODESW --> MODECARRY
-    MODECARRY -- "Gated Carry Cin4" --> ADDER_HI
+    DIP_B --> IC2_XOR
+    DIP_A --> IC1_ADD
+    IC2_XOR --> IC1_ADD
+    DIP_A --> IC3_XOR
+    DIP_B --> IC3_XOR
+    DIP_A --> IC4_AND
+    DIP_B --> IC4_AND
+    DIP_A --> IC5_OR
+    DIP_B --> IC5_OR
+    DIP_A --> IC6_NOT
 
-    DIPA --> AND_BANK
-    DIPB --> AND_BANK
-    DIPA --> OR_BANK
-    DIPB --> OR_BANK
-    DIPA --> NOT_BANK
-    DIPA --> SHL_BUS
-    DIPA --> SHR_BUS
+    IC1_ADD --> IC7_10_MUX
+    IC3_XOR --> IC7_10_MUX
+    IC4_AND --> IC7_10_MUX
+    IC5_OR --> IC7_10_MUX
+    IC6_NOT --> IC7_10_MUX
+    DIP_OP --> IC7_10_MUX
 
-    ADDER_LO -- "Sum S[3..0]" --> MUXBANK
-    ADDER_HI -- "Sum S[7..4]" --> MUXBANK
-    AND_BANK --> MUXBANK
-    OR_BANK --> MUXBANK
-    XOR_BANK --> MUXBANK
-    NOT_BANK --> MUXBANK
-    SHL_BUS --> MUXBANK
-    SHR_BUS --> MUXBANK
+    IC1_ADD -- "Carry C4" --> CASCADE_CARRY
+    CASCADE_CARRY --> IC11_181
 
-    MUXBANK --> BUF
-    BUF -- "ALU Bus Y[7..0]" --> R4
-    BUF -- "via 1k/2.2k Dividers" --> ESP
-    R4 --> PASSLED
-    R4 --> FAILLED
+    IC7_10_MUX -- "Y_custom[3:0]" --> IC12_COMP
+    IC11_181 -- "F[3:0]" --> IC12_COMP
+    IC12_COMP -- "Pin 6 (A=B)" --> MATCH_LED
+    IC12_COMP -- "Pin 6 (A=B)" --> R4_WIFI
+    IC12_COMP -- "Pin 6 via Divider" --> ESP32
+
+    IC7_10_MUX -- "Y[3:0]" --> R4_WIFI
+    IC11_181 -- "Y[7:4]" --> R4_WIFI
+    IC7_10_MUX -- "via Dividers" --> ESP32
+    IC11_181 -- "via Dividers" --> ESP32
+
+    R4_WIFI --> EXT_PASS
+    R4_WIFI --> EXT_FAIL
 ```
 
 ---
 
-## 2. System Block Diagram (Detailed ASCII Art)
+## 2. Complete ASCII Hardware Schematics
+
+### 2.1 Subsystem 1: Power Station & Star Ground Distribution
+* **Arduino UNO R4 Minima**: Provides dedicated +5V DC @ up to 1.2A via high-current USB-C.
+* **Grounding Topology**: Single equipotential star ground eliminating ground loops.
 
 ```
- +---------------------------------------------------------------------------------------------------------+
- |                                  HYBRID INPUT & OVERRIDE STAGE                                          |
- |                                                                                                         |
- |  ESP32-S3 GPIOs (Remote Injection)                                                                      |
- |        │                                                                                                |
- |     [4.7kΩ]                                                                                             |
- |        │                                                                                                |
- |        ├────────◄ DIP Switches A[7:0] & B[7:0] (Connected to +5V)                                       |
- |        │                                                                                                |
- |     [10kΩ] (Pull-Down to GND)                                                                           |
- |        │                                                                                                |
- |        ▼                                                                                                |
- |  Operand Buses A[7:0] and B[7:0]                                                                        |
- +────────┬─────────────────────────────┬──────────────────────────────────────────────────────────────────+
-          │                             │
-          │ A[7:0]                      │ B[7:0]
-          │                             ▼
-          │                   +────────────────────+
-          │                   | 74HCT86 XOR5, XOR6 | ◄── SUB Control Signal (Active HIGH on Opcode 001)
-          │                   | Invert B on SUB    |
-          │                   +─────────┬──────────+
-          │                             │ B'[7:0] = B[7:0] ⊕ SUB
-          ├─────────────────────────────┤
-          │                             │
-          ▼                             ▼
- +─────────────────────────────────────────────────────────────────────────────────────────────────────────+
- |                                   GATE-LEVEL DISCRETE ALU CORE                                          |
- |                                                                                                         |
- |  [ LOWER 4-BIT ADDER (Bits 0..3) ]           [ UPPER 4-BIT ADDER (Bits 4..7) ]                          |
- |  • XOR1, XOR2 (Sum S0..S3)                   • XOR3, XOR4 (Sum S4..S7)                                  |
- |  • AND1, AND2 (Generate/Propagate)           • AND3, AND4 (Generate/Propagate)                          |
- |  • OR1        (Carry Chain C1..C4)           • OR2        (Carry Chain C5..C8)                          |
- |  • Cin = SUB (1 for 2's comp)                • Cin4 = C4 · MODE                                         |
- |                 │                                       ▲                                               |
- |                 └───► C4 ─────► [ AND6 Gate 4 ] ────────┘                                               |
- |                                      ▲                                                                  |
- |                             MODE ────┘ (1 = 8-Bit Cascade, 0 = Dual 4-Bit)                              |
- |                                                                                                         |
- |  [ LOGIC ARRAY ]                                                                                        |
- |  • Bitwise AND: AND5 (Bits 0..3), AND6 (Bits 4..6), AND4 Pin 8 (Bit 7)                                  |
- |  • Bitwise OR:  OR3 (Bits 0..3), OR4 (Bits 4..7)                                                        |
- |  • Bitwise XOR: Adder Stage 1 XOR outputs (A[7:0] ⊕ B[7:0] when SUB=0)                                  |
- |  • Bitwise NOT: NOT1 (Bits 0..5), NOT2 (Bits 6..7)                                                      |
- |                                                                                                         |
- |  [ SHIFT ARRAY (Hardwired) ]                                                                            |
- |  • SHL: A[k-1] → Bit k; Bit 0 = GND                                                                     |
- |  • SHR: A[k+1] → Bit k; Bit 7 = GND                                                                     |
- +──┬───────┬─────────┬──────────┬───────────┬───────────┬──────────────┬──────────────┬───────────────────+
-    │ ADD   │ SUB     │ AND      │ OR        │ XOR       │ NOT          │ SHL          │ SHR               |
-    │ (Sum) │ (Diff)  │ (A·B)    │ (A+B)     │ (A⊕B)     │ (~A)         │ (A<<1)       │ (A>>1)            |
-    │       │         │          │           │           │              │              │                   |
-    ▼       ▼         ▼          ▼           ▼           ▼              ▼              ▼                   |
-   (D0)    (D1)      (D2)       (D3)        (D4)        (D5)           (D6)           (D7)                 |
- +─────────────────────────────────────────────────────────────────────────────────────────────────────────+
- |                                  8× 74HCT151 8:1 MULTIPLEXER ARRAY                                      |
- |                                                                                                         |
- |  Opcode Lines S2, S1, S0 (Pins 9, 10, 11) select which operation routes to Y[7:0]                      |
- +─────────────────────────────────────────────┬───────────────────────────────────────────────────────────+
-                                               │ Y[7:0] Raw
-                                               ▼
- +─────────────────────────────────────────────────────────────────────────────────────────────────────────+
- |                                 74HCT245 OCTAL BUS TRANSCEIVER (BUF1)                                   |
- |  Provides clean line drive, isolation, and fast capacitive charging for downstream MCU loads            |
- +─────────────────────────────────────────────┬───────────────────────────────────────────────────────────+
-                                               │
-                                 Buffered Output Bus Y[7:0]
-                                               │
-                      ┌────────────────────────┴────────────────────────┐
-                      │                                                 │
-                      ▼ (Direct 5V TTL)                                 ▼ (via 1.0kΩ / 2.2kΩ Dividers)
- +───────────────────────────────────────────+     +───────────────────────────────────────────────────────+
- |         ARDUINO UNO R4 WIFI               |     |                 ESP32-S3 N16R8                        |
- |  (Hardware Equivalence Verifier)          |     |          (IoT Telemetry & Web Dashboard)              |
- |                                           |     |                                                       |
- | • Reads Y[7:0] on Digital Pins D2..D9     |     | • Reads Level-Shifted Y[7:0], C8, Mode, Opcode        |
- | • Reads Opcode on Pins D10..D12           |     | • Hosts Wi-Fi AP ('ALU-Testbench-AP')                 |
- | • Computes Expected Result (Golden Model) |     | • Serves Live HTML5/WebSocket Telemetry               |
- | • Compares Hardware Y vs Software Golden  |     | • Injects Automated 2,048-Vector Regression Tests     |
- | • Drives Onboard 12×8 LED Matrix:         |     |                                                       |
- |     ✓ (Green Check) = PASS                |     +───────────────────────────────────────────────────────+
- |     ✗ (Red Cross)   = FAIL                |
- | • External Indicators (via 220Ω):         |
- |     Pin A1 ──► 🟢 GREEN PASS LED          |
- |     Pin A2 ──► 🔴 RED FAIL LED            |
- +───────────────────────────────────────────+
+   USB-C Input (5V 3A)
+         │
+         ▼
+  ┌─────────────────────────┐
+  │  ARDUINO UNO R4 MINIMA  │
+  │  (Dedicated Clean PS)   │
+  │                         │
+  │   5V Pin ───────────────┼─────► [ +5V MASTER POWER RAIL ] (All Breadboards)
+  │                         │            │             │
+  │                         │         [100µF]       [0.1µF]  (Across every IC VCC/GND)
+  │                         │            │             │
+  │  GND Pin ───────────────┼─────► [ COMMON GND RAIL ] (0V Reference)
+  └─────────────────────────┘            │
+                                         ├────────────────────────┐
+                                         │                        │
+  ┌─────────────────────────┐            │         ┌─────────────────────────┐
+  │  ARDUINO UNO R4 WIFI    │            │         │  ESP32-S3 N16R8         │
+  │  (Verifier & 12x8 HUD)  │            │         │  (Web Dashboard & AP)   │
+  │                         │            │         │                         │
+  │  GND Pin ───────────────┴────────────┘         │  GND Pin ───────────────┘
+  │  (5V Pin UNCONNECTED!)                         │  (5V Pin UNCONNECTED!)
+  └─────────────────────────┘                      └─────────────────────────┘
 ```
 
 ---
 
-## 3. Gate-Level Full Adder (1-Bit)
+### 2.2 Subsystem 2: Hybrid Input Stage (Tactile DIPs + ESP32 Override)
+Each of the 20 input lines ($A[7:0], B[7:0], S[2:0], \text{MODE}$) features this identical topology:
 
-A dedicated adder IC (such as the 74LS283 or 7483) is intentionally **not used**. Instead, every bit-slice adder is built from fundamental XOR, AND, and OR gates.
-
-### Boolean Equations:
-$$\begin{aligned}
-X_k &= A_k \oplus B'_k \quad &\text{(Stage 1: Partial Sum / Bitwise XOR)} \\
-S_k &= X_k \oplus C_k = A_k \oplus B'_k \oplus C_k \quad &\text{(Stage 2: Final Sum)} \\
-G_k &= A_k \cdot B'_k \quad &\text{(Carry Generate)} \\
-P_k &= C_k \cdot X_k = C_k \cdot (A_k \oplus B'_k) \quad &\text{(Carry Propagate)} \\
-C_{k+1} &= G_k + P_k = (A_k \cdot B'_k) + (C_k \cdot (A_k \oplus B'_k)) \quad &\text{(Carry Out)}
-\end{aligned}$$
-
-### Detailed 1-Bit Full Adder Schematic:
 ```
-           Ak ─────────────────┬──────────────────────┬──────────────────────┐
-                               │                      │                      │
-           B'k ──────────┬─────┼──────────────────────┼──────┐               │
-                         │     │                      │      │               │
-                         ▼     ▼                      │      │               │
-                     ┌───────────┐                    │      │               │
-                     │  74HCT86  │                    │      │               │
-                     │   XOR #1  ├───── Xk ─────────┐ │      │               │
-                     └─────┬─────┘                  │ │      │               │
-                           │                        ▼ ▼      │               │
-                           │                   ┌───────────┐ │               │
-                           │                   │  74HCT08  │ │               │
-                           │                   │  AND (P)  │ │               │
-                           │                   └─────┬─────┘ │               │
-                           │                         │ Pk    ▼               ▼
-                           │                         │    ┌────────────────────┐
-                           │                         │    │      74HCT08       │
-                           │                         │    │      AND (G)       │
-                           │                         │    └──────────┬─────────┘
-           Ck ───────┬─────┼─────────────────────────┘               │ Gk
-                     │     │                                         │
-                     ▼     ▼                                         │
-                 ┌───────────┐                                       │
-                 │  74HCT86  │                                       ▼
-                 │   XOR #2  │                                ┌─────────────┐
-                 └─────┬─────┘                                │   74HCT32   │
-                       │                                      │     OR      ├────► Ck+1 (Carry Out)
-                       ▼                                      └─────────────┘
-                      Sk (Sum to MUX D0, D1)
+                  +5V Master Rail
+                         │
+                         ▼
+                   [ DIP Switch ]
+                         │
+  ESP32 GPIO ────[ 4.7kΩ Override ]────┬─────► Driven Node (ALU Input Pin)
+                                       │
+                                [ 10kΩ Pull-down ]
+                                       │
+                                       ▼
+                                  Common GND
+```
+
+#### Truth & Voltage Verification:
+- **DIP = OFF, ESP32 = Tri-State (INPUT)**: $V_{node} = 0.0\text{V}$ (Logic LOW).
+- **DIP = ON, ESP32 = Tri-State (INPUT)**: $V_{node} = +5.0\text{V}$ (Logic HIGH).
+- **DIP = OFF, ESP32 = Driving HIGH (3.3V)**:
+  $$V_{node} = 3.3\text{ V} \times \frac{10\text{ k}\Omega}{4.7\text{ k}\Omega + 10\text{ k}\Omega} = 2.245\text{ V} > V_{IH,\min} (2.0\text{ V}) \implies \text{Logic HIGH}$$
+- **DIP = ON (+5V), ESP32 = Driving LOW (0V)**: Contention current $I = 5\text{V} / 4.7\text{k}\Omega = 1.06\text{ mA} < 40\text{ mA}$ limit (Safe!).
+
+---
+
+### 2.3 Subsystem 3: Lower Nibble Custom 4-Bit ALU Slice (IC1..IC6)
+
+```
+                       SUB (Opcode S0 when Opcode 001)
+                        │
+                        ├──────────────────────────┐
+                        │                          │
+                        ▼                          ▼
+                 ┌─────────────┐            ┌─────────────┐
+        B0 ─────►│ 1A       1Y ├──── B'0 ──►│ B1       Σ0 ├───► MUX0 D0, D1 (IC7 Pins 4,3)
+                 │  IC2: 7486  │            │             │
+        B1 ─────►│ 2A       2Y ├──── B'1 ──►│ B2       Σ1 ├───► MUX1 D0, D1 (IC8 Pins 4,3)
+                 │ (B-Invert)  │            │  IC1: 74283 │
+        B2 ─────►│ 3A       3Y ├──── B'2 ──►│ B3 (4-Bit)  │
+                 │             │            │    Adder    │
+        B3 ─────►│ 4A       4Y ├──── B'3 ──►│ B4       Σ2 ├───► MUX2 D0, D1 (IC9 Pins 4,3)
+                 └─────────────┘            │             │
+        A0 ────────────────────────────────►│ A1       Σ3 ├───► MUX3 D0, D1 (IC10 Pins 4,3)
+        A1 ────────────────────────────────►│ A2          │
+        A2 ────────────────────────────────►│ A3       C4 ├───► Carry Out (IC1 Pin 9)
+        A3 ────────────────────────────────►│ A4       C0 │      │
+                                            └──────┬──────┘      ▼
+                                                   ▲      ┌──────────────┐
+                                                   │      │ IC6: 74xx04  │
+                                                   └──────┤ Pin 11 -> 10 ├─► /Cn (Cascaded Carry)
+                                                          └──────────────┘
+
+  --- Bitwise Logic Array ---
+        A[3:0] ──┬──────────┬──────────┬──────────┐
+                 │          │          │          │
+        B[3:0] ──┼──────────┼──────────┼──────────┤
+                 ▼          ▼          ▼          ▼
+            ┌─────────┐┌─────────┐┌─────────┐┌─────────┐
+            │IC4: 7408││IC5: 7432││IC3: 7486││IC6: 7404│
+            │(AND Gate││(OR Gate)││(XOR Gate││(NOT Gate│
+            └────┬────┘└────┬────┘└────┬────┘└────┬────┘
+                 │          │          │          │
+                 ▼ (D2)     ▼ (D3)     ▼ (D4)     ▼ (D5)
+             Bitwise    Bitwise    Bitwise    Bitwise
+               AND        OR         XOR        NOT
 ```
 
 ---
 
-## 4. 4-Bit Ripple Carry Adder Slice
-
-Four 1-bit full adders are cascaded together. The carry output of bit $k$ ripples directly into the carry input of bit $k+1$:
+### 2.4 Subsystem 4: Multiplexer Array (IC7..IC10 4× 74xx151 8:1 MUXes)
+Every bit-slice $i \in \{0, 1, 2, 3\}$ uses one 74xx151:
 
 ```
-                      Cin (SUB for lower nibble, Cin4 for upper nibble)
-                       │
-                       ▼
-               +---------------+
-  A0, B'0 ────►| Full Adder #0 |────► Sum S0 (To MUX1 D0, D1)
-               +-------┬-------+
-                       │ C1
-                       ▼
-               +---------------+
-  A1, B'1 ────►| Full Adder #1 |────► Sum S1 (To MUX2 D0, D1)
-               +-------┬-------+
-                       │ C2
-                       ▼
-               +---------------+
-  A2, B'2 ────►| Full Adder #2 |────► Sum S2 (To MUX3 D0, D1)
-               +-------┬-------+
-                       │ C3
-                       ▼
-               +---------------+
-  A3, B'3 ────►| Full Adder #3 |────► Sum S3 (To MUX4 D0, D1)
-               +-------┬-------+
-                       │
-                       ▼
-                      C4 (Lower Nibble Carry Out)
+                 Opcode Bus S[2..0]
+                        │
+                        ├───────────────────────┐
+                        ▼ (Pins 9, 10, 11)      │
+               ┌───────────────────┐            │
+     Adder Σi ─┤ 4  D0           5 ├─ Yi        │
+      Diff Σi ─┤ 3  D1             │            ▼ (Identical for IC8, IC9, IC10)
+     AND Ai·Bi ┤ 2  D2   74xx151   │
+     OR  Ai+Bi ┤ 1  D3   (IC7)     │
+    XOR  Ai⊕Bi ┤ 15 D4             │
+     NOT   ~Ai ┤ 14 D5             │
+    SHL  Ai-1  ┤ 13 D6             │
+    SHR  Ai+1  ┤ 12 D7   /E=GND(7) │
+               └───────────────────┘
+```
+
+#### Shift Bus Routing:
+- **Bit 0 (IC7)**: $D_6$ (SHL) $\to$ GND; $D_7$ (SHR) $\to A_1$.
+- **Bit 1 (IC8)**: $D_6$ (SHL) $\to A_0$; $D_7$ (SHR) $\to A_2$.
+- **Bit 2 (IC9)**: $D_6$ (SHL) $\to A_1$; $D_7$ (SHR) $\to A_3$.
+- **Bit 3 (IC10)**: $D_6$ (SHL) $\to A_2$; $D_7$ (SHR) $\to$ GND (Mode 1) / $A_4$ (Mode 0).
+
+---
+
+### 2.5 Subsystem 5: 74LS181N Silicon ALU Core (IC11)
+
+```
+                     Mode Switch
+                          │
+          ┌───────────────┴───────────────┐
+          │ (MODE = 0: 8-Bit)             │ (MODE = 1: Verify)
+          ▼                               ▼
+    Operands A[7:4], B[7:4]         Operands A[3:0], B[3:0]
+    Carry In /Cn = IC6 Pin 10 (/C4) Carry In /Cn = +5V (No carry)
+          │                               │
+          └───────────────┬───────────────┘
+                          │
+                          ▼
+            ┌───────────────────────────┐
+            │      IC11: 74LS181N       │
+            │  4-Bit Silicon ALU IC     │
+            │                           │
+            │  Pins 2,19,21,23: Inputs A│
+            │  Pins 1,20,22,24: Inputs B│
+            │  Pins 3,4,5,6: S3,S2,S1,S0│
+            │  Pin 8: Mode Control M    │
+            │  Pin 7: Carry In /Cn      │
+            │                           │
+            │  Pins 9,10,11,13: F0..F3  │
+            │  Pin 18: Carry Out /Cn+4  │
+            └─────────────┬─────────────┘
+                          │
+          ┌───────────────┴───────────────┐
+          │                               │
+          ▼ (MODE = 0)                    ▼ (MODE = 1)
+     Upper 4-Bit Bus                Benchmark Word B to IC12
+     Outputs Y[7:4]                 Pins 9, 11, 14, 1 (B0..B3)
 ```
 
 ---
 
-## 5. 8-Bit Adder with Mode Toggle & Carry Gating
+### 2.6 Subsystem 6: Hardware Equivalence Comparator (IC12 74xx85)
 
-The ALU operates in two distinct user-selectable architectural modes:
-* **MODE = 1 (8-Bit Unified Arithmetic)**: The carry-out of the lower nibble ($C_4$) propagates directly into the carry-in of the upper nibble ($C_{in4}$). This creates a complete 8-bit ripple carry adder/subtractor.
-* **MODE = 0 (Dual Independent 4-Bit Arithmetic)**: The carry between the two nibbles is gated OFF ($C_{in4} = 0$). The upper and lower nibbles operate as two isolated 4-bit ALUs executing simultaneously.
-
-### Mode Carry Gating Circuit:
 ```
- Lower Nibble Carry Out (C4) ─────► Pin 12 ┌─────────────┐
-                                           │  74HCT08    │
-                                           │  AND6 Gate4 ├───── Pin 11 (Cin4) ──► Upper Nibble Cin
- Mode Switch (MODE) ──────────────► Pin 13 └─────────────┘
-```
-
-### Full 8-Bit Interconnection Topology:
-```
-           Cin0 = SUB
-               │
-               ▼
-   ┌───────────────────────┐
-   │ Lower 4-Bit Adder     │
-   │ (XOR1-2, AND1-2, OR1) │════► Sum S[3:0] ──► MUX[4:1] Pins 4 & 3 (D0, D1)
-   └───────────┬───────────┘
-               │ C4 (Carry Out Bit 3)
-               ▼
-         ┌───────────┐
-         │  74HCT08  │
-         │   AND6    │◄─── MODE Control Switch
-         │   Gate 4  │
-         └─────┬─────┘
-               │ Cin4 = C4 · MODE
-               ▼
-   ┌───────────────────────┐
-   │ Upper 4-Bit Adder     │
-   │ (XOR3-4, AND3-4, OR2) │════► Sum S[7:4] ──► MUX[8:5] Pins 4 & 3 (D0, D1)
-   └───────────┬───────────┘
-               │
-               ▼
-              C8 (Final 8-Bit Carry Out ──► ESP32 via divider & Arduino R4 pin A0)
+      Custom ALU Outputs Y[3:0]          74LS181 Silicon Outputs F[3:0]
+      (IC7..IC10 Pin 5)                  (IC11 Pins 9, 10, 11, 13)
+             │                                   │
+             ▼                                   ▼
+      Pins 10, 12, 13, 15                 Pins 9, 11, 14, 1
+      (Word A: A0, A1, A2, A3)            (Word B: B0, B1, B2, B3)
+             │                                   │
+             └───────────────┬───────────────────┘
+                             │
+                             ▼
+              ┌─────────────────────────────┐
+              │   IC12: 74xx85 COMPARATOR   │
+              │                             │
+              │  Pin 3 (I A=B) ◄─── +5V     │
+              │  Pin 2 (I A<B) ◄─── GND     │
+              │  Pin 4 (I A>B) ◄─── GND     │
+              │                             │
+              │  Pin 6 (Q A=B) ─────────────┼────────┐
+              └─────────────────────────────┘        │
+                                                     │
+                             ┌───────────────────────┴───────────────────────┐
+                             │                                               │
+                             ▼                                               ▼
+                      [ 330Ω Resistor ]                              Arduino UNO R4 WiFi
+                             │                                       Pin D12 (5V Direct Read)
+                             ▼                                               │
+                      [ 🟢 GREEN PASS ]                                      ▼
+                      [ SILICON MATCH ]                              ESP32-S3 GPIO 3
+                             │                                       (via 1k/2.2k Divider)
+                             ▼
+                         Common GND
 ```
 
 ---
 
-## 6. Subtraction Circuit (2's Complement Inversion)
-
-Subtraction ($A - B$) is computed in hardware using 2's complement arithmetic:
-$$A - B = A + \overline{B} + 1$$
-
-To achieve this without hardware multiplexers on the operands:
-1. Every bit of operand $B$ passes through a conditional XOR inverter (IC `XOR5` for $B[3:0]$ and `XOR6` for $B[7:4]$).
-2. The second input of each XOR gate is tied to the **$SUB$** control line ($SUB = 1$ when Opcode = `001`, $SUB = 0$ otherwise).
-   $$B'_k = B_k \oplus SUB = \begin{cases} B_k & \text{if } SUB = 0 \text{ (ADD, Logic)} \\ \overline{B_k} & \text{if } SUB = 1 \text{ (SUB)} \end{cases}$$
-3. The initial carry-in to Bit 0 ($C_{in0}$) is tied directly to the **$SUB$** signal.
-   * In addition ($SUB = 0$): $B' = B$, $C_{in0} = 0 \implies \text{Result} = A + B + 0 = A + B$.
-   * In subtraction ($SUB = 1$): $B' = \overline{B}$, $C_{in0} = 1 \implies \text{Result} = A + \overline{B} + 1 = A - B$.
+### 2.7 Subsystem 7 & 8: Dual-MCU Verification & IoT Telemetry Interface
 
 ```
-                      SUB Control Signal (Active HIGH on Opcode 001)
-                            │
-        ┌───────────────────┼───────────────────┬───────────────────┬───────────────────┐
-        │                   │                   │                   │                   │
-        ▼ (Pin 1)           ▼ (Pin 4)           ▼ (Pin 10)          ▼ (Pin 13)          │
-  ┌───────────┐       ┌───────────┐       ┌───────────┐       ┌───────────┐             │
-  │  74HCT86  │       │  74HCT86  │       │  74HCT86  │       │  74HCT86  │             │
-  │   XOR5    │       │   XOR5    │       │   XOR5    │       │   XOR5    │             │
-  │  Gate 1   │       │  Gate 2   │       │  Gate 3   │       │  Gate 4   │             │
-  └─────┬─────┘       └─────┬─────┘       └─────┬─────┘       └─────┬─────┘             │
-        ▲ (Pin 2)           ▲ (Pin 5)           ▲ (Pin 9)           ▲ (Pin 12)          │
-        │ B0                │ B1                │ B2                │ B3                │
-        │                   │                   │                   │                   │
-        ▼ (Pin 3: B'0)      ▼ (Pin 6: B'1)      ▼ (Pin 8: B'2)      ▼ (Pin 11: B'3)     │
-        │                   │                   │                   │                   │
-        ▼                   ▼                   ▼                   ▼                   ▼
-     To Bit 0            To Bit 1            To Bit 2            To Bit 3           Cin to Bit 0
-   Full Adder          Full Adder          Full Adder          Full Adder           (Adder Pin)
-```
-*(An identical circuit on `XOR6` conditions upper nibble bits $B_4, B_5, B_6, B_7$).*
+  =============================================================================
+             ARDUINO UNO R4 WIFI (5V Software Golden Model Oracle)
+  =============================================================================
+  Direct 5V TTL Inputs (No dividers required):
+    Digital Pin D2  ◄────── Y0 (Custom ALU Bit 0 / IC7 Pin 5)
+    Digital Pin D3  ◄────── Y1 (Custom ALU Bit 1 / IC8 Pin 5)
+    Digital Pin D4  ◄────── Y2 (Custom ALU Bit 2 / IC9 Pin 5)
+    Digital Pin D5  ◄────── Y3 (Custom ALU Bit 3 / IC10 Pin 5)
+    Digital Pin D6  ◄────── Y4 (74LS181 Bit 0 / IC11 Pin 9)
+    Digital Pin D7  ◄────── Y5 (74LS181 Bit 1 / IC11 Pin 10)
+    Digital Pin D8  ◄────── Y6 (74LS181 Bit 2 / IC11 Pin 11)
+    Digital Pin D9  ◄────── Y7 (74LS181 Bit 3 / IC11 Pin 13)
+    Digital Pin D12 ◄────── IC12 Pin 6 (Hardware A=B Equivalence Flag)
+    Analog Pin A0   ◄────── Opcode S0
+    Analog Pin A1   ◄────── Opcode S1
+    Analog Pin A2   ◄────── Opcode S2
+    Analog Pin A3   ◄────── MODE Switch Line
+  Outputs:
+    Digital Pin D10 ──────► [ 220Ω ] ──► 🟢 PASS LED (Software Oracle Match)
+    Digital Pin D11 ──────► [ 220Ω ] ──► 🔴 FAIL LED (Software Mismatch)
+    Onboard Matrix  ──────► Animated 12×8 HUD ('✓' / '✗' / Opcode)
 
----
-
-## 7. Logic Operations (AND, OR, XOR, NOT)
-
-All four standard logic operations are evaluated continuously in parallel across the entire 8-bit word:
-
-```
-               Ak ─────────────┬─────────────┬─────────────┬─────────────┐
-                               │             │             │             │
-               Bk ───────┬─────┼───────┬─────┼───────┬─────┼───────┐     │
-                         │     │       │     │       │     │       │     │
-                         ▼     ▼       ▼     ▼       ▼     ▼       │     ▼
-                      ┌─────────┐   ┌─────────┐   ┌─────────┐      │  ┌─────────┐
-                      │ 74HCT08 │   │ 74HCT32 │   │ 74HCT86 │      │  │ 74HCT04 │
-                      │   AND   │   │   OR    │   │ Adder   │      │  │   NOT   │
-                      │ AND5/6  │   │ OR3/4   │   │ Stage 1 │      │  │ NOT1/2  │
-                      └────┬────┘   └────┬────┘   └────┬────┘      │  └────┬────┘
-                           │             │             │           │       │
-                           ▼             ▼             ▼           │       ▼
-                         AND_k         OR_k          XOR_k         │     NOT_k
-                       (MUXk D2)     (MUXk D3)     (MUXk D4)       │   (MUXk D5)
-```
-* **Bitwise AND ($A \cdot B$)**: Implemented using dedicated ICs `AND5` (Bits 0..3) and `AND6` (Bits 4..6), with Bit 7 generated by `AND4` Pin 8.
-* **Bitwise OR ($A + B$)**: Implemented using dedicated ICs `OR3` (Bits 0..3) and `OR4` (Bits 4..7).
-* **Bitwise XOR ($A \oplus B$)**: Sourced directly from **Stage 1 of the Full Adder** (`XOR1` through `XOR4`). When the opcode is XOR (`100`), $SUB = 0 \implies B' = B$, so $X_k = A_k \oplus B_k$.
-* **Bitwise NOT ($\overline{A}$)**: Implemented using Hex Inverter ICs `NOT1` (Bits 0..5) and `NOT2` (Bits 6..7).
-
----
-
-## 8. Shift Operations (Hardwired SHL & SHR)
-
-No complex shifter ICs are required. Shift Left (`SHL`, $A \ll 1$) and Shift Right (`SHR`, $A \gg 1$) are implemented by **hardwired bus routing** directly into multiplexer inputs $D_6$ and $D_7$:
-
-```
- Bit Position:      Bit 7       Bit 6       Bit 5       Bit 4       Bit 3       Bit 2       Bit 1       Bit 0
- Operand A:          A7          A6          A5          A4          A3          A2          A1          A0
-                     │           │           │           │           │           │           │           │
- SHL (D6 Input):     A6          A5          A4          A3          A2          A1          A0         GND (0)
-                     │           │           │           │           │           │           │           │
- SHR (D7 Input):    GND (0)      A7          A6          A5          A4          A3          A2          A1
-```
-
-* **Shift Left (Opcode `110`, MUX input $D_6$)**:
-  * MUX1 (Bit 0) $D_6$ = `GND` (Zero shifts into LSB).
-  * MUX2 (Bit 1) $D_6$ = $A_0$.
-  * MUX3 (Bit 2) $D_6$ = $A_1$.
-  * MUX4 (Bit 3) $D_6$ = $A_2$.
-  * MUX5 (Bit 4) $D_6$ = $A_3$.
-  * MUX6 (Bit 5) $D_6$ = $A_4$.
-  * MUX7 (Bit 6) $D_6$ = $A_5$.
-  * MUX8 (Bit 7) $D_6$ = $A_6$.
-* **Shift Right (Opcode `111`, MUX input $D_7$)**:
-  * MUX1 (Bit 0) $D_7$ = $A_1$.
-  * MUX2 (Bit 1) $D_7$ = $A_2$.
-  * MUX3 (Bit 2) $D_7$ = $A_3$.
-  * MUX4 (Bit 3) $D_7$ = $A_4$.
-  * MUX5 (Bit 4) $D_7$ = $A_5$.
-  * MUX6 (Bit 5) $D_7$ = $A_6$.
-  * MUX7 (Bit 6) $D_7$ = $A_7$.
-  * MUX8 (Bit 7) $D_7$ = `GND` (Zero shifts into MSB).
-
----
-
-## 9. MUX Array (8× 74HCT151 8:1 Multiplexers)
-
-Eight 74HCT151 ICs (`MUX1` through `MUX8`) select which function drives the output bus for each bit.
-The 3-bit Opcode $S_2, S_1, S_0$ is tied in parallel across all eight multiplexers:
-* Pin 11 ($A$ / LSB) $\longleftarrow S_0$
-* Pin 10 ($B$ / Mid) $\longleftarrow S_1$
-* Pin 9  ($C$ / MSB) $\longleftarrow S_2$
-* Pin 7  ($\overline{\text{STROBE}}$) $\longleftarrow \text{GND}$ (Permanently enabled)
-
-```
-                            +5V ──────────── Pin 16 (VCC)
-                            GND ──────────── Pin 8  (GND)
-                            GND ──────────── Pin 7  (/STROBE Enable)
-                       S0 (LSB) ──────────── Pin 11 (Select A)
-                       S1 (MID) ──────────── Pin 10 (Select B)
-                       S2 (MSB) ──────────── Pin 9  (Select C)
-
-                                 ┌───────────────────────────┐
-                                 │    74HCT151 (MUX k)       │
-             Sum_k (Adder) ─────►│ Pin 4  (D0: ADD)          │
-             Sum_k (Adder) ─────►│ Pin 3  (D1: SUB)          │
-             AND_k (7408)  ─────►│ Pin 2  (D2: AND)          │
-             OR_k  (7432)  ─────►│ Pin 1  (D3: OR)           ├─────► Pin 5 (Output Y_k)
-             XOR_k (Adder) ─────►│ Pin 15 (D4: XOR)          │       (To BUF1 74HCT245)
-             NOT_k (7404)  ─────►│ Pin 14 (D5: NOT)          │
-             A[k-1] / GND  ─────►│ Pin 13 (D6: SHL)          │
-             A[k+1] / GND  ─────►│ Pin 12 (D7: SHR)          │
-                                 └───────────────────────────┘
-```
-
-### Complete ALU Function Selection Table:
-| Opcode ($S_2 S_1 S_0$) | Selected Input | Operation | Algebraic Function | Flags Affected |
-| :---: | :---: | :---: | :--- | :--- |
-| **`000`** | $D_0$ | **ADD** | $Y = A + B$ | Carry ($C_8$), Zero ($Z$) |
-| **`001`** | $D_1$ | **SUB** | $Y = A - B = A + \overline{B} + 1$ | Borrow/Carry, Zero ($Z$) |
-| **`010`** | $D_2$ | **AND** | $Y = A \cdot B$ | Zero ($Z$) |
-| **`011`** | $D_3$ | **OR**  | $Y = A + B$ | Zero ($Z$) |
-| **`100`** | $D_4$ | **XOR** | $Y = A \oplus B$ | Zero ($Z$) |
-| **`101`** | $D_5$ | **NOT** | $Y = \overline{A}$ | Zero ($Z$) |
-| **`110`** | $D_6$ | **SHL** | $Y = A \ll 1$ (Bit $0 = 0$) | Carry ($A_7$), Zero ($Z$) |
-| **`111`** | $D_7$ | **SHR** | $Y = A \gg 1$ (Bit $7 = 0$) | Zero ($Z$) |
-
----
-
-## 10. Hybrid Input Conditioning Circuit
-
-The ALU supports seamless **dual-source operation**:
-1. Manual control via physical 8-position DIP switches.
-2. Automated test vector injection via ESP32-S3 GPIO pins over WebSockets.
-
-```
-       +5V Rail
-          │
-        [SW]  (Physical DIP Switch Contact)
-          │
-          ├─────────────────────────┬────────────────────────► To 74HCT Gate Inputs
-          │                         │
-        [10kΩ] (Pull-Down)        [4.7kΩ] (Override Resistor)
-          │                         │
-         GND                        ▼
-                             ESP32-S3 GPIO Pin
-```
-
-### Electrical Operational Modes:
-* **Manual Mode (DIP Switch Active)**:
-  The ESP32-S3 sets its GPIO pins to **High-Impedance Input** (`pinMode(pin, INPUT)`). The leakage current is $< 1\ \mu\text{A}$.
-  * Switch OPEN: $10\text{ k}\Omega$ pull-down holds the gate input at $0.0\text{ V}$ ($\text{LOW}$).
-  * Switch CLOSED: Input connects directly to $+5.0\text{ V}$ ($\text{HIGH}$).
-* **Remote Injection Mode (ESP32-S3 Active)**:
-  The physical DIP switches are set to the OPEN (OFF) position. The ESP32 switches its GPIO pins to **Push-Pull Output** (`pinMode(pin, OUTPUT)`).
-  * ESP32 drives $0\text{ V}$ ($\text{LOW}$): Gate input is held at $0\text{ V}$ ($\text{LOW}$).
-  * ESP32 drives $+3.3\text{ V}$ ($\text{HIGH}$): The resistor divider formed by $4.7\text{ k}\Omega$ and $10\text{ k}\Omega$ sets the gate input voltage to:
-    $$V_{in} = 3.3\text{ V} \times \frac{10\text{ k}\Omega}{4.7\text{ k}\Omega + 10\text{ k}\Omega} = 3.3\text{ V} \times \frac{10}{14.7} = 2.24\text{ V}$$
-    For 74HCT-series TTL-compatible CMOS logic, the minimum guaranteed input high threshold is:
-    $$V_{IH(\min)} = 2.0\text{ V}$$
-    Since $2.24\text{ V} > 2.0\text{ V}$, this voltage is **guaranteed to be recognized as a valid, stable logic HIGH** without risking damage to the ESP32.
-
----
-
-## 11. Verification Interface (Arduino UNO R4 WiFi)
-
-The Arduino UNO R4 WiFi acts as the **independent real-time golden verifier**:
-* Powered via USB, its 5V pin powers the 74HCT IC breadboard rails.
-* Digital pins D2 through D9 read the 8-bit output bus directly from `BUF1` (74HCT245). Since the Arduino UNO R4 operates natively at 5V logic, **no voltage dividers or level shifting are required**.
-* Every execution cycle, the Arduino reads $A$, $B$, and $Opcode$, computes the mathematical golden reference in software, and compares it bit-for-bit against the hardware ALU outputs.
-* **Scoreboard Matrix**: Displays a large green checkmark `✓` on the onboard 12×8 LED matrix if the hardware matches the golden model, or a red cross `✗` if a mismatch is detected.
-* **External Status LEDs**:
-  * Pin A1 $\longrightarrow 220\ \Omega \longrightarrow$ 🟢 **Green PASS LED** $\longrightarrow \text{GND}$
-  * Pin A2 $\longrightarrow 220\ \Omega \longrightarrow$ 🔴 **Red FAIL LED** $\longrightarrow \text{GND}$
-
-```
- BUF1 (74HCT245) Outputs (5.0V) ──────────────────────────► Arduino UNO R4 Digital Pins D2..D9 (Direct 5V)
- Opcode S[2:0] (5.0V) ────────────────────────────────────► Arduino UNO R4 Digital Pins D10..D12 (Direct 5V)
- Final Carry C8 (5.0V) ───────────────────────────────────► Arduino UNO R4 Analog/Digital Pin A0 (Direct 5V)
-
- Arduino R4 Pin A1 ────────[ 220 Ω ]───────► 🟢 GREEN "PASS" LED ────────► GND
- Arduino R4 Pin A2 ────────[ 220 Ω ]───────► 🔴 RED "FAIL" LED ──────────► GND
+  =============================================================================
+             ESP32-S3 N16R8 (IoT Web Dashboard & Remote Vector Injection)
+  =============================================================================
+  Hybrid Injection Lines (via 4.7kΩ Override Resistors):
+    GPIO 1, 2, 4, 5, 6, 7, 8, 9   ──────► Input Bus A[7:0]
+    GPIO 10, 11, 12, 13, 14, 15, 16, 17 ─► Input Bus B[7:0]
+    GPIO 18, 35, 36               ──────► Opcode Bus S[2:0]
+    GPIO 37                       ──────► Mode Select Line
+  Telemetry Monitor Lines (via 1.0kΩ / 2.2kΩ Voltage Dividers to 3.3V):
+    GPIO 38, 39, 40, 41           ◄────── Result Bus Y[3:0]
+    GPIO 42, 47, 48, 21           ◄────── Result Bus Y[7:4]
+    GPIO 3                        ◄────── IC12 Pin 6 (Hardware Equivalence Flag)
 ```
 
 ---
 
-## 12. ESP32-S3 Monitoring (5V $\to$ 3.3V Voltage Dividers)
+## 3. Complete Exhaustive Netlist
 
-The ESP32-S3 operates on 3.3V power and is **not 5V tolerant**. Every 5V signal entering an ESP32-S3 input pin passes through a matched $1.0\text{ k}\Omega$ / $2.2\text{ k}\Omega$ resistive voltage divider:
-
-```
- From 5V IC Output (BUF1 / C8 / Opcode) ───────[ 1.0 kΩ ]───────┬───────► To ESP32-S3 GPIO (3.3V Safe)
-                                                               │
-                                                          [ 2.2 kΩ ]
-                                                               │
-                                                              GND
-```
-
-### Voltage Level Calculation:
-$$V_{ESP32} = 5.0\text{ V} \times \frac{2.2\text{ k}\Omega}{1.0\text{ k}\Omega + 2.2\text{ k}\Omega} = 5.0\text{ V} \times \frac{2.2}{3.2} = 3.43\text{ V}$$
-*(Within absolute maximum ratings for ESP32-S3 GPIO clamping diodes, ensuring fast, crisp edge transitions without overdrive).*
+### 3.1 Power & Ground Nets
+| Net Name | Origin Source | Destination Pins / Components | Function |
+| :--- | :--- | :--- | :--- |
+| **+5V_MASTER** | Arduino UNO R4 Minima 5V Pin | IC1 Pin 16, IC2 Pin 14, IC3 Pin 14, IC4 Pin 14, IC5 Pin 14, IC6 Pin 14, IC7 Pin 16, IC8 Pin 16, IC9 Pin 16, IC10 Pin 16, IC11 Pin 16 (or 24), IC12 Pin 16, IC12 Pin 3 ($I_{A=B}$), DIP Switch Common Rails, $100\ \mu\text{F}$ Electrolytic (+) | System +5V logic supply rail |
+| **COMMON_GND** | Arduino UNO R4 Minima GND Pin | IC1 Pin 8, IC2 Pin 7, IC3 Pin 7, IC4 Pin 7, IC5 Pin 7, IC6 Pin 7, IC7 Pins 7 & 8, IC8 Pins 7 & 8, IC9 Pins 7 & 8, IC10 Pins 7 & 8, IC11 Pin 12, IC12 Pins 2, 4, 8, Arduino UNO R4 WiFi GND, ESP32-S3 GND, all 10kΩ pull-downs, all 2.2kΩ divider shunts, LED cathodes, $100\ \mu\text{F}$ Electrolytic (-) | Unified 0V star ground plane |
 
 ---
 
-## 13. Complete System Netlist
+### 3.2 Input Operand A Bus Nets
+| Net Name | Primary Source | Secondary Source | Destination Pins | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **NET_A0** | DIP SW A Bit 0 | ESP32 GPIO 1 (4.7kΩ) | IC1 Pin 5 ($A_1$), IC3 Pin 1 (1A), IC4 Pin 1 (1A), IC5 Pin 1 (1A), IC6 Pin 1 (1A), IC8 Pin 13 ($D_6$), IC11 Pin 2 (Mode 1) | Operand A Bit 0 |
+| **NET_A1** | DIP SW A Bit 1 | ESP32 GPIO 2 (4.7kΩ) | IC1 Pin 3 ($A_2$), IC3 Pin 4 (2A), IC4 Pin 4 (2A), IC5 Pin 4 (2A), IC6 Pin 3 (2A), IC7 Pin 12 ($D_7$), IC9 Pin 13 ($D_6$), IC11 Pin 19 (Mode 1) | Operand A Bit 1 |
+| **NET_A2** | DIP SW A Bit 2 | ESP32 GPIO 4 (4.7kΩ) | IC1 Pin 14 ($A_3$), IC3 Pin 9 (3A), IC4 Pin 9 (3A), IC5 Pin 9 (3A), IC6 Pin 5 (3A), IC8 Pin 12 ($D_7$), IC10 Pin 13 ($D_6$), IC11 Pin 21 (Mode 1) | Operand A Bit 2 |
+| **NET_A3** | DIP SW A Bit 3 | ESP32 GPIO 5 (4.7kΩ) | IC1 Pin 12 ($A_4$), IC3 Pin 12 (4A), IC4 Pin 12 (4A), IC5 Pin 12 (4A), IC6 Pin 9 (4A), IC9 Pin 12 ($D_7$), IC11 Pin 23 (Mode 1) | Operand A Bit 3 |
+| **NET_A4** | DIP SW A Bit 4 | ESP32 GPIO 6 (4.7kΩ) | IC11 Pin 2 ($\bar{A}_0$, Mode 0), IC10 Pin 12 ($D_7$, Mode 0) | Operand A Bit 4 |
+| **NET_A5** | DIP SW A Bit 5 | ESP32 GPIO 7 (4.7kΩ) | IC11 Pin 19 ($\bar{A}_1$, Mode 0) | Operand A Bit 5 |
+| **NET_A6** | DIP SW A Bit 6 | ESP32 GPIO 8 (4.7kΩ) | IC11 Pin 21 ($\bar{A}_2$, Mode 0) | Operand A Bit 6 |
+| **NET_A7** | DIP SW A Bit 7 | ESP32 GPIO 9 (4.7kΩ) | IC11 Pin 23 ($\bar{A}_3$, Mode 0) | Operand A Bit 7 |
 
-| Wire # | Signal Name | Source Pin | Destination Pin | Functional Description | Color |
-| :---: | :--- | :--- | :--- | :--- | :--- |
-| **W1** | $+5\text{V}$ | Arduino R4 5V Pin | Breadboard Red Rails | System Main $V_{CC}$ Power | Red |
-| **W2** | $\text{GND}$ | Arduino R4 GND Pin | Breadboard Blue Rails & ESP32 GND | System Common Ground | Black |
-| **W3** | $A_0..A_7$ | DIP Switch A & ESP32 Overrides | XOR1..4, AND5..6, OR3..4, NOT1..2 | Operand A Inputs | Blue |
-| **W4** | $B_0..B_7$ | DIP Switch B & ESP32 Overrides | XOR5, XOR6 Inputs | Raw Operand B Inputs | Yellow |
-| **W5** | $SUB$ | Opcode Switch $S_0$ (via Opcode Logic) | XOR5, XOR6 Pin 1,4,10,13 & Adder Cin | Subtraction Invert & Carry-In | Orange |
-| **W6** | $B'_0..B'_3$ | XOR5 Pins 3, 6, 8, 11 | Adder Bits 0..3 (XOR1,2 & AND1,2) | Inverted Operand B (Lower Nibble) | Green |
-| **W7** | $B'_4..B'_7$ | XOR6 Pins 3, 6, 8, 11 | Adder Bits 4..7 (XOR3,4 & AND3,4) | Inverted Operand B (Upper Nibble) | Green |
-| **W8** | $C_{in0}$ | $SUB$ Control Line | XOR1 Pin 4, AND1 Pin 4 | Lower Nibble Initial Carry-In | Orange |
-| **W9** | $C_1$ | OR1 Pin 3 | XOR1 Pin 13, AND1 Pin 13 | Bit 0 $\to$ Bit 1 Carry Ripple | White |
-| **W10** | $C_2$ | OR1 Pin 6 | XOR2 Pin 4, AND2 Pin 4 | Bit 1 $\to$ Bit 2 Carry Ripple | White |
-| **W11** | $C_3$ | OR1 Pin 8 | XOR2 Pin 13, AND2 Pin 13 | Bit 2 $\to$ Bit 3 Carry Ripple | White |
-| **W12** | $C_4$ | OR1 Pin 11 | AND6 Pin 12 (Gate 4 Input) | Lower Nibble Carry Out | White |
-| **W13** | $MODE$ | Mode Switch | AND6 Pin 13 (Gate 4 Input) | Mode Control Line | Purple |
-| **W14** | $C_{in4}$ | AND6 Pin 11 (Gate 4 Output) | XOR3 Pin 4, AND3 Pin 4 | Gated Upper Nibble Carry-In | White |
-| **W15** | $C_5$ | OR2 Pin 3 | XOR3 Pin 13, AND3 Pin 13 | Bit 4 $\to$ Bit 5 Carry Ripple | White |
-| **W16** | $C_6$ | OR2 Pin 6 | XOR4 Pin 4, AND4 Pin 4 | Bit 5 $\to$ Bit 6 Carry Ripple | White |
-| **W17** | $C_7$ | OR2 Pin 8 | XOR4 Pin 13, AND4 Pin 13 | Bit 6 $\to$ Bit 7 Carry Ripple | White |
-| **W18** | $C_8$ | OR2 Pin 11 | Arduino R4 Pin A0 & ESP32 GPIO 26 | Final 8-Bit Carry Out | White |
-| **W19** | $S_0..S_7$ | Adder XOR Pins (XOR1..4) | MUX1..8 Pins 4 & 3 ($D_0, D_1$) | Sum Results (ADD / SUB) | Green |
-| **W20** | $AND_0..AND_7$ | AND5, AND6 Pins | MUX1..8 Pin 2 ($D_2$) | Logic AND Results | Gray |
-| **W21** | $OR_0..OR_7$ | OR3, OR4 Pins | MUX1..8 Pin 1 ($D_3$) | Logic OR Results | Gray |
-| **W22** | $XOR_0..XOR_7$ | Adder Stage 1 Pins (XOR1..4) | MUX1..8 Pin 15 ($D_4$) | Logic XOR Results | Gray |
-| **W23** | $NOT_0..NOT_7$ | NOT1, NOT2 Pins | MUX1..8 Pin 14 ($D_5$) | Logic NOT Results | Gray |
-| **W24** | $SHL_0..SHL_7$ | Shifted $A$ Bus / GND | MUX1..8 Pin 13 ($D_6$) | Shift Left Results | Brown |
-| **W25** | $SHR_0..SHR_7$ | Shifted $A$ Bus / GND | MUX1..8 Pin 12 ($D_7$) | Shift Right Results | Brown |
-| **W26** | $Y_0..Y_7$ Raw | MUX1..8 Pin 5 Outputs | BUF1 (74HCT245) Pins 2..9 ($A_1..A_8$) | Selected MUX Outputs | Blue |
-| **W27** | $Y_0..Y_7$ Buf | BUF1 Pins 18..11 ($B_1..B_8$) | Arduino R4 Pins D2..D9 | Buffered ALU Output Bus | Blue |
-| **W28** | $Y_0..Y_7$ Div | 1kΩ/2.2kΩ Dividers from $Y_{OUT}$ | ESP32 GPIOs 40,41,42,43,44,47,48,3 | Safe Telemetry to ESP32 | Blue |
-| **W29** | PASS Signal | Arduino R4 Pin A1 | 220Ω Resistor $\to$ Green PASS LED | Hardware Verification Status | Green |
-| **W30** | FAIL Signal | Arduino R4 Pin A2 | 220Ω Resistor $\to$ Red FAIL LED | Hardware Verification Status | Red |
+---
+
+### 3.3 Input Operand B Bus & Conditioned B' Nets
+| Net Name | Origin | Conditioning Gate | Destination Pins | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **NET_B0** | DIP SW B Bit 0 | Direct | IC2 Pin 1 (1A), IC3 Pin 2 (1B), IC4 Pin 2 (1B), IC5 Pin 2 (1B), IC11 Pin 1 (Mode 1) | Operand B Bit 0 raw |
+| **NET_B0_COND**| IC2 Pin 3 (1Y) | $B_0 \oplus SUB$ | IC1 Pin 6 ($B_1$) | Conditioned Operand B Bit 0 |
+| **NET_B1** | DIP SW B Bit 1 | Direct | IC2 Pin 4 (2A), IC3 Pin 5 (2B), IC4 Pin 5 (2B), IC5 Pin 5 (2B), IC11 Pin 20 (Mode 1) | Operand B Bit 1 raw |
+| **NET_B1_COND**| IC2 Pin 6 (2Y) | $B_1 \oplus SUB$ | IC1 Pin 2 ($B_2$) | Conditioned Operand B Bit 1 |
+| **NET_B2** | DIP SW B Bit 2 | Direct | IC2 Pin 9 (3A), IC3 Pin 10 (3B), IC4 Pin 10 (3B), IC5 Pin 10 (3B), IC11 Pin 22 (Mode 1) | Operand B Bit 2 raw |
+| **NET_B2_COND**| IC2 Pin 8 (3Y) | $B_2 \oplus SUB$ | IC1 Pin 15 ($B_3$) | Conditioned Operand B Bit 2 |
+| **NET_B3** | DIP SW B Bit 3 | Direct | IC2 Pin 12 (4A), IC3 Pin 13 (4B), IC4 Pin 13 (4B), IC5 Pin 13 (4B), IC11 Pin 24 (Mode 1) | Operand B Bit 3 raw |
+| **NET_B3_COND**| IC2 Pin 11 (4Y)| $B_3 \oplus SUB$ | IC1 Pin 11 ($B_4$) | Conditioned Operand B Bit 3 |
+| **NET_B4** | DIP SW B Bit 4 | Direct | IC11 Pin 1 ($\bar{B}_0$, Mode 0) | Operand B Bit 4 |
+| **NET_B5** | DIP SW B Bit 5 | Direct | IC11 Pin 20 ($\bar{B}_1$, Mode 0) | Operand B Bit 5 |
+| **NET_B6** | DIP SW B Bit 6 | Direct | IC11 Pin 22 ($\bar{B}_2$, Mode 0) | Operand B Bit 6 |
+| **NET_B7** | DIP SW B Bit 7 | Direct | IC11 Pin 24 ($\bar{B}_3$, Mode 0) | Operand B Bit 7 |
+
+---
+
+### 3.4 Control, Opcode & Mode Nets
+| Net Name | Primary Source | Secondary Source | Destination Pins | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **NET_OPCODE_S0** | DIP SW Op Bit 0 | ESP32 GPIO 18 (4.7kΩ) | IC7 Pin 11, IC8 Pin 11, IC9 Pin 11, IC10 Pin 11, Arduino A0, $SUB$ Net | Opcode Bit 0 (LSB) |
+| **NET_OPCODE_S1** | DIP SW Op Bit 1 | ESP32 GPIO 35 (4.7kΩ) | IC7 Pin 10, IC8 Pin 10, IC9 Pin 10, IC10 Pin 10, Arduino A1 | Opcode Bit 1 |
+| **NET_OPCODE_S2** | DIP SW Op Bit 2 | ESP32 GPIO 36 (4.7kΩ) | IC7 Pin 9, IC8 Pin 9, IC9 Pin 9, IC10 Pin 9, Arduino A2 | Opcode Bit 2 (MSB) |
+| **NET_SUB** | Opcode S0 Line | Conditioning | IC1 Pin 7 ($C_0$), IC2 Pins 2, 5, 10, 13 (1B, 2B, 3B, 4B) | Subtraction Control Line ($SUB=1$) |
+| **NET_MODE** | Mode Switch Pin | ESP32 GPIO 37 (4.7kΩ) | Steering Multiplexers / Jumpers, Arduino A3 | Datapath Mode: 0 = 8-Bit, 1 = Verify |
+| **NET_CASCADE_C4**| IC1 Pin 9 ($C_4$) | IC1 Carry Out | IC6 Pin 11 (5A) | Raw Carry-out from Lower Nibble Adder |
+| **NET_CASCADE_CN**| IC6 Pin 10 (5Y) | Inverted Carry | IC11 Pin 7 ($\bar{C}_n$, active LOW carry in for 74LS181) | Inverted Carry to Upper Nibble in Mode 0 |
+
+---
+
+### 3.5 Custom 4-Bit ALU Internal Function Nets
+| Net Name | Source Pin | Destination Pin | Logic Function |
+| :--- | :--- | :--- | :--- |
+| **NET_SUM_0** | IC1 Pin 4 ($\Sigma_0$) | IC7 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Addition/Subtraction Bit 0 |
+| **NET_SUM_1** | IC1 Pin 1 ($\Sigma_1$) | IC8 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Addition/Subtraction Bit 1 |
+| **NET_SUM_2** | IC1 Pin 13 ($\Sigma_2$) | IC9 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Addition/Subtraction Bit 2 |
+| **NET_SUM_3** | IC1 Pin 10 ($\Sigma_3$) | IC10 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Addition/Subtraction Bit 3 |
+| **NET_AND_0** | IC4 Pin 3 (1Y) | IC7 Pin 2 ($D_2$) | Bitwise AND Bit 0 ($A_0 \cdot B_0$) |
+| **NET_AND_1** | IC4 Pin 6 (2Y) | IC8 Pin 2 ($D_2$) | Bitwise AND Bit 1 ($A_1 \cdot B_1$) |
+| **NET_AND_2** | IC4 Pin 8 (3Y) | IC9 Pin 2 ($D_2$) | Bitwise AND Bit 2 ($A_2 \cdot B_2$) |
+| **NET_AND_3** | IC4 Pin 11 (4Y) | IC10 Pin 2 ($D_2$) | Bitwise AND Bit 3 ($A_3 \cdot B_3$) |
+| **NET_OR_0** | IC5 Pin 3 (1Y) | IC7 Pin 1 ($D_3$) | Bitwise OR Bit 0 ($A_0 + B_0$) |
+| **NET_OR_1** | IC5 Pin 6 (2Y) | IC8 Pin 1 ($D_3$) | Bitwise OR Bit 1 ($A_1 + B_1$) |
+| **NET_OR_2** | IC5 Pin 8 (3Y) | IC9 Pin 1 ($D_3$) | Bitwise OR Bit 2 ($A_2 + B_2$) |
+| **NET_OR_3** | IC5 Pin 11 (4Y) | IC10 Pin 1 ($D_3$) | Bitwise OR Bit 3 ($A_3 + B_3$) |
+| **NET_XOR_0** | IC3 Pin 3 (1Y) | IC7 Pin 15 ($D_4$) | Bitwise XOR Bit 0 ($A_0 \oplus B_0$) |
+| **NET_XOR_1** | IC3 Pin 6 (2Y) | IC8 Pin 15 ($D_4$) | Bitwise XOR Bit 1 ($A_1 \oplus B_1$) |
+| **NET_XOR_2** | IC3 Pin 8 (3Y) | IC9 Pin 15 ($D_4$) | Bitwise XOR Bit 2 ($A_2 \oplus B_2$) |
+| **NET_XOR_3** | IC3 Pin 11 (4Y) | IC10 Pin 15 ($D_4$) | Bitwise XOR Bit 3 ($A_3 \oplus B_3$) |
+| **NET_NOT_0** | IC6 Pin 2 (1Y) | IC7 Pin 14 ($D_5$) | Bitwise NOT Bit 0 ($\overline{A_0}$) |
+| **NET_NOT_1** | IC6 Pin 4 (2Y) | IC8 Pin 14 ($D_5$) | Bitwise NOT Bit 1 ($\overline{A_1}$) |
+| **NET_NOT_2** | IC6 Pin 6 (3Y) | IC9 Pin 14 ($D_5$) | Bitwise NOT Bit 2 ($\overline{A_2}$) |
+| **NET_NOT_3** | IC6 Pin 8 (4Y) | IC10 Pin 14 ($D_5$) | Bitwise NOT Bit 3 ($\overline{A_3}$) |
+
+---
+
+### 3.6 Output Bus & Hardware Verification Nets
+| Net Name | Primary Source | Destination 1 | Destination 2 | Destination 3 |
+| :--- | :--- | :--- | :--- | :--- |
+| **NET_Y0** | IC7 Pin 5 (Y) | IC12 Pin 10 ($A_0$) | Arduino R4 D2 | ESP32 GPIO 38 (via 1k/2.2k) |
+| **NET_Y1** | IC8 Pin 5 (Y) | IC12 Pin 12 ($A_1$) | Arduino R4 D3 | ESP32 GPIO 39 (via 1k/2.2k) |
+| **NET_Y2** | IC9 Pin 5 (Y) | IC12 Pin 13 ($A_2$) | Arduino R4 D4 | ESP32 GPIO 40 (via 1k/2.2k) |
+| **NET_Y3** | IC10 Pin 5 (Y) | IC12 Pin 15 ($A_3$) | Arduino R4 D5 | ESP32 GPIO 41 (via 1k/2.2k) |
+| **NET_Y4** | IC11 Pin 9 ($\bar{F}_0$) | IC12 Pin 9 ($B_0$, Mode 1) | Arduino R4 D6 | ESP32 GPIO 42 (via 1k/2.2k) |
+| **NET_Y5** | IC11 Pin 10 ($\bar{F}_1$) | IC12 Pin 11 ($B_1$, Mode 1) | Arduino R4 D7 | ESP32 GPIO 47 (via 1k/2.2k) |
+| **NET_Y6** | IC11 Pin 11 ($\bar{F}_2$) | IC12 Pin 14 ($B_2$, Mode 1) | Arduino R4 D8 | ESP32 GPIO 48 (via 1k/2.2k) |
+| **NET_Y7** | IC11 Pin 13 ($\bar{F}_3$) | IC12 Pin 1 ($B_3$, Mode 1) | Arduino R4 D9 | ESP32 GPIO 21 (via 1k/2.2k) |
+| **NET_EQUIV_PASS** | IC12 Pin 6 ($Q_{A=B}$) | Green PASS LED (330Ω) | Arduino R4 D12 | ESP32 GPIO 3 (via 1k/2.2k) |
