@@ -1,5 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2800 1950" width="100%" height="100%" style="background:#ffffff; font-family: 'Consolas', 'Courier New', monospace, sans-serif;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3400 2200" width="100%" height="100%" style="background:#ffffff; font-family: 'Consolas', 'Courier New', monospace, sans-serif;">
   <defs>
+    <!-- Background Grid -->
     <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
       <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f1f5f9" stroke-width="0.8"/>
     </pattern>
@@ -7,1244 +8,1438 @@
       <rect width="100" height="100" fill="url(#grid)"/>
       <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#e2e8f0" stroke-width="1.2"/>
     </pattern>
-    <!-- Standard Electrical Symbols -->
-    <!-- Ground Symbol -->
+
+    <!-- ========================================== -->
+    <!-- AUTHENTIC IEEE/ANSI ELECTRONIC SYMBOLS     -->
+    <!-- ========================================== -->
+
+    <!-- 1. ANSI XOR Gate Symbol -->
+    <g id="gate-xor">
+      <!-- Input lines -->
+      <line x1="-15" y1="10" x2="3" y2="10" stroke="#000000" stroke-width="2"/>
+      <line x1="-15" y1="30" x2="3" y2="30" stroke="#000000" stroke-width="2"/>
+      <!-- Back isolated arc -->
+      <path d="M -5 0 C 5 13 5 27 -5 40" fill="none" stroke="#000000" stroke-width="2.5"/>
+      <!-- Main curved body -->
+      <path d="M 0 0 C 10 13 10 27 0 40 C 25 40 40 30 55 20 C 40 10 25 0 0 0 Z" fill="#ffffff" stroke="#000000" stroke-width="2.5"/>
+      <!-- Output line -->
+      <line x1="55" y1="20" x2="70" y2="20" stroke="#000000" stroke-width="2"/>
+    </g>
+
+    <!-- 2. ANSI AND Gate Symbol -->
+    <g id="gate-and">
+      <!-- Input lines -->
+      <line x1="-15" y1="10" x2="0" y2="10" stroke="#000000" stroke-width="2"/>
+      <line x1="-15" y1="30" x2="0" y2="30" stroke="#000000" stroke-width="2"/>
+      <!-- D-shaped body -->
+      <path d="M 0 0 L 25 0 C 40 0 50 10 50 20 C 50 30 40 40 25 40 L 0 40 Z" fill="#ffffff" stroke="#000000" stroke-width="2.5"/>
+      <!-- Output line -->
+      <line x1="50" y1="20" x2="65" y2="20" stroke="#000000" stroke-width="2"/>
+    </g>
+
+    <!-- 3. ANSI OR Gate Symbol -->
+    <g id="gate-or">
+      <!-- Input lines -->
+      <line x1="-15" y1="10" x2="5" y2="10" stroke="#000000" stroke-width="2"/>
+      <line x1="-15" y1="30" x2="5" y2="30" stroke="#000000" stroke-width="2"/>
+      <!-- Curved body -->
+      <path d="M 0 0 C 12 13 12 27 0 40 C 25 40 42 30 55 20 C 42 10 25 0 0 0 Z" fill="#ffffff" stroke="#000000" stroke-width="2.5"/>
+      <!-- Output line -->
+      <line x1="55" y1="20" x2="70" y2="20" stroke="#000000" stroke-width="2"/>
+    </g>
+
+    <!-- 4. ANSI NOT Inverter Symbol -->
+    <g id="gate-not">
+      <!-- Input line -->
+      <line x1="-15" y1="15" x2="0" y2="15" stroke="#000000" stroke-width="2"/>
+      <!-- Triangle body -->
+      <polygon points="0,0 30,15 0,30" fill="#ffffff" stroke="#000000" stroke-width="2.5"/>
+      <!-- Inversion bubble -->
+      <circle cx="34" cy="15" r="4" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+      <!-- Output line -->
+      <line x1="38" y1="15" x2="53" y2="15" stroke="#000000" stroke-width="2"/>
+    </g>
+
+    <!-- 5. Real US Standard Zig-Zag Resistor (Horizontal) -->
+    <g id="resistor-zigzag-h">
+      <line x1="0" y1="0" x2="10" y2="0" stroke="#000000" stroke-width="2"/>
+      <path d="M 10 0 L 14 -7 L 22 7 L 30 -7 L 38 7 L 46 -7 L 50 0" fill="none" stroke="#000000" stroke-width="2.5"/>
+      <line x1="50" y1="0" x2="60" y2="0" stroke="#000000" stroke-width="2"/>
+    </g>
+
+    <!-- 6. Real US Standard Zig-Zag Resistor (Vertical) -->
+    <g id="resistor-zigzag-v">
+      <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="2"/>
+      <path d="M 0 10 L -7 14 L 7 22 L -7 30 L 7 38 L -7 46 L 0 50" fill="none" stroke="#000000" stroke-width="2.5"/>
+      <line x1="0" y1="50" x2="0" y2="60" stroke="#000000" stroke-width="2"/>
+    </g>
+
+    <!-- 7. SPST Switch Symbol -->
+    <g id="switch-spst">
+      <line x1="0" y1="0" x2="15" y2="0" stroke="#000000" stroke-width="2"/>
+      <circle cx="15" cy="0" r="3" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+      <line x1="15" y1="0" x2="35" y2="-12" stroke="#000000" stroke-width="2.5"/>
+      <circle cx="40" cy="0" r="3" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+      <line x1="40" y1="0" x2="55" y2="0" stroke="#000000" stroke-width="2"/>
+    </g>
+
+    <!-- 8. Diode / LED Symbol -->
+    <g id="symbol-led">
+      <line x1="0" y1="0" x2="15" y2="0" stroke="#000000" stroke-width="2"/>
+      <polygon points="15,-12 15,12 32,0" fill="#16a34a" stroke="#000000" stroke-width="2"/>
+      <line x1="32" y1="-12" x2="32" y2="12" stroke="#000000" stroke-width="2.5"/>
+      <line x1="32" y1="0" x2="47" y2="0" stroke="#000000" stroke-width="2"/>
+      <!-- Emission arrows -->
+      <line x1="20" y1="-14" x2="28" y2="-22" stroke="#16a34a" stroke-width="1.8"/>
+      <polygon points="28,-22 23,-21 26,-17" fill="#16a34a"/>
+      <line x1="26" y1="-10" x2="34" y2="-18" stroke="#16a34a" stroke-width="1.8"/>
+      <polygon points="34,-18 29,-17 32,-13" fill="#16a34a"/>
+    </g>
+
+    <!-- 9. Ground Symbol -->
     <g id="gnd">
       <line x1="0" y1="0" x2="0" y2="12" stroke="#000000" stroke-width="2"/>
-      <line x1="-12" y1="12" x2="12" y2="12" stroke="#000000" stroke-width="2.5"/>
-      <line x1="-8" y1="17" x2="8" y2="17" stroke="#000000" stroke-width="2"/>
+      <line x1="-14" y1="12" x2="14" y2="12" stroke="#000000" stroke-width="2.5"/>
+      <line x1="-9" y1="17" x2="9" y2="17" stroke="#000000" stroke-width="2"/>
       <line x1="-4" y1="22" x2="4" y2="22" stroke="#000000" stroke-width="1.5"/>
     </g>
-    <!-- VCC 5V Symbol -->
-    <g id="vcc">
-      <line x1="0" y1="0" x2="0" y2="-12" stroke="#dc2626" stroke-width="2"/>
-      <circle cx="0" cy="-15" r="3.5" fill="none" stroke="#dc2626" stroke-width="2"/>
-      <text x="0" y="-24" font-size="12" font-weight="bold" fill="#dc2626" text-anchor="middle">+5V</text>
+
+    <!-- 10. VCC Power Arrow (+5V) -->
+    <g id="vcc-arrow">
+      <line x1="0" y1="0" x2="0" y2="-15" stroke="#dc2626" stroke-width="2"/>
+      <polygon points="0,-24 -6,-14 6,-14" fill="#dc2626"/>
+      <text x="0" y="-28" font-size="12" font-weight="bold" fill="#dc2626" text-anchor="middle">+5V</text>
     </g>
-    <!-- Resistor Horizontal -->
-    <g id="resistor-h">
-      <line x1="0" y1="0" x2="10" y2="0" stroke="#000000" stroke-width="2"/>
-      <rect x="10" y="-7" width="30" height="14" fill="#ffffff" stroke="#000000" stroke-width="2"/>
-      <line x1="40" y1="0" x2="50" y2="0" stroke="#000000" stroke-width="2"/>
-    </g>
-    <!-- Resistor Vertical -->
-    <g id="resistor-v">
-      <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="2"/>
-      <rect x="-7" y="10" width="14" height="30" fill="#ffffff" stroke="#000000" stroke-width="2"/>
-      <line x1="0" y1="40" x2="0" y2="50" stroke="#000000" stroke-width="2"/>
-    </g>
-    <!-- Capacitor Ceramic -->
-    <g id="cap">
-      <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="2"/>
-      <line x1="-12" y1="10" x2="12" y2="10" stroke="#000000" stroke-width="2.5"/>
-      <line x1="-12" y1="16" x2="12" y2="16" stroke="#000000" stroke-width="2.5"/>
-      <line x1="0" y1="16" x2="0" y2="26" stroke="#000000" stroke-width="2"/>
-    </g>
-    <!-- Electrolytic Cap (Polarized) -->
-    <g id="cap-elec">
-      <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="2"/>
-      <line x1="-14" y1="10" x2="14" y2="10" stroke="#000000" stroke-width="3"/>
-      <path d="M -14 18 Q 0 13 14 18" fill="none" stroke="#000000" stroke-width="2.5"/>
-      <line x1="0" y1="17" x2="0" y2="28" stroke="#000000" stroke-width="2"/>
-      <text x="10" y="8" font-size="12" font-weight="bold" fill="#dc2626">+</text>
-    </g>
-    <!-- LED Symbol -->
-    <g id="led">
-      <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="2"/>
-      <polygon points="-10,10 10,10 0,25" fill="#16a34a" stroke="#000000" stroke-width="1.5"/>
-      <line x1="-10" y1="25" x2="10" y2="25" stroke="#000000" stroke-width="2.5"/>
-      <line x1="0" y1="25" x2="0" y2="35" stroke="#000000" stroke-width="2"/>
-      <!-- Arrows -->
-      <line x1="12" y1="12" x2="22" y2="4" stroke="#16a34a" stroke-width="1.5"/>
-      <polygon points="22,4 17,5 19,9" fill="#16a34a"/>
-      <line x1="16" y1="18" x2="26" y2="10" stroke="#16a34a" stroke-width="1.5"/>
-      <polygon points="26,10 21,11 23,15" fill="#16a34a"/>
-    </g>
+
     <!-- Junction Dot -->
-    <circle id="dot" r="4" fill="#000000"/>
-    <circle id="dot-red" r="4" fill="#dc2626"/>
+    <circle id="junc" r="4.5" fill="#000000"/>
+    <circle id="junc-red" r="4.5" fill="#dc2626"/>
   </defs>
 
-  <!-- Background Grid -->
-  <rect width="2800" height="1950" fill="url(#grid-major)"/>
+  <!-- Background Grid Canvas -->
+  <rect width="3400" height="2200" fill="url(#grid-major)"/>
 
-  <!-- Master Title Block (Engineering Standard Drawing) -->
-  <rect x="30" y="25" width="2740" height="90" fill="#0f172a" rx="6"/>
-  <text x="60" y="65" fill="#38bdf8" font-size="28" font-weight="bold" letter-spacing="1">DECA DUAL-MODE HYBRID 8-BIT / 4-BIT ALU PROCESSOR — COMPLETE SCHEMATIC</text>
-  <text x="60" y="95" fill="#94a3b8" font-size="16">Silicon Reference Verification (74LS181N + 74HC85) &amp; Custom Discrete Core (74HCT283/86/08/32/04/151) with 3-Board System</text>
-  <rect x="2380" y="35" width="370" height="70" fill="#1e293b" rx="4" stroke="#334155"/>
-  <text x="2400" y="60" fill="#f8fafc" font-size="14" font-weight="bold">DESIGNER: Shubh Kashyap</text>
-  <text x="2400" y="80" fill="#cbd5e1" font-size="12">DATE: October 2026 | REV: 3.0 (FINAL HW)</text>
-  <text x="2400" y="96" fill="#38bdf8" font-size="11">STATUS: FULL PRODUCTION SCHEMATIC</text>
-
-  <!-- ========================================================================= -->
-  <!-- SECTION A: POWER DISTRIBUTION & DECOUPLING                               -->
-  <!-- ========================================================================= -->
-  <g id="section-power" transform="translate(50, 140)">
-    <rect x="0" y="0" width="480" height="340" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" rx="6"/>
-    <rect x="0" y="0" width="480" height="32" fill="#e2e8f0" rx="6"/>
-    <text x="15" y="22" font-size="14" font-weight="bold" fill="#0f172a">POWER DISTRIBUTION &amp; BULK RESERVOIR</text>
-    
-    <!-- Arduino Minima Connector Box -->
-    <rect x="30" y="55" width="160" height="100" fill="#ffffff" stroke="#000000" stroke-width="2"/>
-    <text x="110" y="80" font-size="13" font-weight="bold" fill="#000000" text-anchor="middle">ARDUINO R4</text>
-    <text x="110" y="98" font-size="13" font-weight="bold" fill="#000000" text-anchor="middle">MINIMA (POWER)</text>
-    <text x="110" y="118" font-size="11" fill="#64748b" text-anchor="middle">USB-C 5V / 1A Isolated</text>
-    
-    <!-- 5V and GND Pins -->
-    <text x="175" y="70" font-size="12" font-weight="bold" fill="#dc2626">5V</text>
-    <text x="175" y="135" font-size="12" font-weight="bold" fill="#000000">GND</text>
-    
-    <!-- 5V Wire -->
-    <line x1="190" y1="65" x2="430" y2="65" stroke="#dc2626" stroke-width="3"/>
-    <use href="#vcc" x="430" y="65"/>
-    <use href="#dot-red" x="270" y="65"/>
-    <use href="#dot-red" x="350" y="65"/>
-    
-    <!-- GND Wire -->
-    <line x1="190" y1="130" x2="430" y2="130" stroke="#000000" stroke-width="3"/>
-    <use href="#gnd" x="430" y="130"/>
-    <use href="#dot" x="270" y="130"/>
-    <use href="#dot" x="350" y="130"/>
-    
-    <!-- 220uF Bulk Electrolytic Cap -->
-    <line x1="270" y1="65" x2="270" y2="80" stroke="#dc2626" stroke-width="2"/>
-    <use href="#cap-elec" x="270" y="80"/>
-    <line x1="270" y1="108" x2="270" y2="130" stroke="#000000" stroke-width="2"/>
-    <text x="285" y="100" font-size="12" font-weight="bold" fill="#0f172a">220µF</text>
-    <text x="285" y="115" font-size="10" fill="#64748b">16V Elec</text>
-    
-    <!-- 0.1uF High-Frequency Bypass -->
-    <line x1="350" y1="65" x2="350" y2="82" stroke="#dc2626" stroke-width="2"/>
-    <use href="#cap" x="350" y="82"/>
-    <line x1="350" y1="108" x2="350" y2="130" stroke="#000000" stroke-width="2"/>
-    <text x="365" y="100" font-size="12" font-weight="bold" fill="#0f172a">0.1µF</text>
-    <text x="365" y="115" font-size="10" fill="#64748b">104 Cer</text>
-
-    <!-- Star Ground & Common GND Tie -->
-    <rect x="30" y="180" width="420" height="135" fill="#ffffff" stroke="#94a3b8" stroke-dasharray="4,4"/>
-    <text x="45" y="202" font-size="12" font-weight="bold" fill="#0f172a">COMMON STAR-GROUND REFERENCE BUS (0V)</text>
-    <text x="45" y="222" font-size="11" fill="#475569">• Arduino UNO R4 Minima GND ──► Connected</text>
-    <text x="45" y="240" font-size="11" fill="#475569">• Arduino UNO R4 WiFi GND   ──► Connected (Native 5V logic reference)</text>
-    <text x="45" y="258" font-size="11" fill="#475569">• ESP32-S3 N16R8 GND        ──► Connected (Common digital ground)</text>
-    <text x="45" y="276" font-size="11" fill="#475569">• 12x IC Decoupling Caps    ──► 0.1µF (104) across Pin 14/7, 16/8, 24/12</text>
-    <text x="45" y="294" font-size="11" fill="#dc2626" font-weight="bold">★ Single ground plane prevents ground bounce during 74181 switching</text>
-  </g>
+  <!-- Master Engineering Border & Title Block -->
+  <rect x="25" y="20" width="3350" height="2160" fill="none" stroke="#0f172a" stroke-width="3"/>
+  <rect x="25" y="20" width="3350" height="85" fill="#0f172a"/>
+  <text x="60" y="60" fill="#38bdf8" font-size="28" font-weight="bold" letter-spacing="1">DECA DUAL-MODE HYBRID 8-BIT / 4-BIT ALU PROCESSOR — SCHEMATIC DIAGRAM</text>
+  <text x="60" y="88" fill="#94a3b8" font-size="15">Full Symbol-Based Gate-Level Datapath, Texas Instruments 74LS181 Silicon Core, 74HC85 Verifier &amp; 3-Board Telemetry</text>
+  
+  <rect x="2900" y="30" width="460" height="65" fill="#1e293b" rx="4" stroke="#475569"/>
+  <text x="2920" y="54" fill="#f8fafc" font-size="13" font-weight="bold">DESIGNER: Shubh Kashyap</text>
+  <text x="2920" y="72" fill="#cbd5e1" font-size="12">COURSE: DECA Minor Project | REV: 4.0 (SYMBOLIC)</text>
+  <text x="2920" y="88" fill="#38bdf8" font-size="11" font-weight="bold">FORMAT: ANSI / IEEE SCHEMATIC</text>
 
   <!-- ========================================================================= -->
-  <!-- SECTION B: HYBRID INPUT STAGE (DIP SWITCHES + 4.7k OVERRIDES)             -->
+  <!-- COLUMN 1: INPUT SWITCHES & PASSIVE NETWORKS                               -->
   <!-- ========================================================================= -->
-  <g id="section-inputs" transform="translate(50, 510)">
-    <rect x="0" y="0" width="480" height="1390" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" rx="6"/>
-    <rect x="0" y="0" width="480" height="32" fill="#e2e8f0" rx="6"/>
-    <text x="15" y="22" font-size="14" font-weight="bold" fill="#0f172a">HYBRID INPUT INTERFACE (PHYSICAL DIP + ESP32 OVERRIDE)</text>
+  <g id="col-inputs" transform="translate(60, 130)">
+    <rect x="0" y="0" width="460" height="2020" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" rx="4"/>
+    <text x="20" y="30" font-size="16" font-weight="bold" fill="#0f172a">1. INPUT SWITCH STAGE (+5V / 10k PULL-DOWN / 4.7k OVERRIDE)</text>
+    <text x="20" y="52" font-size="11" fill="#64748b">Tactile SPST Switches, 10kΩ Pull-downs to Ground, 4.7kΩ ESP32 Remote Override Lines</text>
 
-    <!-- Header Explanation -->
-    <text x="20" y="60" font-size="11" fill="#64748b">Each input channel features: 10kΩ Pull-down + 4.7kΩ ESP32 Series Override Resistor</text>
-
-    <!-- Loop to generate 12 input channels -->
-
-    <!-- Channel: A0 -->
-    <g transform="translate(20, 90)">
-      <!-- DIP Switch Box -->
-      <rect x="0" y="0" width="80" height="40" fill="#ffffff" stroke="#000000" stroke-width="1.5" rx="3"/>
-      <text x="40" y="16" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle">DIP_A1</text>
-      <!-- Switch symbol inside -->
-      <line x1="15" y1="28" x2="30" y2="28" stroke="#000000" stroke-width="1.5"/>
-      <line x1="30" y1="28" x2="55" y2="20" stroke="#000000" stroke-width="2"/>
-      <line x1="55" y1="28" x2="65" y2="28" stroke="#000000" stroke-width="1.5"/>
+    <!-- Signal: A0 -->
+    <g transform="translate(30, 90)">
+      <!-- +5V Power Line -->
+      <use href="#vcc-arrow" x="20" y="0"/>
+      <line x1="20" y1="0" x2="20" y2="20" stroke="#dc2626" stroke-width="2"/>
       
-      <!-- +5V input to switch -->
-      <line x1="-15" y1="28" x2="0" y2="28" stroke="#dc2626" stroke-width="2"/>
-      <use href="#vcc" x="-15" y="28"/>
-
-      <!-- Switch output junction -->
-      <line x1="80" y1="28" x2="160" y2="28" stroke="#000000" stroke-width="2"/>
-      <use href="#dot" x="160" y="28"/>
-
-      <!-- 10k Pull-down -->
-      <line x1="160" y1="28" x2="160" y2="40" stroke="#000000" stroke-width="1.5"/>
-      <use href="#resistor-v" x="160" y="40"/>
-      <use href="#gnd" x="160" y="90"/>
-      <text x="175" y="65" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
-
-      <!-- ESP32 Override line (4.7k resistor) -->
-      <rect x="180" y="0" width="110" height="25" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
-      <text x="235" y="17" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 GPIO 1</text>
-      <line x1="290" y1="12" x2="310" y2="12" stroke="#16a34a" stroke-width="2"/>
-      
-      <use href="#resistor-h" x="310" y="12"/>
-      <text x="335" y="-2" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
-      
-      <line x1="360" y1="12" x2="380" y2="12" stroke="#16a34a" stroke-width="2"/>
-      <line x1="380" y1="12" x2="380" y2="28" stroke="#16a34a" stroke-width="2"/>
-      <line x1="160" y1="28" x2="430" y2="28" stroke="#2563eb" stroke-width="2.5"/>
-      <use href="#dot" x="380" y="28"/>
-      
-      <!-- Output Label Banner -->
-      <polygon points="410,20 440,28 410,36" fill="#2563eb"/>
-      <text x="400" y="18" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">A0</text>
-    </g>
-
-    <!-- Channel: A1 -->
-    <g transform="translate(20, 190)">
-      <!-- DIP Switch Box -->
-      <rect x="0" y="0" width="80" height="40" fill="#ffffff" stroke="#000000" stroke-width="1.5" rx="3"/>
-      <text x="40" y="16" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle">DIP_A2</text>
-      <!-- Switch symbol inside -->
-      <line x1="15" y1="28" x2="30" y2="28" stroke="#000000" stroke-width="1.5"/>
-      <line x1="30" y1="28" x2="55" y2="20" stroke="#000000" stroke-width="2"/>
-      <line x1="55" y1="28" x2="65" y2="28" stroke="#000000" stroke-width="1.5"/>
-      
-      <!-- +5V input to switch -->
-      <line x1="-15" y1="28" x2="0" y2="28" stroke="#dc2626" stroke-width="2"/>
-      <use href="#vcc" x="-15" y="28"/>
-
-      <!-- Switch output junction -->
-      <line x1="80" y1="28" x2="160" y2="28" stroke="#000000" stroke-width="2"/>
-      <use href="#dot" x="160" y="28"/>
-
-      <!-- 10k Pull-down -->
-      <line x1="160" y1="28" x2="160" y2="40" stroke="#000000" stroke-width="1.5"/>
-      <use href="#resistor-v" x="160" y="40"/>
-      <use href="#gnd" x="160" y="90"/>
-      <text x="175" y="65" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
-
-      <!-- ESP32 Override line (4.7k resistor) -->
-      <rect x="180" y="0" width="110" height="25" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
-      <text x="235" y="17" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 GPIO 2</text>
-      <line x1="290" y1="12" x2="310" y2="12" stroke="#16a34a" stroke-width="2"/>
-      
-      <use href="#resistor-h" x="310" y="12"/>
-      <text x="335" y="-2" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
-      
-      <line x1="360" y1="12" x2="380" y2="12" stroke="#16a34a" stroke-width="2"/>
-      <line x1="380" y1="12" x2="380" y2="28" stroke="#16a34a" stroke-width="2"/>
-      <line x1="160" y1="28" x2="430" y2="28" stroke="#2563eb" stroke-width="2.5"/>
-      <use href="#dot" x="380" y="28"/>
-      
-      <!-- Output Label Banner -->
-      <polygon points="410,20 440,28 410,36" fill="#2563eb"/>
-      <text x="400" y="18" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">A1</text>
-    </g>
-
-    <!-- Channel: A2 -->
-    <g transform="translate(20, 290)">
-      <!-- DIP Switch Box -->
-      <rect x="0" y="0" width="80" height="40" fill="#ffffff" stroke="#000000" stroke-width="1.5" rx="3"/>
-      <text x="40" y="16" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle">DIP_A3</text>
-      <!-- Switch symbol inside -->
-      <line x1="15" y1="28" x2="30" y2="28" stroke="#000000" stroke-width="1.5"/>
-      <line x1="30" y1="28" x2="55" y2="20" stroke="#000000" stroke-width="2"/>
-      <line x1="55" y1="28" x2="65" y2="28" stroke="#000000" stroke-width="1.5"/>
-      
-      <!-- +5V input to switch -->
-      <line x1="-15" y1="28" x2="0" y2="28" stroke="#dc2626" stroke-width="2"/>
-      <use href="#vcc" x="-15" y="28"/>
-
-      <!-- Switch output junction -->
-      <line x1="80" y1="28" x2="160" y2="28" stroke="#000000" stroke-width="2"/>
-      <use href="#dot" x="160" y="28"/>
-
-      <!-- 10k Pull-down -->
-      <line x1="160" y1="28" x2="160" y2="40" stroke="#000000" stroke-width="1.5"/>
-      <use href="#resistor-v" x="160" y="40"/>
-      <use href="#gnd" x="160" y="90"/>
-      <text x="175" y="65" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
-
-      <!-- ESP32 Override line (4.7k resistor) -->
-      <rect x="180" y="0" width="110" height="25" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
-      <text x="235" y="17" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 GPIO 4</text>
-      <line x1="290" y1="12" x2="310" y2="12" stroke="#16a34a" stroke-width="2"/>
-      
-      <use href="#resistor-h" x="310" y="12"/>
-      <text x="335" y="-2" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
-      
-      <line x1="360" y1="12" x2="380" y2="12" stroke="#16a34a" stroke-width="2"/>
-      <line x1="380" y1="12" x2="380" y2="28" stroke="#16a34a" stroke-width="2"/>
-      <line x1="160" y1="28" x2="430" y2="28" stroke="#2563eb" stroke-width="2.5"/>
-      <use href="#dot" x="380" y="28"/>
-      
-      <!-- Output Label Banner -->
-      <polygon points="410,20 440,28 410,36" fill="#2563eb"/>
-      <text x="400" y="18" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">A2</text>
-    </g>
-
-    <!-- Channel: A3 -->
-    <g transform="translate(20, 390)">
-      <!-- DIP Switch Box -->
-      <rect x="0" y="0" width="80" height="40" fill="#ffffff" stroke="#000000" stroke-width="1.5" rx="3"/>
-      <text x="40" y="16" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle">DIP_A4</text>
-      <!-- Switch symbol inside -->
-      <line x1="15" y1="28" x2="30" y2="28" stroke="#000000" stroke-width="1.5"/>
-      <line x1="30" y1="28" x2="55" y2="20" stroke="#000000" stroke-width="2"/>
-      <line x1="55" y1="28" x2="65" y2="28" stroke="#000000" stroke-width="1.5"/>
-      
-      <!-- +5V input to switch -->
-      <line x1="-15" y1="28" x2="0" y2="28" stroke="#dc2626" stroke-width="2"/>
-      <use href="#vcc" x="-15" y="28"/>
-
-      <!-- Switch output junction -->
-      <line x1="80" y1="28" x2="160" y2="28" stroke="#000000" stroke-width="2"/>
-      <use href="#dot" x="160" y="28"/>
-
-      <!-- 10k Pull-down -->
-      <line x1="160" y1="28" x2="160" y2="40" stroke="#000000" stroke-width="1.5"/>
-      <use href="#resistor-v" x="160" y="40"/>
-      <use href="#gnd" x="160" y="90"/>
-      <text x="175" y="65" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
-
-      <!-- ESP32 Override line (4.7k resistor) -->
-      <rect x="180" y="0" width="110" height="25" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
-      <text x="235" y="17" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 GPIO 5</text>
-      <line x1="290" y1="12" x2="310" y2="12" stroke="#16a34a" stroke-width="2"/>
-      
-      <use href="#resistor-h" x="310" y="12"/>
-      <text x="335" y="-2" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
-      
-      <line x1="360" y1="12" x2="380" y2="12" stroke="#16a34a" stroke-width="2"/>
-      <line x1="380" y1="12" x2="380" y2="28" stroke="#16a34a" stroke-width="2"/>
-      <line x1="160" y1="28" x2="430" y2="28" stroke="#2563eb" stroke-width="2.5"/>
-      <use href="#dot" x="380" y="28"/>
-      
-      <!-- Output Label Banner -->
-      <polygon points="410,20 440,28 410,36" fill="#2563eb"/>
-      <text x="400" y="18" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">A3</text>
-    </g>
-
-    <!-- Channel: B0 -->
-    <g transform="translate(20, 500)">
-      <!-- DIP Switch Box -->
-      <rect x="0" y="0" width="80" height="40" fill="#ffffff" stroke="#000000" stroke-width="1.5" rx="3"/>
-      <text x="40" y="16" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle">DIP_B1</text>
-      <!-- Switch symbol inside -->
-      <line x1="15" y1="28" x2="30" y2="28" stroke="#000000" stroke-width="1.5"/>
-      <line x1="30" y1="28" x2="55" y2="20" stroke="#000000" stroke-width="2"/>
-      <line x1="55" y1="28" x2="65" y2="28" stroke="#000000" stroke-width="1.5"/>
-      
-      <!-- +5V input to switch -->
-      <line x1="-15" y1="28" x2="0" y2="28" stroke="#dc2626" stroke-width="2"/>
-      <use href="#vcc" x="-15" y="28"/>
-
-      <!-- Switch output junction -->
-      <line x1="80" y1="28" x2="160" y2="28" stroke="#000000" stroke-width="2"/>
-      <use href="#dot" x="160" y="28"/>
-
-      <!-- 10k Pull-down -->
-      <line x1="160" y1="28" x2="160" y2="40" stroke="#000000" stroke-width="1.5"/>
-      <use href="#resistor-v" x="160" y="40"/>
-      <use href="#gnd" x="160" y="90"/>
-      <text x="175" y="65" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
-
-      <!-- ESP32 Override line (4.7k resistor) -->
-      <rect x="180" y="0" width="110" height="25" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
-      <text x="235" y="17" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 GPIO 10</text>
-      <line x1="290" y1="12" x2="310" y2="12" stroke="#16a34a" stroke-width="2"/>
-      
-      <use href="#resistor-h" x="310" y="12"/>
-      <text x="335" y="-2" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
-      
-      <line x1="360" y1="12" x2="380" y2="12" stroke="#16a34a" stroke-width="2"/>
-      <line x1="380" y1="12" x2="380" y2="28" stroke="#16a34a" stroke-width="2"/>
-      <line x1="160" y1="28" x2="430" y2="28" stroke="#2563eb" stroke-width="2.5"/>
-      <use href="#dot" x="380" y="28"/>
-      
-      <!-- Output Label Banner -->
-      <polygon points="410,20 440,28 410,36" fill="#2563eb"/>
-      <text x="400" y="18" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">B0</text>
-    </g>
-
-    <!-- Channel: B1 -->
-    <g transform="translate(20, 600)">
-      <!-- DIP Switch Box -->
-      <rect x="0" y="0" width="80" height="40" fill="#ffffff" stroke="#000000" stroke-width="1.5" rx="3"/>
-      <text x="40" y="16" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle">DIP_B2</text>
-      <!-- Switch symbol inside -->
-      <line x1="15" y1="28" x2="30" y2="28" stroke="#000000" stroke-width="1.5"/>
-      <line x1="30" y1="28" x2="55" y2="20" stroke="#000000" stroke-width="2"/>
-      <line x1="55" y1="28" x2="65" y2="28" stroke="#000000" stroke-width="1.5"/>
-      
-      <!-- +5V input to switch -->
-      <line x1="-15" y1="28" x2="0" y2="28" stroke="#dc2626" stroke-width="2"/>
-      <use href="#vcc" x="-15" y="28"/>
-
-      <!-- Switch output junction -->
-      <line x1="80" y1="28" x2="160" y2="28" stroke="#000000" stroke-width="2"/>
-      <use href="#dot" x="160" y="28"/>
-
-      <!-- 10k Pull-down -->
-      <line x1="160" y1="28" x2="160" y2="40" stroke="#000000" stroke-width="1.5"/>
-      <use href="#resistor-v" x="160" y="40"/>
-      <use href="#gnd" x="160" y="90"/>
-      <text x="175" y="65" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
-
-      <!-- ESP32 Override line (4.7k resistor) -->
-      <rect x="180" y="0" width="110" height="25" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
-      <text x="235" y="17" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 GPIO 11</text>
-      <line x1="290" y1="12" x2="310" y2="12" stroke="#16a34a" stroke-width="2"/>
-      
-      <use href="#resistor-h" x="310" y="12"/>
-      <text x="335" y="-2" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
-      
-      <line x1="360" y1="12" x2="380" y2="12" stroke="#16a34a" stroke-width="2"/>
-      <line x1="380" y1="12" x2="380" y2="28" stroke="#16a34a" stroke-width="2"/>
-      <line x1="160" y1="28" x2="430" y2="28" stroke="#2563eb" stroke-width="2.5"/>
-      <use href="#dot" x="380" y="28"/>
-      
-      <!-- Output Label Banner -->
-      <polygon points="410,20 440,28 410,36" fill="#2563eb"/>
-      <text x="400" y="18" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">B1</text>
-    </g>
-
-    <!-- Channel: B2 -->
-    <g transform="translate(20, 700)">
-      <!-- DIP Switch Box -->
-      <rect x="0" y="0" width="80" height="40" fill="#ffffff" stroke="#000000" stroke-width="1.5" rx="3"/>
-      <text x="40" y="16" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle">DIP_B3</text>
-      <!-- Switch symbol inside -->
-      <line x1="15" y1="28" x2="30" y2="28" stroke="#000000" stroke-width="1.5"/>
-      <line x1="30" y1="28" x2="55" y2="20" stroke="#000000" stroke-width="2"/>
-      <line x1="55" y1="28" x2="65" y2="28" stroke="#000000" stroke-width="1.5"/>
-      
-      <!-- +5V input to switch -->
-      <line x1="-15" y1="28" x2="0" y2="28" stroke="#dc2626" stroke-width="2"/>
-      <use href="#vcc" x="-15" y="28"/>
-
-      <!-- Switch output junction -->
-      <line x1="80" y1="28" x2="160" y2="28" stroke="#000000" stroke-width="2"/>
-      <use href="#dot" x="160" y="28"/>
-
-      <!-- 10k Pull-down -->
-      <line x1="160" y1="28" x2="160" y2="40" stroke="#000000" stroke-width="1.5"/>
-      <use href="#resistor-v" x="160" y="40"/>
-      <use href="#gnd" x="160" y="90"/>
-      <text x="175" y="65" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
-
-      <!-- ESP32 Override line (4.7k resistor) -->
-      <rect x="180" y="0" width="110" height="25" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
-      <text x="235" y="17" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 GPIO 12</text>
-      <line x1="290" y1="12" x2="310" y2="12" stroke="#16a34a" stroke-width="2"/>
-      
-      <use href="#resistor-h" x="310" y="12"/>
-      <text x="335" y="-2" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
-      
-      <line x1="360" y1="12" x2="380" y2="12" stroke="#16a34a" stroke-width="2"/>
-      <line x1="380" y1="12" x2="380" y2="28" stroke="#16a34a" stroke-width="2"/>
-      <line x1="160" y1="28" x2="430" y2="28" stroke="#2563eb" stroke-width="2.5"/>
-      <use href="#dot" x="380" y="28"/>
-      
-      <!-- Output Label Banner -->
-      <polygon points="410,20 440,28 410,36" fill="#2563eb"/>
-      <text x="400" y="18" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">B2</text>
-    </g>
-
-    <!-- Channel: B3 -->
-    <g transform="translate(20, 800)">
-      <!-- DIP Switch Box -->
-      <rect x="0" y="0" width="80" height="40" fill="#ffffff" stroke="#000000" stroke-width="1.5" rx="3"/>
-      <text x="40" y="16" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle">DIP_B4</text>
-      <!-- Switch symbol inside -->
-      <line x1="15" y1="28" x2="30" y2="28" stroke="#000000" stroke-width="1.5"/>
-      <line x1="30" y1="28" x2="55" y2="20" stroke="#000000" stroke-width="2"/>
-      <line x1="55" y1="28" x2="65" y2="28" stroke="#000000" stroke-width="1.5"/>
-      
-      <!-- +5V input to switch -->
-      <line x1="-15" y1="28" x2="0" y2="28" stroke="#dc2626" stroke-width="2"/>
-      <use href="#vcc" x="-15" y="28"/>
-
-      <!-- Switch output junction -->
-      <line x1="80" y1="28" x2="160" y2="28" stroke="#000000" stroke-width="2"/>
-      <use href="#dot" x="160" y="28"/>
-
-      <!-- 10k Pull-down -->
-      <line x1="160" y1="28" x2="160" y2="40" stroke="#000000" stroke-width="1.5"/>
-      <use href="#resistor-v" x="160" y="40"/>
-      <use href="#gnd" x="160" y="90"/>
-      <text x="175" y="65" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
-
-      <!-- ESP32 Override line (4.7k resistor) -->
-      <rect x="180" y="0" width="110" height="25" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
-      <text x="235" y="17" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 GPIO 13</text>
-      <line x1="290" y1="12" x2="310" y2="12" stroke="#16a34a" stroke-width="2"/>
-      
-      <use href="#resistor-h" x="310" y="12"/>
-      <text x="335" y="-2" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
-      
-      <line x1="360" y1="12" x2="380" y2="12" stroke="#16a34a" stroke-width="2"/>
-      <line x1="380" y1="12" x2="380" y2="28" stroke="#16a34a" stroke-width="2"/>
-      <line x1="160" y1="28" x2="430" y2="28" stroke="#2563eb" stroke-width="2.5"/>
-      <use href="#dot" x="380" y="28"/>
-      
-      <!-- Output Label Banner -->
-      <polygon points="410,20 440,28 410,36" fill="#2563eb"/>
-      <text x="400" y="18" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">B3</text>
-    </g>
-
-    <!-- Channel: S0 (LSB) -->
-    <g transform="translate(20, 920)">
-      <!-- DIP Switch Box -->
-      <rect x="0" y="0" width="80" height="40" fill="#ffffff" stroke="#000000" stroke-width="1.5" rx="3"/>
-      <text x="40" y="16" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle">DIP_S0</text>
-      <!-- Switch symbol inside -->
-      <line x1="15" y1="28" x2="30" y2="28" stroke="#000000" stroke-width="1.5"/>
-      <line x1="30" y1="28" x2="55" y2="20" stroke="#000000" stroke-width="2"/>
-      <line x1="55" y1="28" x2="65" y2="28" stroke="#000000" stroke-width="1.5"/>
-      
-      <!-- +5V input to switch -->
-      <line x1="-15" y1="28" x2="0" y2="28" stroke="#dc2626" stroke-width="2"/>
-      <use href="#vcc" x="-15" y="28"/>
-
-      <!-- Switch output junction -->
-      <line x1="80" y1="28" x2="160" y2="28" stroke="#000000" stroke-width="2"/>
-      <use href="#dot" x="160" y="28"/>
-
-      <!-- 10k Pull-down -->
-      <line x1="160" y1="28" x2="160" y2="40" stroke="#000000" stroke-width="1.5"/>
-      <use href="#resistor-v" x="160" y="40"/>
-      <use href="#gnd" x="160" y="90"/>
-      <text x="175" y="65" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
-
-      <!-- ESP32 Override line (4.7k resistor) -->
-      <rect x="180" y="0" width="110" height="25" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
-      <text x="235" y="17" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 GPIO 18</text>
-      <line x1="290" y1="12" x2="310" y2="12" stroke="#16a34a" stroke-width="2"/>
-      
-      <use href="#resistor-h" x="310" y="12"/>
-      <text x="335" y="-2" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
-      
-      <line x1="360" y1="12" x2="380" y2="12" stroke="#16a34a" stroke-width="2"/>
-      <line x1="380" y1="12" x2="380" y2="28" stroke="#16a34a" stroke-width="2"/>
-      <line x1="160" y1="28" x2="430" y2="28" stroke="#2563eb" stroke-width="2.5"/>
-      <use href="#dot" x="380" y="28"/>
-      
-      <!-- Output Label Banner -->
-      <polygon points="410,20 440,28 410,36" fill="#2563eb"/>
-      <text x="400" y="18" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">S0 (LSB)</text>
-    </g>
-
-    <!-- Channel: S1 -->
-    <g transform="translate(20, 1020)">
-      <!-- DIP Switch Box -->
-      <rect x="0" y="0" width="80" height="40" fill="#ffffff" stroke="#000000" stroke-width="1.5" rx="3"/>
-      <text x="40" y="16" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle">DIP_S1</text>
-      <!-- Switch symbol inside -->
-      <line x1="15" y1="28" x2="30" y2="28" stroke="#000000" stroke-width="1.5"/>
-      <line x1="30" y1="28" x2="55" y2="20" stroke="#000000" stroke-width="2"/>
-      <line x1="55" y1="28" x2="65" y2="28" stroke="#000000" stroke-width="1.5"/>
-      
-      <!-- +5V input to switch -->
-      <line x1="-15" y1="28" x2="0" y2="28" stroke="#dc2626" stroke-width="2"/>
-      <use href="#vcc" x="-15" y="28"/>
-
-      <!-- Switch output junction -->
-      <line x1="80" y1="28" x2="160" y2="28" stroke="#000000" stroke-width="2"/>
-      <use href="#dot" x="160" y="28"/>
-
-      <!-- 10k Pull-down -->
-      <line x1="160" y1="28" x2="160" y2="40" stroke="#000000" stroke-width="1.5"/>
-      <use href="#resistor-v" x="160" y="40"/>
-      <use href="#gnd" x="160" y="90"/>
-      <text x="175" y="65" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
-
-      <!-- ESP32 Override line (4.7k resistor) -->
-      <rect x="180" y="0" width="110" height="25" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
-      <text x="235" y="17" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 GPIO 35</text>
-      <line x1="290" y1="12" x2="310" y2="12" stroke="#16a34a" stroke-width="2"/>
-      
-      <use href="#resistor-h" x="310" y="12"/>
-      <text x="335" y="-2" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
-      
-      <line x1="360" y1="12" x2="380" y2="12" stroke="#16a34a" stroke-width="2"/>
-      <line x1="380" y1="12" x2="380" y2="28" stroke="#16a34a" stroke-width="2"/>
-      <line x1="160" y1="28" x2="430" y2="28" stroke="#2563eb" stroke-width="2.5"/>
-      <use href="#dot" x="380" y="28"/>
-      
-      <!-- Output Label Banner -->
-      <polygon points="410,20 440,28 410,36" fill="#2563eb"/>
-      <text x="400" y="18" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">S1</text>
-    </g>
-
-    <!-- Channel: S2 (MSB) -->
-    <g transform="translate(20, 1120)">
-      <!-- DIP Switch Box -->
-      <rect x="0" y="0" width="80" height="40" fill="#ffffff" stroke="#000000" stroke-width="1.5" rx="3"/>
-      <text x="40" y="16" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle">DIP_S2</text>
-      <!-- Switch symbol inside -->
-      <line x1="15" y1="28" x2="30" y2="28" stroke="#000000" stroke-width="1.5"/>
-      <line x1="30" y1="28" x2="55" y2="20" stroke="#000000" stroke-width="2"/>
-      <line x1="55" y1="28" x2="65" y2="28" stroke="#000000" stroke-width="1.5"/>
-      
-      <!-- +5V input to switch -->
-      <line x1="-15" y1="28" x2="0" y2="28" stroke="#dc2626" stroke-width="2"/>
-      <use href="#vcc" x="-15" y="28"/>
-
-      <!-- Switch output junction -->
-      <line x1="80" y1="28" x2="160" y2="28" stroke="#000000" stroke-width="2"/>
-      <use href="#dot" x="160" y="28"/>
-
-      <!-- 10k Pull-down -->
-      <line x1="160" y1="28" x2="160" y2="40" stroke="#000000" stroke-width="1.5"/>
-      <use href="#resistor-v" x="160" y="40"/>
-      <use href="#gnd" x="160" y="90"/>
-      <text x="175" y="65" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
-
-      <!-- ESP32 Override line (4.7k resistor) -->
-      <rect x="180" y="0" width="110" height="25" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
-      <text x="235" y="17" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 GPIO 36</text>
-      <line x1="290" y1="12" x2="310" y2="12" stroke="#16a34a" stroke-width="2"/>
-      
-      <use href="#resistor-h" x="310" y="12"/>
-      <text x="335" y="-2" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
-      
-      <line x1="360" y1="12" x2="380" y2="12" stroke="#16a34a" stroke-width="2"/>
-      <line x1="380" y1="12" x2="380" y2="28" stroke="#16a34a" stroke-width="2"/>
-      <line x1="160" y1="28" x2="430" y2="28" stroke="#2563eb" stroke-width="2.5"/>
-      <use href="#dot" x="380" y="28"/>
-      
-      <!-- Output Label Banner -->
-      <polygon points="410,20 440,28 410,36" fill="#2563eb"/>
-      <text x="400" y="18" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">S2 (MSB)</text>
-    </g>
-
-    <!-- Channel: MODE -->
-    <g transform="translate(20, 1230)">
-      <!-- DIP Switch Box -->
-      <rect x="0" y="0" width="80" height="40" fill="#ffffff" stroke="#000000" stroke-width="1.5" rx="3"/>
-      <text x="40" y="16" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle">DIP_MODE</text>
-      <!-- Switch symbol inside -->
-      <line x1="15" y1="28" x2="30" y2="28" stroke="#000000" stroke-width="1.5"/>
-      <line x1="30" y1="28" x2="55" y2="20" stroke="#000000" stroke-width="2"/>
-      <line x1="55" y1="28" x2="65" y2="28" stroke="#000000" stroke-width="1.5"/>
-      
-      <!-- +5V input to switch -->
-      <line x1="-15" y1="28" x2="0" y2="28" stroke="#dc2626" stroke-width="2"/>
-      <use href="#vcc" x="-15" y="28"/>
-
-      <!-- Switch output junction -->
-      <line x1="80" y1="28" x2="160" y2="28" stroke="#000000" stroke-width="2"/>
-      <use href="#dot" x="160" y="28"/>
-
-      <!-- 10k Pull-down -->
-      <line x1="160" y1="28" x2="160" y2="40" stroke="#000000" stroke-width="1.5"/>
-      <use href="#resistor-v" x="160" y="40"/>
-      <use href="#gnd" x="160" y="90"/>
-      <text x="175" y="65" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
-
-      <!-- ESP32 Override line (4.7k resistor) -->
-      <rect x="180" y="0" width="110" height="25" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
-      <text x="235" y="17" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 GPIO 37</text>
-      <line x1="290" y1="12" x2="310" y2="12" stroke="#16a34a" stroke-width="2"/>
-      
-      <use href="#resistor-h" x="310" y="12"/>
-      <text x="335" y="-2" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
-      
-      <line x1="360" y1="12" x2="380" y2="12" stroke="#16a34a" stroke-width="2"/>
-      <line x1="380" y1="12" x2="380" y2="28" stroke="#16a34a" stroke-width="2"/>
-      <line x1="160" y1="28" x2="430" y2="28" stroke="#2563eb" stroke-width="2.5"/>
-      <use href="#dot" x="380" y="28"/>
-      
-      <!-- Output Label Banner -->
-      <polygon points="410,20 440,28 410,36" fill="#2563eb"/>
-      <text x="400" y="18" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">MODE</text>
-    </g>
-
-  </g>
-
-  <!-- ========================================================================= -->
-  <!-- SECTION C: LOWER NIBBLE CUSTOM 4-BIT ALU (IC1 - IC10)                     -->
-  <!-- ========================================================================= -->
-  <g id="section-custom-alu" transform="translate(560, 140)">
-    <rect x="0" y="0" width="1020" height="1760" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" rx="6"/>
-    <rect x="0" y="0" width="1020" height="32" fill="#e2e8f0" rx="6"/>
-    <text x="15" y="22" font-size="14" font-weight="bold" fill="#0f172a">CUSTOM 4-BIT ALU DATAPATH (74HCT283 ADDER + 74HCT GATES + 4x 74HCT151 MUX)</text>
-
-    <!-- Subtraction Inverter Box (IC2: 74HCT86) -->
-    <g transform="translate(30, 55)">
-      <rect x="0" y="0" width="280" height="260" fill="#ffffff" stroke="#000000" stroke-width="2"/>
-      <text x="140" y="25" font-size="13" font-weight="bold" fill="#000000" text-anchor="middle">IC2: 74HCT86</text>
-      <text x="140" y="42" font-size="11" fill="#475569" text-anchor="middle">SUBTRACTION CONDITIONAL B-INVERT</text>
-      
-      <!-- Inputs B0-B3 and SUB -->
-      <text x="10" y="75" font-size="11" font-weight="bold">Pin 1: B0 In</text>
-      <text x="10" y="105" font-size="11" font-weight="bold">Pin 4: B1 In</text>
-      <text x="10" y="135" font-size="11" font-weight="bold">Pin 9: B2 In</text>
-      <text x="10" y="165" font-size="11" font-weight="bold">Pin 12: B3 In</text>
-      <text x="10" y="200" font-size="11" font-weight="bold" fill="#dc2626">Pins 2,5,10,13: SUB_FLAG</text>
-      <text x="10" y="235" font-size="10" fill="#64748b">Pin 14: +5V | Pin 7: GND</text>
-
-      <!-- Outputs B'0 - B'3 -->
-      <text x="270" y="75" font-size="11" font-weight="bold" fill="#2563eb" text-anchor="end">Pin 3: B'0 ──►</text>
-      <text x="270" y="105" font-size="11" font-weight="bold" fill="#2563eb" text-anchor="end">Pin 6: B'1 ──►</text>
-      <text x="270" y="135" font-size="11" font-weight="bold" fill="#2563eb" text-anchor="end">Pin 8: B'2 ──►</text>
-      <text x="270" y="165" font-size="11" font-weight="bold" fill="#2563eb" text-anchor="end">Pin 11: B'3 ──►</text>
-    </g>
-
-    <!-- Arithmetic Adder Core (IC1: 74HCT283) -->
-    <g transform="translate(360, 55)">
-      <rect x="0" y="0" width="300" height="260" fill="#ffffff" stroke="#000000" stroke-width="2"/>
-      <text x="150" y="25" font-size="13" font-weight="bold" fill="#000000" text-anchor="middle">IC1: 74HCT283</text>
-      <text x="150" y="42" font-size="11" fill="#475569" text-anchor="middle">4-BIT BINARY FULL ADDER</text>
-
-      <!-- Left Pin Connections -->
-      <text x="10" y="70" font-size="11">Pin 5: A0</text>
-      <text x="10" y="90" font-size="11">Pin 6: B0' (from IC2)</text>
-      <text x="10" y="115" font-size="11">Pin 3: A1</text>
-      <text x="10" y="135" font-size="11">Pin 2: B1' (from IC2)</text>
-      <text x="10" y="160" font-size="11">Pin 14: A2</text>
-      <text x="10" y="180" font-size="11">Pin 15: B2' (from IC2)</text>
-      <text x="10" y="205" font-size="11">Pin 12: A3</text>
-      <text x="10" y="225" font-size="11">Pin 11: B3' (from IC2)</text>
-      <text x="10" y="248" font-size="11" fill="#dc2626">Pin 7: Cin (SUB_FLAG)</text>
-
-      <!-- Right Pin Outputs -->
-      <text x="290" y="80" font-size="11" font-weight="bold" fill="#16a34a" text-anchor="end">Pin 4: Σ0 (Sum 0) ──►</text>
-      <text x="290" y="125" font-size="11" font-weight="bold" fill="#16a34a" text-anchor="end">Pin 1: Σ1 (Sum 1) ──►</text>
-      <text x="290" y="170" font-size="11" font-weight="bold" fill="#16a34a" text-anchor="end">Pin 13: Σ2 (Sum 2) ──►</text>
-      <text x="290" y="215" font-size="11" font-weight="bold" fill="#16a34a" text-anchor="end">Pin 10: Σ3 (Sum 3) ──►</text>
-      <text x="290" y="248" font-size="11" font-weight="bold" fill="#ea580c" text-anchor="end">Pin 9: C4 (Carry) ──►</text>
-    </g>
-
-    <!-- Logic Gates Bank (IC3, IC4, IC5, IC6) -->
-    <g transform="translate(30, 340)">
-      <rect x="0" y="0" width="630" height="280" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
-      <text x="315" y="25" font-size="13" font-weight="bold" fill="#000000" text-anchor="middle">BITWISE LOGIC OPERATIONS ARRAY (4-BIT SLICE)</text>
-      
-      <!-- IC3: XOR -->
-      <rect x="20" y="45" width="270" height="100" fill="#f8fafc" stroke="#64748b"/>
-      <text x="30" y="65" font-size="12" font-weight="bold" fill="#0f172a">IC3: 74HCT86 (Quad XOR)</text>
-      <text x="30" y="85" font-size="10" fill="#475569">Pin 3: A0 ⊕ B0 ──► D4 of MUX 0</text>
-      <text x="30" y="100" font-size="10" fill="#475569">Pin 6: A1 ⊕ B1 ──► D4 of MUX 1</text>
-      <text x="30" y="115" font-size="10" fill="#475569">Pin 8: A2 ⊕ B2 ──► D4 of MUX 2</text>
-      <text x="30" y="130" font-size="10" fill="#475569">Pin 11: A3 ⊕ B3 ──► D4 of MUX 3</text>
-
-      <!-- IC4: AND -->
-      <rect x="330" y="45" width="270" height="100" fill="#f8fafc" stroke="#64748b"/>
-      <text x="340" y="65" font-size="12" font-weight="bold" fill="#0f172a">IC4: 74HCT08 (Quad AND)</text>
-      <text x="340" y="85" font-size="10" fill="#475569">Pin 3: A0 · B0 ──► D2 of MUX 0</text>
-      <text x="340" y="100" font-size="10" fill="#475569">Pin 6: A1 · B1 ──► D2 of MUX 1</text>
-      <text x="340" y="115" font-size="10" fill="#475569">Pin 8: A2 · B2 ──► D2 of MUX 2</text>
-      <text x="340" y="130" font-size="10" fill="#475569">Pin 11: A3 · B3 ──► D2 of MUX 3</text>
-
-      <!-- IC5: OR -->
-      <rect x="20" y="160" width="270" height="100" fill="#f8fafc" stroke="#64748b"/>
-      <text x="30" y="180" font-size="12" font-weight="bold" fill="#0f172a">IC5: 74HCT32 (Quad OR)</text>
-      <text x="30" y="200" font-size="10" fill="#475569">Pin 3: A0 + B0 ──► D3 of MUX 0</text>
-      <text x="30" y="215" font-size="10" fill="#475569">Pin 6: A1 + B1 ──► D3 of MUX 1</text>
-      <text x="30" y="230" font-size="10" fill="#475569">Pin 8: A2 + B2 ──► D3 of MUX 2</text>
-      <text x="30" y="245" font-size="10" fill="#475569">Pin 11: A3 + B3 ──► D3 of MUX 3</text>
-
-      <!-- IC6: NOT -->
-      <rect x="330" y="160" width="270" height="100" fill="#f8fafc" stroke="#64748b"/>
-      <text x="340" y="180" font-size="12" font-weight="bold" fill="#0f172a">IC6: 74HCT04 (Hex NOT)</text>
-      <text x="340" y="200" font-size="10" fill="#475569">Pin 2: ~A0 ──► D5 of MUX 0</text>
-      <text x="340" y="215" font-size="10" fill="#475569">Pin 4: ~A1 ──► D5 of MUX 1</text>
-      <text x="340" y="230" font-size="10" fill="#475569">Pin 6: ~A2 ──► D5 of MUX 2</text>
-      <text x="340" y="245" font-size="10" fill="#475569">Pin 8: ~A3 ──► D5 of MUX 3</text>
-    </g>
-
-    <!-- 4x 74HCT151 Multiplexers (IC7, IC8, IC9, IC10) -->
-    <g transform="translate(30, 640)">
-      <rect x="0" y="0" width="960" height="1090" fill="#ffffff" stroke="#000000" stroke-width="2"/>
-      <text x="480" y="25" font-size="14" font-weight="bold" fill="#0f172a" text-anchor="middle">4-BIT OPERATION SELECT MULTIPLEXER BANK (8:1 DATA SELECTORS)</text>
-      <text x="480" y="45" font-size="11" fill="#64748b" text-anchor="middle">Select Lines: S2 (MSB, Pin 11), S1 (Pin 10), S0 (LSB, Pin 9) shared across all MUXes | Pin 7 (/G) = GND</text>
-
-      <!-- 4 MUX ICs side by side or stacked -->
-
-      <!-- MUX IC7: 74HCT151 (Bit 0) -->
-      <g transform="translate(30, 70)">
-        <rect x="0" y="0" width="890" height="225" fill="#f8fafc" stroke="#000000" stroke-width="1.5" rx="4"/>
-        <text x="20" y="24" font-size="13" font-weight="bold" fill="#0f172a">IC7: 74HCT151 (Bit 0)</text>
-        <rect x="740" y="8" width="130" height="26" fill="#eff6ff" stroke="#3b82f6" rx="3"/>
-        <text x="805" y="25" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="middle">OUTPUT Y0 (Pin 5)</text>
-
-        <!-- 8 Inputs Grid -->
-        <g transform="translate(20, 45)">
-          <!-- D0 ADD -->
-          <rect x="0" y="0" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="10" y="16" font-size="10" font-weight="bold" fill="#1e293b">D0 (P12): ADD [000]</text>
-          <text x="10" y="29" font-size="10" fill="#16a34a">Σ0</text>
-
-          <!-- D1 SUB -->
-          <rect x="210" y="0" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="220" y="16" font-size="10" font-weight="bold" fill="#1e293b">D1 (P4): SUB [001]</text>
-          <text x="220" y="29" font-size="10" fill="#16a34a">Σ0</text>
-
-          <!-- D2 AND -->
-          <rect x="420" y="0" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="430" y="16" font-size="10" font-weight="bold" fill="#1e293b">D2 (P3): AND [010]</text>
-          <text x="430" y="29" font-size="10" fill="#2563eb">IC4.P3 (A0·B0)</text>
-
-          <!-- D3 OR -->
-          <rect x="630" y="0" width="220" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="640" y="16" font-size="10" font-weight="bold" fill="#1e293b">D3 (P2): OR [011]</text>
-          <text x="640" y="29" font-size="10" fill="#2563eb">IC5.P3 (A0+B0)</text>
-
-          <!-- D4 XOR -->
-          <rect x="0" y="45" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="10" y="61" font-size="10" font-weight="bold" fill="#1e293b">D4 (P1): XOR [100]</text>
-          <text x="10" y="74" font-size="10" fill="#2563eb">IC3.P3 (A0⊕B0)</text>
-
-          <!-- D5 NOT -->
-          <rect x="210" y="45" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="220" y="61" font-size="10" font-weight="bold" fill="#1e293b">D5 (P15): NOT [101]</text>
-          <text x="220" y="74" font-size="10" fill="#2563eb">IC6.P2 (~A0)</text>
-
-          <!-- D6 SHL -->
-          <rect x="420" y="45" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="430" y="61" font-size="10" font-weight="bold" fill="#1e293b">D6 (P14): SHL [110]</text>
-          <text x="430" y="74" font-size="10" fill="#9333ea">GND (0)</text>
-
-          <!-- D7 SHR -->
-          <rect x="630" y="45" width="220" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="640" y="61" font-size="10" font-weight="bold" fill="#1e293b">D7 (P13): SHR [111]</text>
-          <text x="640" y="74" font-size="10" fill="#9333ea">A1 (SHR)</text>
-        </g>
-
-        <!-- Pin Connections summary -->
-        <text x="20" y="150" font-size="11" fill="#64748b">Controls: Pin 9=S0, Pin 10=S1, Pin 11=S2 | Pin 7 (/G)=GND | Pin 16=5V | Pin 8=GND | Pin 6 (/W)=NC</text>
-        <line x1="20" y1="160" x2="860" y2="160" stroke="#e2e8f0"/>
-        <!-- Destination summary -->
-        <text x="20" y="178" font-size="11" font-weight="bold" fill="#0f172a">Pin 5 Output (Y0) Routes Directly To:</text>
-        <text x="20" y="195" font-size="11" fill="#475569">1) Arduino R4 WiFi | 2) IC12 74HC85 Input A | 3) Voltage Divider (2.2k/4.7k) ──► ESP32-S3</text>
+      <!-- Switch Symbol -->
+      <g transform="translate(20, 20)">
+        <use href="#switch-spst" x="0" y="0"/>
+        <text x="25" y="-15" font-size="10" font-weight="bold" fill="#0f172a">A0_SW</text>
       </g>
 
-      <!-- MUX IC8: 74HCT151 (Bit 1) -->
-      <g transform="translate(30, 320)">
-        <rect x="0" y="0" width="890" height="225" fill="#f8fafc" stroke="#000000" stroke-width="1.5" rx="4"/>
-        <text x="20" y="24" font-size="13" font-weight="bold" fill="#0f172a">IC8: 74HCT151 (Bit 1)</text>
-        <rect x="740" y="8" width="130" height="26" fill="#eff6ff" stroke="#3b82f6" rx="3"/>
-        <text x="805" y="25" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="middle">OUTPUT Y1 (Pin 5)</text>
+      <!-- Switch Output Node -->
+      <line x1="75" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2.5"/>
+      <use href="#junc" x="160" y="20"/>
 
-        <!-- 8 Inputs Grid -->
-        <g transform="translate(20, 45)">
-          <!-- D0 ADD -->
-          <rect x="0" y="0" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="10" y="16" font-size="10" font-weight="bold" fill="#1e293b">D0 (P12): ADD [000]</text>
-          <text x="10" y="29" font-size="10" fill="#16a34a">Σ1</text>
+      <!-- 10k Pull-down Resistor (Zig-zag) -->
+      <line x1="160" y1="20" x2="160" y2="35" stroke="#000000" stroke-width="2"/>
+      <use href="#resistor-zigzag-v" x="160" y="35"/>
+      <text x="175" y="70" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
+      <use href="#gnd" x="160" y="95"/>
 
-          <!-- D1 SUB -->
-          <rect x="210" y="0" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="220" y="16" font-size="10" font-weight="bold" fill="#1e293b">D1 (P4): SUB [001]</text>
-          <text x="220" y="29" font-size="10" fill="#16a34a">Σ1</text>
+      <!-- ESP32 4.7k Override Branch -->
+      <rect x="185" y="-2" width="100" height="22" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
+      <text x="235" y="13" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 Pin</text>
+      <line x1="285" y1="9" x2="305" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <use href="#resistor-zigzag-h" x="305" y="9"/>
+      <text x="335" y="-3" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
+      <line x1="365" y1="9" x2="385" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <line x1="385" y1="9" x2="385" y2="20" stroke="#16a34a" stroke-width="2"/>
+      <use href="#junc" x="385" y="20"/>
 
-          <!-- D2 AND -->
-          <rect x="420" y="0" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="430" y="16" font-size="10" font-weight="bold" fill="#1e293b">D2 (P3): AND [010]</text>
-          <text x="430" y="29" font-size="10" fill="#2563eb">IC4.P6 (A1·B1)</text>
+      <!-- Main Out Bus Wire -->
+      <line x1="160" y1="20" x2="420" y2="20" stroke="#2563eb" stroke-width="2.5"/>
+      <polygon points="400,14 425,20 400,26" fill="#2563eb"/>
+      <text x="390" y="14" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">A0</text>
+    </g>
 
-          <!-- D3 OR -->
-          <rect x="630" y="0" width="220" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="640" y="16" font-size="10" font-weight="bold" fill="#1e293b">D3 (P2): OR [011]</text>
-          <text x="640" y="29" font-size="10" fill="#2563eb">IC5.P6 (A1+B1)</text>
-
-          <!-- D4 XOR -->
-          <rect x="0" y="45" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="10" y="61" font-size="10" font-weight="bold" fill="#1e293b">D4 (P1): XOR [100]</text>
-          <text x="10" y="74" font-size="10" fill="#2563eb">IC3.P6 (A1⊕B1)</text>
-
-          <!-- D5 NOT -->
-          <rect x="210" y="45" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="220" y="61" font-size="10" font-weight="bold" fill="#1e293b">D5 (P15): NOT [101]</text>
-          <text x="220" y="74" font-size="10" fill="#2563eb">IC6.P4 (~A1)</text>
-
-          <!-- D6 SHL -->
-          <rect x="420" y="45" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="430" y="61" font-size="10" font-weight="bold" fill="#1e293b">D6 (P14): SHL [110]</text>
-          <text x="430" y="74" font-size="10" fill="#9333ea">A0 (SHL)</text>
-
-          <!-- D7 SHR -->
-          <rect x="630" y="45" width="220" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="640" y="61" font-size="10" font-weight="bold" fill="#1e293b">D7 (P13): SHR [111]</text>
-          <text x="640" y="74" font-size="10" fill="#9333ea">A2 (SHR)</text>
-        </g>
-
-        <!-- Pin Connections summary -->
-        <text x="20" y="150" font-size="11" fill="#64748b">Controls: Pin 9=S0, Pin 10=S1, Pin 11=S2 | Pin 7 (/G)=GND | Pin 16=5V | Pin 8=GND | Pin 6 (/W)=NC</text>
-        <line x1="20" y1="160" x2="860" y2="160" stroke="#e2e8f0"/>
-        <!-- Destination summary -->
-        <text x="20" y="178" font-size="11" font-weight="bold" fill="#0f172a">Pin 5 Output (Y1) Routes Directly To:</text>
-        <text x="20" y="195" font-size="11" fill="#475569">1) Arduino R4 WiFi | 2) IC12 74HC85 Input A | 3) Voltage Divider (2.2k/4.7k) ──► ESP32-S3</text>
+    <!-- Signal: A1 -->
+    <g transform="translate(30, 170)">
+      <!-- +5V Power Line -->
+      <use href="#vcc-arrow" x="20" y="0"/>
+      <line x1="20" y1="0" x2="20" y2="20" stroke="#dc2626" stroke-width="2"/>
+      
+      <!-- Switch Symbol -->
+      <g transform="translate(20, 20)">
+        <use href="#switch-spst" x="0" y="0"/>
+        <text x="25" y="-15" font-size="10" font-weight="bold" fill="#0f172a">A1_SW</text>
       </g>
 
-      <!-- MUX IC9: 74HCT151 (Bit 2) -->
-      <g transform="translate(30, 570)">
-        <rect x="0" y="0" width="890" height="225" fill="#f8fafc" stroke="#000000" stroke-width="1.5" rx="4"/>
-        <text x="20" y="24" font-size="13" font-weight="bold" fill="#0f172a">IC9: 74HCT151 (Bit 2)</text>
-        <rect x="740" y="8" width="130" height="26" fill="#eff6ff" stroke="#3b82f6" rx="3"/>
-        <text x="805" y="25" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="middle">OUTPUT Y2 (Pin 5)</text>
+      <!-- Switch Output Node -->
+      <line x1="75" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2.5"/>
+      <use href="#junc" x="160" y="20"/>
 
-        <!-- 8 Inputs Grid -->
-        <g transform="translate(20, 45)">
-          <!-- D0 ADD -->
-          <rect x="0" y="0" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="10" y="16" font-size="10" font-weight="bold" fill="#1e293b">D0 (P12): ADD [000]</text>
-          <text x="10" y="29" font-size="10" fill="#16a34a">Σ2</text>
+      <!-- 10k Pull-down Resistor (Zig-zag) -->
+      <line x1="160" y1="20" x2="160" y2="35" stroke="#000000" stroke-width="2"/>
+      <use href="#resistor-zigzag-v" x="160" y="35"/>
+      <text x="175" y="70" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
+      <use href="#gnd" x="160" y="95"/>
 
-          <!-- D1 SUB -->
-          <rect x="210" y="0" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="220" y="16" font-size="10" font-weight="bold" fill="#1e293b">D1 (P4): SUB [001]</text>
-          <text x="220" y="29" font-size="10" fill="#16a34a">Σ2</text>
+      <!-- ESP32 4.7k Override Branch -->
+      <rect x="185" y="-2" width="100" height="22" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
+      <text x="235" y="13" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 Pin</text>
+      <line x1="285" y1="9" x2="305" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <use href="#resistor-zigzag-h" x="305" y="9"/>
+      <text x="335" y="-3" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
+      <line x1="365" y1="9" x2="385" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <line x1="385" y1="9" x2="385" y2="20" stroke="#16a34a" stroke-width="2"/>
+      <use href="#junc" x="385" y="20"/>
 
-          <!-- D2 AND -->
-          <rect x="420" y="0" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="430" y="16" font-size="10" font-weight="bold" fill="#1e293b">D2 (P3): AND [010]</text>
-          <text x="430" y="29" font-size="10" fill="#2563eb">IC4.P8 (A2·B2)</text>
+      <!-- Main Out Bus Wire -->
+      <line x1="160" y1="20" x2="420" y2="20" stroke="#2563eb" stroke-width="2.5"/>
+      <polygon points="400,14 425,20 400,26" fill="#2563eb"/>
+      <text x="390" y="14" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">A1</text>
+    </g>
 
-          <!-- D3 OR -->
-          <rect x="630" y="0" width="220" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="640" y="16" font-size="10" font-weight="bold" fill="#1e293b">D3 (P2): OR [011]</text>
-          <text x="640" y="29" font-size="10" fill="#2563eb">IC5.P8 (A2+B2)</text>
-
-          <!-- D4 XOR -->
-          <rect x="0" y="45" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="10" y="61" font-size="10" font-weight="bold" fill="#1e293b">D4 (P1): XOR [100]</text>
-          <text x="10" y="74" font-size="10" fill="#2563eb">IC3.P8 (A2⊕B2)</text>
-
-          <!-- D5 NOT -->
-          <rect x="210" y="45" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="220" y="61" font-size="10" font-weight="bold" fill="#1e293b">D5 (P15): NOT [101]</text>
-          <text x="220" y="74" font-size="10" fill="#2563eb">IC6.P6 (~A2)</text>
-
-          <!-- D6 SHL -->
-          <rect x="420" y="45" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="430" y="61" font-size="10" font-weight="bold" fill="#1e293b">D6 (P14): SHL [110]</text>
-          <text x="430" y="74" font-size="10" fill="#9333ea">A1 (SHL)</text>
-
-          <!-- D7 SHR -->
-          <rect x="630" y="45" width="220" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="640" y="61" font-size="10" font-weight="bold" fill="#1e293b">D7 (P13): SHR [111]</text>
-          <text x="640" y="74" font-size="10" fill="#9333ea">A3 (SHR)</text>
-        </g>
-
-        <!-- Pin Connections summary -->
-        <text x="20" y="150" font-size="11" fill="#64748b">Controls: Pin 9=S0, Pin 10=S1, Pin 11=S2 | Pin 7 (/G)=GND | Pin 16=5V | Pin 8=GND | Pin 6 (/W)=NC</text>
-        <line x1="20" y1="160" x2="860" y2="160" stroke="#e2e8f0"/>
-        <!-- Destination summary -->
-        <text x="20" y="178" font-size="11" font-weight="bold" fill="#0f172a">Pin 5 Output (Y2) Routes Directly To:</text>
-        <text x="20" y="195" font-size="11" fill="#475569">1) Arduino R4 WiFi | 2) IC12 74HC85 Input A | 3) Voltage Divider (2.2k/4.7k) ──► ESP32-S3</text>
+    <!-- Signal: A2 -->
+    <g transform="translate(30, 250)">
+      <!-- +5V Power Line -->
+      <use href="#vcc-arrow" x="20" y="0"/>
+      <line x1="20" y1="0" x2="20" y2="20" stroke="#dc2626" stroke-width="2"/>
+      
+      <!-- Switch Symbol -->
+      <g transform="translate(20, 20)">
+        <use href="#switch-spst" x="0" y="0"/>
+        <text x="25" y="-15" font-size="10" font-weight="bold" fill="#0f172a">A2_SW</text>
       </g>
 
-      <!-- MUX IC10: 74HCT151 (Bit 3) -->
-      <g transform="translate(30, 820)">
-        <rect x="0" y="0" width="890" height="225" fill="#f8fafc" stroke="#000000" stroke-width="1.5" rx="4"/>
-        <text x="20" y="24" font-size="13" font-weight="bold" fill="#0f172a">IC10: 74HCT151 (Bit 3)</text>
-        <rect x="740" y="8" width="130" height="26" fill="#eff6ff" stroke="#3b82f6" rx="3"/>
-        <text x="805" y="25" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="middle">OUTPUT Y3 (Pin 5)</text>
+      <!-- Switch Output Node -->
+      <line x1="75" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2.5"/>
+      <use href="#junc" x="160" y="20"/>
 
-        <!-- 8 Inputs Grid -->
-        <g transform="translate(20, 45)">
-          <!-- D0 ADD -->
-          <rect x="0" y="0" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="10" y="16" font-size="10" font-weight="bold" fill="#1e293b">D0 (P12): ADD [000]</text>
-          <text x="10" y="29" font-size="10" fill="#16a34a">Σ3</text>
+      <!-- 10k Pull-down Resistor (Zig-zag) -->
+      <line x1="160" y1="20" x2="160" y2="35" stroke="#000000" stroke-width="2"/>
+      <use href="#resistor-zigzag-v" x="160" y="35"/>
+      <text x="175" y="70" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
+      <use href="#gnd" x="160" y="95"/>
 
-          <!-- D1 SUB -->
-          <rect x="210" y="0" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="220" y="16" font-size="10" font-weight="bold" fill="#1e293b">D1 (P4): SUB [001]</text>
-          <text x="220" y="29" font-size="10" fill="#16a34a">Σ3</text>
+      <!-- ESP32 4.7k Override Branch -->
+      <rect x="185" y="-2" width="100" height="22" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
+      <text x="235" y="13" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 Pin</text>
+      <line x1="285" y1="9" x2="305" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <use href="#resistor-zigzag-h" x="305" y="9"/>
+      <text x="335" y="-3" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
+      <line x1="365" y1="9" x2="385" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <line x1="385" y1="9" x2="385" y2="20" stroke="#16a34a" stroke-width="2"/>
+      <use href="#junc" x="385" y="20"/>
 
-          <!-- D2 AND -->
-          <rect x="420" y="0" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="430" y="16" font-size="10" font-weight="bold" fill="#1e293b">D2 (P3): AND [010]</text>
-          <text x="430" y="29" font-size="10" fill="#2563eb">IC4.P11 (A3·B3)</text>
+      <!-- Main Out Bus Wire -->
+      <line x1="160" y1="20" x2="420" y2="20" stroke="#2563eb" stroke-width="2.5"/>
+      <polygon points="400,14 425,20 400,26" fill="#2563eb"/>
+      <text x="390" y="14" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">A2</text>
+    </g>
 
-          <!-- D3 OR -->
-          <rect x="630" y="0" width="220" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="640" y="16" font-size="10" font-weight="bold" fill="#1e293b">D3 (P2): OR [011]</text>
-          <text x="640" y="29" font-size="10" fill="#2563eb">IC5.P11 (A3+B3)</text>
-
-          <!-- D4 XOR -->
-          <rect x="0" y="45" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="10" y="61" font-size="10" font-weight="bold" fill="#1e293b">D4 (P1): XOR [100]</text>
-          <text x="10" y="74" font-size="10" fill="#2563eb">IC3.P11 (A3⊕B3)</text>
-
-          <!-- D5 NOT -->
-          <rect x="210" y="45" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="220" y="61" font-size="10" font-weight="bold" fill="#1e293b">D5 (P15): NOT [101]</text>
-          <text x="220" y="74" font-size="10" fill="#2563eb">IC6.P8 (~A3)</text>
-
-          <!-- D6 SHL -->
-          <rect x="420" y="45" width="190" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="430" y="61" font-size="10" font-weight="bold" fill="#1e293b">D6 (P14): SHL [110]</text>
-          <text x="430" y="74" font-size="10" fill="#9333ea">A2 (SHL)</text>
-
-          <!-- D7 SHR -->
-          <rect x="630" y="45" width="220" height="35" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="640" y="61" font-size="10" font-weight="bold" fill="#1e293b">D7 (P13): SHR [111]</text>
-          <text x="640" y="74" font-size="10" fill="#9333ea">GND (0)</text>
-        </g>
-
-        <!-- Pin Connections summary -->
-        <text x="20" y="150" font-size="11" fill="#64748b">Controls: Pin 9=S0, Pin 10=S1, Pin 11=S2 | Pin 7 (/G)=GND | Pin 16=5V | Pin 8=GND | Pin 6 (/W)=NC</text>
-        <line x1="20" y1="160" x2="860" y2="160" stroke="#e2e8f0"/>
-        <!-- Destination summary -->
-        <text x="20" y="178" font-size="11" font-weight="bold" fill="#0f172a">Pin 5 Output (Y3) Routes Directly To:</text>
-        <text x="20" y="195" font-size="11" fill="#475569">1) Arduino R4 WiFi | 2) IC12 74HC85 Input A | 3) Voltage Divider (2.2k/4.7k) ──► ESP32-S3</text>
+    <!-- Signal: A3 -->
+    <g transform="translate(30, 330)">
+      <!-- +5V Power Line -->
+      <use href="#vcc-arrow" x="20" y="0"/>
+      <line x1="20" y1="0" x2="20" y2="20" stroke="#dc2626" stroke-width="2"/>
+      
+      <!-- Switch Symbol -->
+      <g transform="translate(20, 20)">
+        <use href="#switch-spst" x="0" y="0"/>
+        <text x="25" y="-15" font-size="10" font-weight="bold" fill="#0f172a">A3_SW</text>
       </g>
 
+      <!-- Switch Output Node -->
+      <line x1="75" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2.5"/>
+      <use href="#junc" x="160" y="20"/>
+
+      <!-- 10k Pull-down Resistor (Zig-zag) -->
+      <line x1="160" y1="20" x2="160" y2="35" stroke="#000000" stroke-width="2"/>
+      <use href="#resistor-zigzag-v" x="160" y="35"/>
+      <text x="175" y="70" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
+      <use href="#gnd" x="160" y="95"/>
+
+      <!-- ESP32 4.7k Override Branch -->
+      <rect x="185" y="-2" width="100" height="22" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
+      <text x="235" y="13" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 Pin</text>
+      <line x1="285" y1="9" x2="305" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <use href="#resistor-zigzag-h" x="305" y="9"/>
+      <text x="335" y="-3" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
+      <line x1="365" y1="9" x2="385" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <line x1="385" y1="9" x2="385" y2="20" stroke="#16a34a" stroke-width="2"/>
+      <use href="#junc" x="385" y="20"/>
+
+      <!-- Main Out Bus Wire -->
+      <line x1="160" y1="20" x2="420" y2="20" stroke="#2563eb" stroke-width="2.5"/>
+      <polygon points="400,14 425,20 400,26" fill="#2563eb"/>
+      <text x="390" y="14" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">A3</text>
+    </g>
+
+    <!-- Signal: B0 -->
+    <g transform="translate(30, 430)">
+      <!-- +5V Power Line -->
+      <use href="#vcc-arrow" x="20" y="0"/>
+      <line x1="20" y1="0" x2="20" y2="20" stroke="#dc2626" stroke-width="2"/>
+      
+      <!-- Switch Symbol -->
+      <g transform="translate(20, 20)">
+        <use href="#switch-spst" x="0" y="0"/>
+        <text x="25" y="-15" font-size="10" font-weight="bold" fill="#0f172a">B0_SW</text>
+      </g>
+
+      <!-- Switch Output Node -->
+      <line x1="75" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2.5"/>
+      <use href="#junc" x="160" y="20"/>
+
+      <!-- 10k Pull-down Resistor (Zig-zag) -->
+      <line x1="160" y1="20" x2="160" y2="35" stroke="#000000" stroke-width="2"/>
+      <use href="#resistor-zigzag-v" x="160" y="35"/>
+      <text x="175" y="70" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
+      <use href="#gnd" x="160" y="95"/>
+
+      <!-- ESP32 4.7k Override Branch -->
+      <rect x="185" y="-2" width="100" height="22" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
+      <text x="235" y="13" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 Pin</text>
+      <line x1="285" y1="9" x2="305" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <use href="#resistor-zigzag-h" x="305" y="9"/>
+      <text x="335" y="-3" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
+      <line x1="365" y1="9" x2="385" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <line x1="385" y1="9" x2="385" y2="20" stroke="#16a34a" stroke-width="2"/>
+      <use href="#junc" x="385" y="20"/>
+
+      <!-- Main Out Bus Wire -->
+      <line x1="160" y1="20" x2="420" y2="20" stroke="#2563eb" stroke-width="2.5"/>
+      <polygon points="400,14 425,20 400,26" fill="#2563eb"/>
+      <text x="390" y="14" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">B0</text>
+    </g>
+
+    <!-- Signal: B1 -->
+    <g transform="translate(30, 510)">
+      <!-- +5V Power Line -->
+      <use href="#vcc-arrow" x="20" y="0"/>
+      <line x1="20" y1="0" x2="20" y2="20" stroke="#dc2626" stroke-width="2"/>
+      
+      <!-- Switch Symbol -->
+      <g transform="translate(20, 20)">
+        <use href="#switch-spst" x="0" y="0"/>
+        <text x="25" y="-15" font-size="10" font-weight="bold" fill="#0f172a">B1_SW</text>
+      </g>
+
+      <!-- Switch Output Node -->
+      <line x1="75" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2.5"/>
+      <use href="#junc" x="160" y="20"/>
+
+      <!-- 10k Pull-down Resistor (Zig-zag) -->
+      <line x1="160" y1="20" x2="160" y2="35" stroke="#000000" stroke-width="2"/>
+      <use href="#resistor-zigzag-v" x="160" y="35"/>
+      <text x="175" y="70" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
+      <use href="#gnd" x="160" y="95"/>
+
+      <!-- ESP32 4.7k Override Branch -->
+      <rect x="185" y="-2" width="100" height="22" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
+      <text x="235" y="13" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 Pin</text>
+      <line x1="285" y1="9" x2="305" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <use href="#resistor-zigzag-h" x="305" y="9"/>
+      <text x="335" y="-3" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
+      <line x1="365" y1="9" x2="385" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <line x1="385" y1="9" x2="385" y2="20" stroke="#16a34a" stroke-width="2"/>
+      <use href="#junc" x="385" y="20"/>
+
+      <!-- Main Out Bus Wire -->
+      <line x1="160" y1="20" x2="420" y2="20" stroke="#2563eb" stroke-width="2.5"/>
+      <polygon points="400,14 425,20 400,26" fill="#2563eb"/>
+      <text x="390" y="14" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">B1</text>
+    </g>
+
+    <!-- Signal: B2 -->
+    <g transform="translate(30, 590)">
+      <!-- +5V Power Line -->
+      <use href="#vcc-arrow" x="20" y="0"/>
+      <line x1="20" y1="0" x2="20" y2="20" stroke="#dc2626" stroke-width="2"/>
+      
+      <!-- Switch Symbol -->
+      <g transform="translate(20, 20)">
+        <use href="#switch-spst" x="0" y="0"/>
+        <text x="25" y="-15" font-size="10" font-weight="bold" fill="#0f172a">B2_SW</text>
+      </g>
+
+      <!-- Switch Output Node -->
+      <line x1="75" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2.5"/>
+      <use href="#junc" x="160" y="20"/>
+
+      <!-- 10k Pull-down Resistor (Zig-zag) -->
+      <line x1="160" y1="20" x2="160" y2="35" stroke="#000000" stroke-width="2"/>
+      <use href="#resistor-zigzag-v" x="160" y="35"/>
+      <text x="175" y="70" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
+      <use href="#gnd" x="160" y="95"/>
+
+      <!-- ESP32 4.7k Override Branch -->
+      <rect x="185" y="-2" width="100" height="22" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
+      <text x="235" y="13" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 Pin</text>
+      <line x1="285" y1="9" x2="305" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <use href="#resistor-zigzag-h" x="305" y="9"/>
+      <text x="335" y="-3" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
+      <line x1="365" y1="9" x2="385" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <line x1="385" y1="9" x2="385" y2="20" stroke="#16a34a" stroke-width="2"/>
+      <use href="#junc" x="385" y="20"/>
+
+      <!-- Main Out Bus Wire -->
+      <line x1="160" y1="20" x2="420" y2="20" stroke="#2563eb" stroke-width="2.5"/>
+      <polygon points="400,14 425,20 400,26" fill="#2563eb"/>
+      <text x="390" y="14" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">B2</text>
+    </g>
+
+    <!-- Signal: B3 -->
+    <g transform="translate(30, 670)">
+      <!-- +5V Power Line -->
+      <use href="#vcc-arrow" x="20" y="0"/>
+      <line x1="20" y1="0" x2="20" y2="20" stroke="#dc2626" stroke-width="2"/>
+      
+      <!-- Switch Symbol -->
+      <g transform="translate(20, 20)">
+        <use href="#switch-spst" x="0" y="0"/>
+        <text x="25" y="-15" font-size="10" font-weight="bold" fill="#0f172a">B3_SW</text>
+      </g>
+
+      <!-- Switch Output Node -->
+      <line x1="75" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2.5"/>
+      <use href="#junc" x="160" y="20"/>
+
+      <!-- 10k Pull-down Resistor (Zig-zag) -->
+      <line x1="160" y1="20" x2="160" y2="35" stroke="#000000" stroke-width="2"/>
+      <use href="#resistor-zigzag-v" x="160" y="35"/>
+      <text x="175" y="70" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
+      <use href="#gnd" x="160" y="95"/>
+
+      <!-- ESP32 4.7k Override Branch -->
+      <rect x="185" y="-2" width="100" height="22" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
+      <text x="235" y="13" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 Pin</text>
+      <line x1="285" y1="9" x2="305" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <use href="#resistor-zigzag-h" x="305" y="9"/>
+      <text x="335" y="-3" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
+      <line x1="365" y1="9" x2="385" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <line x1="385" y1="9" x2="385" y2="20" stroke="#16a34a" stroke-width="2"/>
+      <use href="#junc" x="385" y="20"/>
+
+      <!-- Main Out Bus Wire -->
+      <line x1="160" y1="20" x2="420" y2="20" stroke="#2563eb" stroke-width="2.5"/>
+      <polygon points="400,14 425,20 400,26" fill="#2563eb"/>
+      <text x="390" y="14" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">B3</text>
+    </g>
+
+    <!-- Signal: S0 -->
+    <g transform="translate(30, 780)">
+      <!-- +5V Power Line -->
+      <use href="#vcc-arrow" x="20" y="0"/>
+      <line x1="20" y1="0" x2="20" y2="20" stroke="#dc2626" stroke-width="2"/>
+      
+      <!-- Switch Symbol -->
+      <g transform="translate(20, 20)">
+        <use href="#switch-spst" x="0" y="0"/>
+        <text x="25" y="-15" font-size="10" font-weight="bold" fill="#0f172a">S0_SW</text>
+      </g>
+
+      <!-- Switch Output Node -->
+      <line x1="75" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2.5"/>
+      <use href="#junc" x="160" y="20"/>
+
+      <!-- 10k Pull-down Resistor (Zig-zag) -->
+      <line x1="160" y1="20" x2="160" y2="35" stroke="#000000" stroke-width="2"/>
+      <use href="#resistor-zigzag-v" x="160" y="35"/>
+      <text x="175" y="70" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
+      <use href="#gnd" x="160" y="95"/>
+
+      <!-- ESP32 4.7k Override Branch -->
+      <rect x="185" y="-2" width="100" height="22" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
+      <text x="235" y="13" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 Pin</text>
+      <line x1="285" y1="9" x2="305" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <use href="#resistor-zigzag-h" x="305" y="9"/>
+      <text x="335" y="-3" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
+      <line x1="365" y1="9" x2="385" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <line x1="385" y1="9" x2="385" y2="20" stroke="#16a34a" stroke-width="2"/>
+      <use href="#junc" x="385" y="20"/>
+
+      <!-- Main Out Bus Wire -->
+      <line x1="160" y1="20" x2="420" y2="20" stroke="#2563eb" stroke-width="2.5"/>
+      <polygon points="400,14 425,20 400,26" fill="#2563eb"/>
+      <text x="390" y="14" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">S0</text>
+    </g>
+
+    <!-- Signal: S1 -->
+    <g transform="translate(30, 860)">
+      <!-- +5V Power Line -->
+      <use href="#vcc-arrow" x="20" y="0"/>
+      <line x1="20" y1="0" x2="20" y2="20" stroke="#dc2626" stroke-width="2"/>
+      
+      <!-- Switch Symbol -->
+      <g transform="translate(20, 20)">
+        <use href="#switch-spst" x="0" y="0"/>
+        <text x="25" y="-15" font-size="10" font-weight="bold" fill="#0f172a">S1_SW</text>
+      </g>
+
+      <!-- Switch Output Node -->
+      <line x1="75" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2.5"/>
+      <use href="#junc" x="160" y="20"/>
+
+      <!-- 10k Pull-down Resistor (Zig-zag) -->
+      <line x1="160" y1="20" x2="160" y2="35" stroke="#000000" stroke-width="2"/>
+      <use href="#resistor-zigzag-v" x="160" y="35"/>
+      <text x="175" y="70" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
+      <use href="#gnd" x="160" y="95"/>
+
+      <!-- ESP32 4.7k Override Branch -->
+      <rect x="185" y="-2" width="100" height="22" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
+      <text x="235" y="13" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 Pin</text>
+      <line x1="285" y1="9" x2="305" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <use href="#resistor-zigzag-h" x="305" y="9"/>
+      <text x="335" y="-3" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
+      <line x1="365" y1="9" x2="385" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <line x1="385" y1="9" x2="385" y2="20" stroke="#16a34a" stroke-width="2"/>
+      <use href="#junc" x="385" y="20"/>
+
+      <!-- Main Out Bus Wire -->
+      <line x1="160" y1="20" x2="420" y2="20" stroke="#2563eb" stroke-width="2.5"/>
+      <polygon points="400,14 425,20 400,26" fill="#2563eb"/>
+      <text x="390" y="14" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">S1</text>
+    </g>
+
+    <!-- Signal: S2 -->
+    <g transform="translate(30, 940)">
+      <!-- +5V Power Line -->
+      <use href="#vcc-arrow" x="20" y="0"/>
+      <line x1="20" y1="0" x2="20" y2="20" stroke="#dc2626" stroke-width="2"/>
+      
+      <!-- Switch Symbol -->
+      <g transform="translate(20, 20)">
+        <use href="#switch-spst" x="0" y="0"/>
+        <text x="25" y="-15" font-size="10" font-weight="bold" fill="#0f172a">S2_SW</text>
+      </g>
+
+      <!-- Switch Output Node -->
+      <line x1="75" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2.5"/>
+      <use href="#junc" x="160" y="20"/>
+
+      <!-- 10k Pull-down Resistor (Zig-zag) -->
+      <line x1="160" y1="20" x2="160" y2="35" stroke="#000000" stroke-width="2"/>
+      <use href="#resistor-zigzag-v" x="160" y="35"/>
+      <text x="175" y="70" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
+      <use href="#gnd" x="160" y="95"/>
+
+      <!-- ESP32 4.7k Override Branch -->
+      <rect x="185" y="-2" width="100" height="22" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
+      <text x="235" y="13" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 Pin</text>
+      <line x1="285" y1="9" x2="305" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <use href="#resistor-zigzag-h" x="305" y="9"/>
+      <text x="335" y="-3" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
+      <line x1="365" y1="9" x2="385" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <line x1="385" y1="9" x2="385" y2="20" stroke="#16a34a" stroke-width="2"/>
+      <use href="#junc" x="385" y="20"/>
+
+      <!-- Main Out Bus Wire -->
+      <line x1="160" y1="20" x2="420" y2="20" stroke="#2563eb" stroke-width="2.5"/>
+      <polygon points="400,14 425,20 400,26" fill="#2563eb"/>
+      <text x="390" y="14" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">S2</text>
+    </g>
+
+    <!-- Signal: MODE -->
+    <g transform="translate(30, 1040)">
+      <!-- +5V Power Line -->
+      <use href="#vcc-arrow" x="20" y="0"/>
+      <line x1="20" y1="0" x2="20" y2="20" stroke="#dc2626" stroke-width="2"/>
+      
+      <!-- Switch Symbol -->
+      <g transform="translate(20, 20)">
+        <use href="#switch-spst" x="0" y="0"/>
+        <text x="25" y="-15" font-size="10" font-weight="bold" fill="#0f172a">MODE_SW</text>
+      </g>
+
+      <!-- Switch Output Node -->
+      <line x1="75" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2.5"/>
+      <use href="#junc" x="160" y="20"/>
+
+      <!-- 10k Pull-down Resistor (Zig-zag) -->
+      <line x1="160" y1="20" x2="160" y2="35" stroke="#000000" stroke-width="2"/>
+      <use href="#resistor-zigzag-v" x="160" y="35"/>
+      <text x="175" y="70" font-size="10" font-weight="bold" fill="#64748b">10kΩ</text>
+      <use href="#gnd" x="160" y="95"/>
+
+      <!-- ESP32 4.7k Override Branch -->
+      <rect x="185" y="-2" width="100" height="22" fill="#f0fdf4" stroke="#16a34a" rx="3"/>
+      <text x="235" y="13" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">ESP32 Pin</text>
+      <line x1="285" y1="9" x2="305" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <use href="#resistor-zigzag-h" x="305" y="9"/>
+      <text x="335" y="-3" font-size="10" font-weight="bold" fill="#166534" text-anchor="middle">4.7kΩ</text>
+      <line x1="365" y1="9" x2="385" y2="9" stroke="#16a34a" stroke-width="2"/>
+      <line x1="385" y1="9" x2="385" y2="20" stroke="#16a34a" stroke-width="2"/>
+      <use href="#junc" x="385" y="20"/>
+
+      <!-- Main Out Bus Wire -->
+      <line x1="160" y1="20" x2="420" y2="20" stroke="#2563eb" stroke-width="2.5"/>
+      <polygon points="400,14 425,20 400,26" fill="#2563eb"/>
+      <text x="390" y="14" font-size="12" font-weight="bold" fill="#1d4ed8" text-anchor="end">MODE</text>
+    </g>
+
+    <!-- Bulk Power Decoupling Block at bottom of Col 1 -->
+    <g transform="translate(30, 1250)">
+      <rect x="0" y="0" width="390" height="240" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" rx="4"/>
+      <text x="15" y="26" font-size="13" font-weight="bold" fill="#0f172a">POWER DECOUPLING NETWORK</text>
+      <text x="15" y="46" font-size="10" fill="#64748b">Arduino R4 Minima Dedicated Clean 5V/1A Rail</text>
+      
+      <!-- 5V Rail -->
+      <use href="#vcc-arrow" x="40" y="80"/>
+      <line x1="40" y1="80" x2="350" y2="80" stroke="#dc2626" stroke-width="3"/>
+      
+      <!-- GND Rail -->
+      <use href="#gnd" x="350" y="190"/>
+      <line x1="40" y1="190" x2="350" y2="190" stroke="#000000" stroke-width="3"/>
+      <text x="40" y="210" font-size="11" font-weight="bold">COMMON GND BUS</text>
+
+      <!-- 220uF Electrolytic Bulk -->
+      <use href="#junc-red" x="120" y="80"/>
+      <use href="#junc" x="120" y="190"/>
+      <line x1="120" y1="80" x2="120" y2="110" stroke="#dc2626" stroke-width="2"/>
+      <rect x="105" y="110" width="30" height="40" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+      <line x1="105" y1="110" x2="135" y2="110" stroke="#dc2626" stroke-width="3"/>
+      <text x="140" y="125" font-size="12" font-weight="bold" fill="#0f172a">220µF</text>
+      <text x="140" y="140" font-size="10" fill="#64748b">16V Elec</text>
+      <line x1="120" y1="150" x2="120" y2="190" stroke="#000000" stroke-width="2"/>
+
+      <!-- 12x 0.1uF Ceramic Bypass Representation -->
+      <use href="#junc-red" x="240" y="80"/>
+      <use href="#junc" x="240" y="190"/>
+      <line x1="240" y1="80" x2="240" y2="115" stroke="#dc2626" stroke-width="2"/>
+      <line x1="225" y1="115" x2="255" y2="115" stroke="#000000" stroke-width="2.5"/>
+      <line x1="225" y1="123" x2="255" y2="123" stroke="#000000" stroke-width="2.5"/>
+      <text x="260" y="120" font-size="12" font-weight="bold" fill="#0f172a">0.1µF × 12</text>
+      <text x="260" y="135" font-size="10" fill="#64748b">1 per IC Socket</text>
+      <line x1="240" y1="123" x2="240" y2="190" stroke="#000000" stroke-width="2"/>
     </g>
   </g>
 
   <!-- ========================================================================= -->
-  <!-- SECTION D: 74LS181N & 74HC85 HARDWARE COMPARATOR                          -->
+  <!-- COLUMN 2: SUBTRACTION CONDITIONAL INVERSION (IC2: 74HCT86 XOR GATES)     -->
   <!-- ========================================================================= -->
-  <g id="section-181-85" transform="translate(1620, 140)">
-    <rect x="0" y="0" width="1120" height="1060" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" rx="6"/>
-    <rect x="0" y="0" width="1120" height="32" fill="#e2e8f0" rx="6"/>
-    <text x="15" y="22" font-size="14" font-weight="bold" fill="#0f172a">SILICON BENCHMARK &amp; EQUIVALENCE VERIFIER (74LS181N + 74HC85)</text>
+  <g id="col-sub-xor" transform="translate(560, 130)">
+    <rect x="0" y="0" width="380" height="660" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" rx="4"/>
+    <text x="20" y="30" font-size="15" font-weight="bold" fill="#0f172a">2. SUBTRACTION INVERTER (IC2: 74HCT86)</text>
+    <text x="20" y="50" font-size="11" fill="#64748b">B' = B ⊕ SUB_FLAG (Two's Complement Conditioner)</text>
 
-    <!-- IC11: 74LS181N 24-Pin WIDE DIP -->
-    <g transform="translate(30, 55)">
-      <rect x="0" y="0" width="480" height="480" fill="#ffffff" stroke="#000000" stroke-width="2"/>
-      <text x="240" y="28" font-size="14" font-weight="bold" fill="#000000" text-anchor="middle">IC11: 74LS181N (24-PIN WIDE DIP-600)</text>
-      <text x="240" y="46" font-size="11" fill="#475569" text-anchor="middle">COMMERCIAL MSI 4-BIT ALU (TEXAS INSTRUMENTS)</text>
+    <!-- SUB_FLAG Control Bus line running vertically -->
+    <line x1="50" y1="70" x2="50" y2="600" stroke="#dc2626" stroke-width="2.5"/>
+    <use href="#vcc-arrow" x="50" y="70"/>
+    <text x="60" y="85" font-size="11" font-weight="bold" fill="#dc2626">SUB_FLAG (Opcode 001)</text>
 
-      <!-- Pinout Left (Pins 1-12) -->
-      <text x="15" y="80" font-size="11">Pin 1: B0 In</text>
-      <text x="15" y="105" font-size="11">Pin 2: A0 In</text>
-      <text x="15" y="130" font-size="11">Pin 3: S3 (Select 3)</text>
-      <text x="15" y="155" font-size="11">Pin 4: S2 (Opcode S2)</text>
-      <text x="15" y="180" font-size="11">Pin 5: S1 (Opcode S1)</text>
-      <text x="15" y="205" font-size="11">Pin 6: S0 (Opcode S0)</text>
-      <text x="15" y="230" font-size="11" fill="#ea580c">Pin 7: /Cn (Carry In)</text>
-      <text x="15" y="255" font-size="11" fill="#dc2626">Pin 8: M (Mode: 0=Arith, 1=Logic)</text>
-      <text x="15" y="285" font-size="11" font-weight="bold" fill="#2563eb">Pin 9: F0 (Bit 0 Out)</text>
-      <text x="15" y="310" font-size="11" font-weight="bold" fill="#2563eb">Pin 10: F1 (Bit 1 Out)</text>
-      <text x="15" y="335" font-size="11" font-weight="bold" fill="#2563eb">Pin 11: F2 (Bit 2 Out)</text>
-      <text x="15" y="360" font-size="11" fill="#64748b">Pin 12: GND (0V)</text>
 
-      <!-- Pinout Right (Pins 13-24) -->
-      <text x="465" y="80" font-size="11" font-weight="bold" fill="#dc2626" text-anchor="end">Pin 24: VCC (+5V)</text>
-      <text x="465" y="105" font-size="11" text-anchor="end">Pin 23: A3 In</text>
-      <text x="465" y="130" font-size="11" text-anchor="end">Pin 22: B3 In</text>
-      <text x="465" y="155" font-size="11" text-anchor="end">Pin 21: A1 In</text>
-      <text x="465" y="180" font-size="11" text-anchor="end">Pin 20: B1 In</text>
-      <text x="465" y="205" font-size="11" text-anchor="end">Pin 19: A2 In</text>
-      <text x="465" y="230" font-size="11" text-anchor="end">Pin 18: B2 In</text>
-      <text x="465" y="255" font-size="11" fill="#64748b" text-anchor="end">Pins 14,15,16,17: Open / NC</text>
-      <text x="465" y="285" font-size="11" font-weight="bold" fill="#2563eb" text-anchor="end">Pin 13: F3 (Bit 3 Out)</text>
+    <!-- XOR Gate for B0 -->
+    <g transform="translate(140, 110)">
+      <!-- Input 1 from B switch -->
+      <line x1="-80" y1="10" x2="0" y2="10" stroke="#2563eb" stroke-width="2"/>
+      <text x="-85" y="14" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">B0</text>
 
-      <!-- 4x 4.7k Pull-ups to +5V (CRITICAL FIX) -->
-      <rect x="15" y="380" width="450" height="85" fill="#fef2f2" stroke="#dc2626" rx="4"/>
-      <text x="25" y="402" font-size="11" font-weight="bold" fill="#991b1b">★ CRITICAL: 4x 4.7kΩ PULL-UP RESISTORS TO +5V ON F0..F3</text>
-      <text x="25" y="420" font-size="10" fill="#7f1d1d">• Pulls 74LS181 bipolar TTL outputs (V_OH ≈ 2.7V) up to +5.0V</text>
-      <text x="25" y="435" font-size="10" fill="#7f1d1d">• Required because 74HC85 CMOS requires V_IH ≥ 3.5V (0.7 × 5V)</text>
-      <text x="25" y="450" font-size="10" font-weight="bold" fill="#166534">• Without pull-ups: False FAIL! With pull-ups: 100% Guaranteed MATCH</text>
+      <!-- Input 2 from SUB_FLAG -->
+      <line x1="-90" y1="30" x2="0" y2="30" stroke="#dc2626" stroke-width="2"/>
+      <use href="#junc-red" x="-90" y="30"/>
+
+      <!-- Gate Symbol -->
+      <use href="#gate-xor" x="0" y="0"/>
+      <text x="25" y="24" font-size="10" font-weight="bold" fill="#475569" text-anchor="middle">XOR</text>
+
+      <!-- Output Wire to Adder -->
+      <line x1="70" y1="20" x2="210" y2="20" stroke="#16a34a" stroke-width="2.5"/>
+      <polygon points="190,14 215,20 190,26" fill="#16a34a"/>
+      <text x="180" y="14" font-size="11" font-weight="bold" fill="#15803d" text-anchor="end">B'0</text>
     </g>
 
-    <!-- IC12: 74HC85 Magnitude Comparator -->
-    <g transform="translate(560, 55)">
-      <rect x="0" y="0" width="520" height="480" fill="#ffffff" stroke="#000000" stroke-width="2"/>
-      <text x="260" y="28" font-size="14" font-weight="bold" fill="#000000" text-anchor="middle">IC12: 74HC85</text>
-      <text x="260" y="46" font-size="11" fill="#475569" text-anchor="middle">4-BIT MAGNITUDE COMPARATOR (SILICON VERIFIER)</text>
+    <!-- XOR Gate for B1 -->
+    <g transform="translate(140, 240)">
+      <!-- Input 1 from B switch -->
+      <line x1="-80" y1="10" x2="0" y2="10" stroke="#2563eb" stroke-width="2"/>
+      <text x="-85" y="14" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">B1</text>
 
-      <!-- Input A (From Custom ALU MUXes Y0..Y3) -->
-      <rect x="20" y="65" width="230" height="130" fill="#eff6ff" stroke="#3b82f6"/>
-      <text x="30" y="85" font-size="11" font-weight="bold" fill="#1e3a8a">INPUT A (Custom ALU Y0..Y3):</text>
-      <text x="30" y="105" font-size="10" fill="#1d4ed8">Pin 10 (A0) ◄── IC7 Pin 5 (Y0)</text>
-      <text x="30" y="125" font-size="10" fill="#1d4ed8">Pin 12 (A1) ◄── IC8 Pin 5 (Y1)</text>
-      <text x="30" y="145" font-size="10" fill="#1d4ed8">Pin 13 (A2) ◄── IC9 Pin 5 (Y2)</text>
-      <text x="30" y="165" font-size="10" fill="#1d4ed8">Pin 15 (A3) ◄── IC10 Pin 5 (Y3)</text>
+      <!-- Input 2 from SUB_FLAG -->
+      <line x1="-90" y1="30" x2="0" y2="30" stroke="#dc2626" stroke-width="2"/>
+      <use href="#junc-red" x="-90" y="30"/>
 
-      <!-- Input B (From 74LS181 F0..F3 + Pull-ups) -->
-      <rect x="270" y="65" width="230" height="130" fill="#fef3c7" stroke="#d97706"/>
-      <text x="280" y="85" font-size="11" font-weight="bold" fill="#78350f">INPUT B (74LS181 F0..F3):</text>
-      <text x="280" y="105" font-size="10" fill="#b45309">Pin 9  (B0) ◄── 74181 P9  (+4.7k)</text>
-      <text x="280" y="125" font-size="10" fill="#b45309">Pin 11 (B1) ◄── 74181 P10 (+4.7k)</text>
-      <text x="280" y="145" font-size="10" fill="#b45309">Pin 14 (B2) ◄── 74181 P11 (+4.7k)</text>
-      <text x="280" y="165" font-size="10" fill="#b45309">Pin 1  (B3) ◄── 74181 P13 (+4.7k)</text>
+      <!-- Gate Symbol -->
+      <use href="#gate-xor" x="0" y="0"/>
+      <text x="25" y="24" font-size="10" font-weight="bold" fill="#475569" text-anchor="middle">XOR</text>
 
-      <!-- Cascading Inputs -->
-      <rect x="20" y="210" width="480" height="65" fill="#f8fafc" stroke="#64748b"/>
-      <text x="30" y="230" font-size="11" font-weight="bold" fill="#0f172a">CASCADING EXPANSION PINS (MANDATORY):</text>
-      <text x="30" y="250" font-size="11" fill="#475569">• Pin 3 (I_A=B) ──► Connect to +5V Rail</text>
-      <text x="260" y="250" font-size="11" fill="#475569">• Pins 2,4 (I_A&lt;B, I_A&gt;B) ──► GND Rail</text>
-
-      <!-- Match Output (Pin 6) -->
-      <rect x="20" y="295" width="480" height="165" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
-      <text x="30" y="320" font-size="14" font-weight="bold" fill="#15803d">PIN 6: O(A=B) SILICON EQUIVALENCE MATCH</text>
-      <text x="30" y="340" font-size="11" fill="#166534">Goes HIGH (+5V) when Custom ALU output == Texas Instruments 74LS181!</text>
-
-      <!-- Connections from Pin 6 -->
-      <line x1="30" y1="360" x2="470" y2="360" stroke="#bbf7d0"/>
-      <text x="30" y="380" font-size="11" font-weight="bold" fill="#0f172a">Wired Directly To 3 Destinations:</text>
-      <text x="30" y="400" font-size="11" fill="#14532d">1) Green Silicon Match LED (via 2.2kΩ series resistor to GND)</text>
-      <text x="30" y="420" font-size="11" fill="#14532d">2) Arduino UNO R4 WiFi Pin A0 (Real-time hardware verification)</text>
-      <text x="30" y="440" font-size="11" fill="#14532d">3) Voltage Divider (2.2k/4.7k) ──► ESP32 GPIO 3 (Web Dashboard)</text>
+      <!-- Output Wire to Adder -->
+      <line x1="70" y1="20" x2="210" y2="20" stroke="#16a34a" stroke-width="2.5"/>
+      <polygon points="190,14 215,20 190,26" fill="#16a34a"/>
+      <text x="180" y="14" font-size="11" font-weight="bold" fill="#15803d" text-anchor="end">B'1</text>
     </g>
 
-    <!-- Operational Truth Table for 74LS181 -->
+    <!-- XOR Gate for B2 -->
+    <g transform="translate(140, 370)">
+      <!-- Input 1 from B switch -->
+      <line x1="-80" y1="10" x2="0" y2="10" stroke="#2563eb" stroke-width="2"/>
+      <text x="-85" y="14" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">B2</text>
+
+      <!-- Input 2 from SUB_FLAG -->
+      <line x1="-90" y1="30" x2="0" y2="30" stroke="#dc2626" stroke-width="2"/>
+      <use href="#junc-red" x="-90" y="30"/>
+
+      <!-- Gate Symbol -->
+      <use href="#gate-xor" x="0" y="0"/>
+      <text x="25" y="24" font-size="10" font-weight="bold" fill="#475569" text-anchor="middle">XOR</text>
+
+      <!-- Output Wire to Adder -->
+      <line x1="70" y1="20" x2="210" y2="20" stroke="#16a34a" stroke-width="2.5"/>
+      <polygon points="190,14 215,20 190,26" fill="#16a34a"/>
+      <text x="180" y="14" font-size="11" font-weight="bold" fill="#15803d" text-anchor="end">B'2</text>
+    </g>
+
+    <!-- XOR Gate for B3 -->
+    <g transform="translate(140, 500)">
+      <!-- Input 1 from B switch -->
+      <line x1="-80" y1="10" x2="0" y2="10" stroke="#2563eb" stroke-width="2"/>
+      <text x="-85" y="14" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">B3</text>
+
+      <!-- Input 2 from SUB_FLAG -->
+      <line x1="-90" y1="30" x2="0" y2="30" stroke="#dc2626" stroke-width="2"/>
+      <use href="#junc-red" x="-90" y="30"/>
+
+      <!-- Gate Symbol -->
+      <use href="#gate-xor" x="0" y="0"/>
+      <text x="25" y="24" font-size="10" font-weight="bold" fill="#475569" text-anchor="middle">XOR</text>
+
+      <!-- Output Wire to Adder -->
+      <line x1="70" y1="20" x2="210" y2="20" stroke="#16a34a" stroke-width="2.5"/>
+      <polygon points="190,14 215,20 190,26" fill="#16a34a"/>
+      <text x="180" y="14" font-size="11" font-weight="bold" fill="#15803d" text-anchor="end">B'3</text>
+    </g>
+
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- COLUMN 3: ARITHMETIC ADDER CORE (IC1: 74HCT283 BINARY FULL ADDER)        -->
+  <!-- ========================================================================= -->
+  <g id="col-adder" transform="translate(980, 130)">
+    <rect x="0" y="0" width="460" height="660" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" rx="4"/>
+    <text x="20" y="30" font-size="15" font-weight="bold" fill="#0f172a">3. 4-BIT BINARY ADDER (IC1: 74HCT283)</text>
+    <text x="20" y="50" font-size="11" fill="#64748b">Computes Σ[3..0] = A + B' + Cin with Fast Lookahead Carry</text>
+
+    <!-- Main 74HCT283 Block -->
+    <rect x="70" y="80" width="320" height="540" fill="#ffffff" stroke="#0f172a" stroke-width="2.5" rx="4"/>
+    <text x="230" y="115" font-size="16" font-weight="bold" fill="#0f172a" text-anchor="middle">IC1: 74HCT283</text>
+    <text x="230" y="135" font-size="11" fill="#475569" text-anchor="middle">4-BIT FULL ADDER CORE</text>
+    <line x1="90" y1="145" x2="370" y2="145" stroke="#cbd5e1"/>
+
+    <!-- Left Pins (Inputs) -->
+    <g transform="translate(70, 150)">
+      <!-- Bit 0 -->
+      <line x1="-40" y1="30" x2="0" y2="30" stroke="#2563eb" stroke-width="2"/>
+      <text x="-45" y="34" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">A0</text>
+      <text x="10" y="34" font-size="11" font-weight="bold">Pin 5 (A1)</text>
+
+      <line x1="-40" y1="60" x2="0" y2="60" stroke="#16a34a" stroke-width="2"/>
+      <text x="-45" y="64" font-size="11" font-weight="bold" fill="#15803d" text-anchor="end">B'0</text>
+      <text x="10" y="64" font-size="11" font-weight="bold">Pin 6 (B1)</text>
+
+      <!-- Bit 1 -->
+      <line x1="-40" y1="110" x2="0" y2="110" stroke="#2563eb" stroke-width="2"/>
+      <text x="-45" y="114" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">A1</text>
+      <text x="10" y="114" font-size="11" font-weight="bold">Pin 3 (A2)</text>
+
+      <line x1="-40" y1="140" x2="0" y2="140" stroke="#16a34a" stroke-width="2"/>
+      <text x="-45" y="144" font-size="11" font-weight="bold" fill="#15803d" text-anchor="end">B'1</text>
+      <text x="10" y="144" font-size="11" font-weight="bold">Pin 2 (B2)</text>
+
+      <!-- Bit 2 -->
+      <line x1="-40" y1="190" x2="0" y2="190" stroke="#2563eb" stroke-width="2"/>
+      <text x="-45" y="194" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">A2</text>
+      <text x="10" y="194" font-size="11" font-weight="bold">Pin 14 (A3)</text>
+
+      <line x1="-40" y1="220" x2="0" y2="220" stroke="#16a34a" stroke-width="2"/>
+      <text x="-45" y="224" font-size="11" font-weight="bold" fill="#15803d" text-anchor="end">B'2</text>
+      <text x="10" y="224" font-size="11" font-weight="bold">Pin 15 (B3)</text>
+
+      <!-- Bit 3 -->
+      <line x1="-40" y1="270" x2="0" y2="270" stroke="#2563eb" stroke-width="2"/>
+      <text x="-45" y="274" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">A3</text>
+      <text x="10" y="274" font-size="11" font-weight="bold">Pin 12 (A4)</text>
+
+      <line x1="-40" y1="300" x2="0" y2="300" stroke="#16a34a" stroke-width="2"/>
+      <text x="-45" y="304" font-size="11" font-weight="bold" fill="#15803d" text-anchor="end">B'3</text>
+      <text x="10" y="304" font-size="11" font-weight="bold">Pin 11 (B4)</text>
+
+      <!-- Cin -->
+      <line x1="-40" y1="350" x2="0" y2="350" stroke="#dc2626" stroke-width="2"/>
+      <text x="-45" y="354" font-size="11" font-weight="bold" fill="#dc2626" text-anchor="end">Cin (SUB)</text>
+      <text x="10" y="354" font-size="11" font-weight="bold">Pin 7 (C0)</text>
+    </g>
+
+    <!-- Right Pins (Sum Outputs & Cout) -->
+    <g transform="translate(390, 150)">
+      <line x1="0" y1="45" x2="50" y2="45" stroke="#16a34a" stroke-width="2.5"/>
+      <text x="-10" y="49" font-size="11" font-weight="bold" text-anchor="end">Pin 4 (Σ1)</text>
+      <polygon points="35,39 55,45 35,51" fill="#16a34a"/>
+      <text x="60" y="49" font-size="12" font-weight="bold" fill="#15803d">SUM 0</text>
+
+      <line x1="0" y1="125" x2="50" y2="125" stroke="#16a34a" stroke-width="2.5"/>
+      <text x="-10" y="129" font-size="11" font-weight="bold" text-anchor="end">Pin 1 (Σ2)</text>
+      <polygon points="35,119 55,125 35,131" fill="#16a34a"/>
+      <text x="60" y="129" font-size="12" font-weight="bold" fill="#15803d">SUM 1</text>
+
+      <line x1="0" y1="205" x2="50" y2="205" stroke="#16a34a" stroke-width="2.5"/>
+      <text x="-10" y="209" font-size="11" font-weight="bold" text-anchor="end">Pin 13 (Σ3)</text>
+      <polygon points="35,199 55,205 35,211" fill="#16a34a"/>
+      <text x="60" y="209" font-size="12" font-weight="bold" fill="#15803d">SUM 2</text>
+
+      <line x1="0" y1="285" x2="50" y2="285" stroke="#16a34a" stroke-width="2.5"/>
+      <text x="-10" y="289" font-size="11" font-weight="bold" text-anchor="end">Pin 10 (Σ4)</text>
+      <polygon points="35,279 55,285 35,291" fill="#16a34a"/>
+      <text x="60" y="289" font-size="12" font-weight="bold" fill="#15803d">SUM 3</text>
+
+      <line x1="0" y1="350" x2="50" y2="350" stroke="#ea580c" stroke-width="2.5"/>
+      <text x="-10" y="354" font-size="11" font-weight="bold" text-anchor="end">Pin 9 (C4)</text>
+      <polygon points="35,344 55,350 35,356" fill="#ea580c"/>
+      <text x="60" y="354" font-size="12" font-weight="bold" fill="#c2410c">C4 (Carry)</text>
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- COLUMN 4: BITWISE LOGIC GATE ARRAYS (IC3, IC4, IC5, IC6)                  -->
+  <!-- ========================================================================= -->
+  <g id="col-logic" transform="translate(560, 820)">
+    <rect x="0" y="0" width="880" height="1330" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" rx="4"/>
+    <text x="20" y="30" font-size="15" font-weight="bold" fill="#0f172a">4. BITWISE LOGIC GATE ARRAY (XOR, AND, OR, NOT)</text>
+    <text x="20" y="50" font-size="11" fill="#64748b">IC3 (74HCT86 XOR), IC4 (74HCT08 AND), IC5 (74HCT32 OR), IC6 (74HCT04 NOT)</text>
+
+
+    <!-- BIT 0 SLICE (A0, B0) -->
+    <g transform="translate(30, 70)">
+      <rect x="0" y="0" width="820" height="280" fill="#ffffff" stroke="#e2e8f0" rx="4"/>
+      <text x="20" y="25" font-size="13" font-weight="bold" fill="#1e293b">BIT 0 SLICE (A0, B0)</text>
+
+      <!-- XOR Gate (IC3) -->
+      <g transform="translate(100, 45)">
+        <use href="#gate-xor" x="0" y="0"/>
+        <text x="-20" y="14" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">A0</text>
+        <text x="-20" y="34" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">B0</text>
+        <line x1="70" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2"/>
+        <text x="170" y="24" font-size="11" font-weight="bold" fill="#2563eb">XOR (A0⊕B0) ──► D4</text>
+      </g>
+
+      <!-- AND Gate (IC4) -->
+      <g transform="translate(100, 100)">
+        <use href="#gate-and" x="0" y="0"/>
+        <text x="-20" y="14" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">A0</text>
+        <text x="-20" y="34" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">B0</text>
+        <line x1="65" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2"/>
+        <text x="170" y="24" font-size="11" font-weight="bold" fill="#2563eb">AND (A0·B0) ──► D2</text>
+      </g>
+
+      <!-- OR Gate (IC5) -->
+      <g transform="translate(100, 155)">
+        <use href="#gate-or" x="0" y="0"/>
+        <text x="-20" y="14" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">A0</text>
+        <text x="-20" y="34" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">B0</text>
+        <line x1="70" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2"/>
+        <text x="170" y="24" font-size="11" font-weight="bold" fill="#2563eb">OR  (A0+B0) ──► D3</text>
+      </g>
+
+      <!-- NOT Inverter (IC6) -->
+      <g transform="translate(100, 210)">
+        <use href="#gate-not" x="0" y="0"/>
+        <text x="-20" y="19" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">A0</text>
+        <line x1="53" y1="15" x2="160" y2="15" stroke="#000000" stroke-width="2"/>
+        <text x="170" y="19" font-size="11" font-weight="bold" fill="#2563eb">NOT (~A0) ──► D5</text>
+      </g>
+    </g>
+
+    <!-- BIT 1 SLICE (A1, B1) -->
+    <g transform="translate(30, 380)">
+      <rect x="0" y="0" width="820" height="280" fill="#ffffff" stroke="#e2e8f0" rx="4"/>
+      <text x="20" y="25" font-size="13" font-weight="bold" fill="#1e293b">BIT 1 SLICE (A1, B1)</text>
+
+      <!-- XOR Gate (IC3) -->
+      <g transform="translate(100, 45)">
+        <use href="#gate-xor" x="0" y="0"/>
+        <text x="-20" y="14" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">A1</text>
+        <text x="-20" y="34" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">B1</text>
+        <line x1="70" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2"/>
+        <text x="170" y="24" font-size="11" font-weight="bold" fill="#2563eb">XOR (A1⊕B1) ──► D4</text>
+      </g>
+
+      <!-- AND Gate (IC4) -->
+      <g transform="translate(100, 100)">
+        <use href="#gate-and" x="0" y="0"/>
+        <text x="-20" y="14" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">A1</text>
+        <text x="-20" y="34" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">B1</text>
+        <line x1="65" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2"/>
+        <text x="170" y="24" font-size="11" font-weight="bold" fill="#2563eb">AND (A1·B1) ──► D2</text>
+      </g>
+
+      <!-- OR Gate (IC5) -->
+      <g transform="translate(100, 155)">
+        <use href="#gate-or" x="0" y="0"/>
+        <text x="-20" y="14" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">A1</text>
+        <text x="-20" y="34" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">B1</text>
+        <line x1="70" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2"/>
+        <text x="170" y="24" font-size="11" font-weight="bold" fill="#2563eb">OR  (A1+B1) ──► D3</text>
+      </g>
+
+      <!-- NOT Inverter (IC6) -->
+      <g transform="translate(100, 210)">
+        <use href="#gate-not" x="0" y="0"/>
+        <text x="-20" y="19" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">A1</text>
+        <line x1="53" y1="15" x2="160" y2="15" stroke="#000000" stroke-width="2"/>
+        <text x="170" y="19" font-size="11" font-weight="bold" fill="#2563eb">NOT (~A1) ──► D5</text>
+      </g>
+    </g>
+
+    <!-- BIT 2 SLICE (A2, B2) -->
+    <g transform="translate(30, 690)">
+      <rect x="0" y="0" width="820" height="280" fill="#ffffff" stroke="#e2e8f0" rx="4"/>
+      <text x="20" y="25" font-size="13" font-weight="bold" fill="#1e293b">BIT 2 SLICE (A2, B2)</text>
+
+      <!-- XOR Gate (IC3) -->
+      <g transform="translate(100, 45)">
+        <use href="#gate-xor" x="0" y="0"/>
+        <text x="-20" y="14" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">A2</text>
+        <text x="-20" y="34" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">B2</text>
+        <line x1="70" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2"/>
+        <text x="170" y="24" font-size="11" font-weight="bold" fill="#2563eb">XOR (A2⊕B2) ──► D4</text>
+      </g>
+
+      <!-- AND Gate (IC4) -->
+      <g transform="translate(100, 100)">
+        <use href="#gate-and" x="0" y="0"/>
+        <text x="-20" y="14" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">A2</text>
+        <text x="-20" y="34" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">B2</text>
+        <line x1="65" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2"/>
+        <text x="170" y="24" font-size="11" font-weight="bold" fill="#2563eb">AND (A2·B2) ──► D2</text>
+      </g>
+
+      <!-- OR Gate (IC5) -->
+      <g transform="translate(100, 155)">
+        <use href="#gate-or" x="0" y="0"/>
+        <text x="-20" y="14" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">A2</text>
+        <text x="-20" y="34" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">B2</text>
+        <line x1="70" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2"/>
+        <text x="170" y="24" font-size="11" font-weight="bold" fill="#2563eb">OR  (A2+B2) ──► D3</text>
+      </g>
+
+      <!-- NOT Inverter (IC6) -->
+      <g transform="translate(100, 210)">
+        <use href="#gate-not" x="0" y="0"/>
+        <text x="-20" y="19" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">A2</text>
+        <line x1="53" y1="15" x2="160" y2="15" stroke="#000000" stroke-width="2"/>
+        <text x="170" y="19" font-size="11" font-weight="bold" fill="#2563eb">NOT (~A2) ──► D5</text>
+      </g>
+    </g>
+
+    <!-- BIT 3 SLICE (A3, B3) -->
+    <g transform="translate(30, 1000)">
+      <rect x="0" y="0" width="820" height="280" fill="#ffffff" stroke="#e2e8f0" rx="4"/>
+      <text x="20" y="25" font-size="13" font-weight="bold" fill="#1e293b">BIT 3 SLICE (A3, B3)</text>
+
+      <!-- XOR Gate (IC3) -->
+      <g transform="translate(100, 45)">
+        <use href="#gate-xor" x="0" y="0"/>
+        <text x="-20" y="14" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">A3</text>
+        <text x="-20" y="34" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">B3</text>
+        <line x1="70" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2"/>
+        <text x="170" y="24" font-size="11" font-weight="bold" fill="#2563eb">XOR (A3⊕B3) ──► D4</text>
+      </g>
+
+      <!-- AND Gate (IC4) -->
+      <g transform="translate(100, 100)">
+        <use href="#gate-and" x="0" y="0"/>
+        <text x="-20" y="14" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">A3</text>
+        <text x="-20" y="34" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">B3</text>
+        <line x1="65" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2"/>
+        <text x="170" y="24" font-size="11" font-weight="bold" fill="#2563eb">AND (A3·B3) ──► D2</text>
+      </g>
+
+      <!-- OR Gate (IC5) -->
+      <g transform="translate(100, 155)">
+        <use href="#gate-or" x="0" y="0"/>
+        <text x="-20" y="14" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">A3</text>
+        <text x="-20" y="34" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">B3</text>
+        <line x1="70" y1="20" x2="160" y2="20" stroke="#000000" stroke-width="2"/>
+        <text x="170" y="24" font-size="11" font-weight="bold" fill="#2563eb">OR  (A3+B3) ──► D3</text>
+      </g>
+
+      <!-- NOT Inverter (IC6) -->
+      <g transform="translate(100, 210)">
+        <use href="#gate-not" x="0" y="0"/>
+        <text x="-20" y="19" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="end">A3</text>
+        <line x1="53" y1="15" x2="160" y2="15" stroke="#000000" stroke-width="2"/>
+        <text x="170" y="19" font-size="11" font-weight="bold" fill="#2563eb">NOT (~A3) ──► D5</text>
+      </g>
+    </g>
+
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- COLUMN 5: 4-BIT MULTIPLEXER BANK (IC7..IC10: 74HCT151 8:1 MUXES)          -->
+  <!-- ========================================================================= -->
+  <g id="col-mux" transform="translate(1480, 130)">
+    <rect x="0" y="0" width="560" height="2020" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" rx="4"/>
+    <text x="20" y="30" font-size="15" font-weight="bold" fill="#0f172a">5. 4-BIT MULTIPLEXER ARRAY (8:1 DATA SELECTORS)</text>
+    <text x="20" y="50" font-size="11" fill="#64748b">IC7 (Y0), IC8 (Y1), IC9 (Y2), IC10 (Y3) driven by 3-bit Opcode (S0, S1, S2)</text>
+
+    <!-- IC7: 74HCT151 (Bit 0 MUX) -->
+    <g transform="translate(30, 80)">
+      <!-- MUX Box Trapezoid / Rect -->
+      <polygon points="80,20 380,20 340,420 80,420" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
+      <text x="220" y="55" font-size="15" font-weight="bold" fill="#0f172a" text-anchor="middle">IC7: 74HCT151 (Bit 0 MUX)</text>
+
+      <!-- 8 Inputs D0-D7 -->
+      <g transform="translate(80, 70)">
+        <line x1="-50" y1="20" x2="0" y2="20" stroke="#16a34a" stroke-width="2"/>
+        <text x="-55" y="24" font-size="11" font-weight="bold" fill="#15803d" text-anchor="end">D0: ADD (Sum)</text>
+
+        <line x1="-50" y1="55" x2="0" y2="55" stroke="#16a34a" stroke-width="2"/>
+        <text x="-55" y="59" font-size="11" font-weight="bold" fill="#15803d" text-anchor="end">D1: SUB (Sum)</text>
+
+        <line x1="-50" y1="90" x2="0" y2="90" stroke="#2563eb" stroke-width="2"/>
+        <text x="-55" y="94" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">D2: AND</text>
+
+        <line x1="-50" y1="125" x2="0" y2="125" stroke="#2563eb" stroke-width="2"/>
+        <text x="-55" y="129" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">D3: OR</text>
+
+        <line x1="-50" y1="160" x2="0" y2="160" stroke="#2563eb" stroke-width="2"/>
+        <text x="-55" y="164" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">D4: XOR</text>
+
+        <line x1="-50" y1="195" x2="0" y2="195" stroke="#2563eb" stroke-width="2"/>
+        <text x="-55" y="199" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">D5: NOT</text>
+
+        <line x1="-50" y1="230" x2="0" y2="230" stroke="#9333ea" stroke-width="2"/>
+        <text x="-55" y="234" font-size="11" font-weight="bold" fill="#7e22ce" text-anchor="end">D6: SHL</text>
+
+        <line x1="-50" y1="265" x2="0" y2="265" stroke="#9333ea" stroke-width="2"/>
+        <text x="-55" y="269" font-size="11" font-weight="bold" fill="#7e22ce" text-anchor="end">D7: SHR</text>
+      </g>
+
+      <!-- Select lines on bottom -->
+      <line x1="140" y1="420" x2="140" y2="455" stroke="#ea580c" stroke-width="2"/>
+      <text x="140" y="470" font-size="10" font-weight="bold" fill="#c2410c" text-anchor="middle">S0</text>
+      <line x1="200" y1="420" x2="200" y2="455" stroke="#ea580c" stroke-width="2"/>
+      <text x="200" y="470" font-size="10" font-weight="bold" fill="#c2410c" text-anchor="middle">S1</text>
+      <line x1="260" y1="420" x2="260" y2="455" stroke="#ea580c" stroke-width="2"/>
+      <text x="260" y="470" font-size="10" font-weight="bold" fill="#c2410c" text-anchor="middle">S2</text>
+
+      <!-- Enable pin to GND -->
+      <line x1="100" y1="420" x2="100" y2="445" stroke="#000000" stroke-width="2"/>
+      <use href="#gnd" x="100" y="445"/>
+      <text x="100" y="475" font-size="9" fill="#64748b" text-anchor="middle">/G=GND</text>
+
+      <!-- Output Line Y -->
+      <line x1="360" y1="220" x2="490" y2="220" stroke="#0f172a" stroke-width="3"/>
+      <polygon points="470,214 495,220 470,226" fill="#0f172a"/>
+      <rect x="420" y="195" width="80" height="25" fill="#eff6ff" stroke="#3b82f6" rx="3"/>
+      <text x="460" y="212" font-size="13" font-weight="bold" fill="#1d4ed8" text-anchor="middle">Y0</text>
+    </g>
+
+    <!-- IC8: 74HCT151 (Bit 1 MUX) -->
     <g transform="translate(30, 560)">
-      <rect x="0" y="0" width="1050" height="470" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
-      <text x="525" y="25" font-size="13" font-weight="bold" fill="#0f172a" text-anchor="middle">OPERATION MAPPING: 3-BIT OPCODE ──► 74HCT151 MUX &amp; 74LS181N CONTROL LINES</text>
+      <!-- MUX Box Trapezoid / Rect -->
+      <polygon points="80,20 380,20 340,420 80,420" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
+      <text x="220" y="55" font-size="15" font-weight="bold" fill="#0f172a" text-anchor="middle">IC8: 74HCT151 (Bit 1 MUX)</text>
 
-      <line x1="20" y1="40" x2="1030" y2="40" stroke="#000000" stroke-width="1.5"/>
-      <text x="30" y="60" font-size="11" font-weight="bold">Opcode (S2 S1 S0)</text>
-      <text x="180" y="60" font-size="11" font-weight="bold">ALU Operation</text>
-      <text x="340" y="60" font-size="11" font-weight="bold">74151 MUX Input</text>
-      <text x="500" y="60" font-size="11" font-weight="bold">74181 Mode (M)</text>
-      <text x="660" y="60" font-size="11" font-weight="bold">74181 Select (S3 S2 S1 S0)</text>
-      <text x="880" y="60" font-size="11" font-weight="bold">74181 Carry (/Cn)</text>
-      <line x1="20" y1="72" x2="1030" y2="72" stroke="#cbd5e1"/>
+      <!-- 8 Inputs D0-D7 -->
+      <g transform="translate(80, 70)">
+        <line x1="-50" y1="20" x2="0" y2="20" stroke="#16a34a" stroke-width="2"/>
+        <text x="-55" y="24" font-size="11" font-weight="bold" fill="#15803d" text-anchor="end">D0: ADD (Sum)</text>
 
-      <!-- Table rows -->
+        <line x1="-50" y1="55" x2="0" y2="55" stroke="#16a34a" stroke-width="2"/>
+        <text x="-55" y="59" font-size="11" font-weight="bold" fill="#15803d" text-anchor="end">D1: SUB (Sum)</text>
 
-      <text x="30" y="95" font-size="11" font-family="monospace">000 (0)</text>
-      <text x="180" y="95" font-size="11" font-weight="bold" fill="#0f172a">ADD (A + B)</text>
-      <text x="340" y="95" font-size="11" fill="#16a34a">D0 (Pin 12)</text>
-      <text x="500" y="95" font-size="11" fill="#dc2626">0 (Arithmetic)</text>
-      <text x="660" y="95" font-size="11" font-family="monospace" fill="#2563eb">1001 (H, L, L, H)</text>
-      <text x="880" y="95" font-size="11" fill="#ea580c">1 (No carry)</text>
-      <line x1="20" y1="110" x2="1030" y2="110" stroke="#f1f5f9"/>
+        <line x1="-50" y1="90" x2="0" y2="90" stroke="#2563eb" stroke-width="2"/>
+        <text x="-55" y="94" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">D2: AND</text>
 
-      <text x="30" y="135" font-size="11" font-family="monospace">001 (1)</text>
-      <text x="180" y="135" font-size="11" font-weight="bold" fill="#0f172a">SUB (A - B)</text>
-      <text x="340" y="135" font-size="11" fill="#16a34a">D1 (Pin 4)</text>
-      <text x="500" y="135" font-size="11" fill="#dc2626">0 (Arithmetic)</text>
-      <text x="660" y="135" font-size="11" font-family="monospace" fill="#2563eb">0110 (L, H, H, L)</text>
-      <text x="880" y="135" font-size="11" fill="#ea580c">0 (Two's comp C0=0)</text>
-      <line x1="20" y1="150" x2="1030" y2="150" stroke="#f1f5f9"/>
+        <line x1="-50" y1="125" x2="0" y2="125" stroke="#2563eb" stroke-width="2"/>
+        <text x="-55" y="129" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">D3: OR</text>
 
-      <text x="30" y="175" font-size="11" font-family="monospace">010 (2)</text>
-      <text x="180" y="175" font-size="11" font-weight="bold" fill="#0f172a">AND (A · B)</text>
-      <text x="340" y="175" font-size="11" fill="#16a34a">D2 (Pin 3)</text>
-      <text x="500" y="175" font-size="11" fill="#dc2626">1 (Logic)</text>
-      <text x="660" y="175" font-size="11" font-family="monospace" fill="#2563eb">1011 (H, L, H, H)</text>
-      <text x="880" y="175" font-size="11" fill="#ea580c">X (Don't care)</text>
-      <line x1="20" y1="190" x2="1030" y2="190" stroke="#f1f5f9"/>
+        <line x1="-50" y1="160" x2="0" y2="160" stroke="#2563eb" stroke-width="2"/>
+        <text x="-55" y="164" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">D4: XOR</text>
 
-      <text x="30" y="215" font-size="11" font-family="monospace">011 (3)</text>
-      <text x="180" y="215" font-size="11" font-weight="bold" fill="#0f172a">OR  (A + B)</text>
-      <text x="340" y="215" font-size="11" fill="#16a34a">D3 (Pin 2)</text>
-      <text x="500" y="215" font-size="11" fill="#dc2626">1 (Logic)</text>
-      <text x="660" y="215" font-size="11" font-family="monospace" fill="#2563eb">1110 (H, H, H, L)</text>
-      <text x="880" y="215" font-size="11" fill="#ea580c">X (Don't care)</text>
-      <line x1="20" y1="230" x2="1030" y2="230" stroke="#f1f5f9"/>
+        <line x1="-50" y1="195" x2="0" y2="195" stroke="#2563eb" stroke-width="2"/>
+        <text x="-55" y="199" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">D5: NOT</text>
 
-      <text x="30" y="255" font-size="11" font-family="monospace">100 (4)</text>
-      <text x="180" y="255" font-size="11" font-weight="bold" fill="#0f172a">XOR (A ⊕ B)</text>
-      <text x="340" y="255" font-size="11" fill="#16a34a">D4 (Pin 1)</text>
-      <text x="500" y="255" font-size="11" fill="#dc2626">1 (Logic)</text>
-      <text x="660" y="255" font-size="11" font-family="monospace" fill="#2563eb">0110 (L, H, H, L)</text>
-      <text x="880" y="255" font-size="11" fill="#ea580c">X (Don't care)</text>
-      <line x1="20" y1="270" x2="1030" y2="270" stroke="#f1f5f9"/>
+        <line x1="-50" y1="230" x2="0" y2="230" stroke="#9333ea" stroke-width="2"/>
+        <text x="-55" y="234" font-size="11" font-weight="bold" fill="#7e22ce" text-anchor="end">D6: SHL</text>
 
-      <text x="30" y="295" font-size="11" font-family="monospace">101 (5)</text>
-      <text x="180" y="295" font-size="11" font-weight="bold" fill="#0f172a">NOT (~A)</text>
-      <text x="340" y="295" font-size="11" fill="#16a34a">D5 (Pin 15)</text>
-      <text x="500" y="295" font-size="11" fill="#dc2626">1 (Logic)</text>
-      <text x="660" y="295" font-size="11" font-family="monospace" fill="#2563eb">0000 (L, L, L, L)</text>
-      <text x="880" y="295" font-size="11" fill="#ea580c">X (Don't care)</text>
-      <line x1="20" y1="310" x2="1030" y2="310" stroke="#f1f5f9"/>
+        <line x1="-50" y1="265" x2="0" y2="265" stroke="#9333ea" stroke-width="2"/>
+        <text x="-55" y="269" font-size="11" font-weight="bold" fill="#7e22ce" text-anchor="end">D7: SHR</text>
+      </g>
 
-      <text x="30" y="335" font-size="11" font-family="monospace">110 (6)</text>
-      <text x="180" y="335" font-size="11" font-weight="bold" fill="#0f172a">SHL (A << 1)</text>
-      <text x="340" y="335" font-size="11" fill="#16a34a">D6 (Pin 14)</text>
-      <text x="500" y="335" font-size="11" fill="#dc2626">N/A (Custom MUX)</text>
-      <text x="660" y="335" font-size="11" font-family="monospace" fill="#2563eb">N/A (Custom MUX)</text>
-      <text x="880" y="335" font-size="11" fill="#ea580c">N/A</text>
-      <line x1="20" y1="350" x2="1030" y2="350" stroke="#f1f5f9"/>
+      <!-- Select lines on bottom -->
+      <line x1="140" y1="420" x2="140" y2="455" stroke="#ea580c" stroke-width="2"/>
+      <text x="140" y="470" font-size="10" font-weight="bold" fill="#c2410c" text-anchor="middle">S0</text>
+      <line x1="200" y1="420" x2="200" y2="455" stroke="#ea580c" stroke-width="2"/>
+      <text x="200" y="470" font-size="10" font-weight="bold" fill="#c2410c" text-anchor="middle">S1</text>
+      <line x1="260" y1="420" x2="260" y2="455" stroke="#ea580c" stroke-width="2"/>
+      <text x="260" y="470" font-size="10" font-weight="bold" fill="#c2410c" text-anchor="middle">S2</text>
 
-      <text x="30" y="375" font-size="11" font-family="monospace">111 (7)</text>
-      <text x="180" y="375" font-size="11" font-weight="bold" fill="#0f172a">SHR (A >> 1)</text>
-      <text x="340" y="375" font-size="11" fill="#16a34a">D7 (Pin 13)</text>
-      <text x="500" y="375" font-size="11" fill="#dc2626">N/A (Custom MUX)</text>
-      <text x="660" y="375" font-size="11" font-family="monospace" fill="#2563eb">N/A (Custom MUX)</text>
-      <text x="880" y="375" font-size="11" fill="#ea580c">N/A</text>
-      <line x1="20" y1="390" x2="1030" y2="390" stroke="#f1f5f9"/>
+      <!-- Enable pin to GND -->
+      <line x1="100" y1="420" x2="100" y2="445" stroke="#000000" stroke-width="2"/>
+      <use href="#gnd" x="100" y="445"/>
+      <text x="100" y="475" font-size="9" fill="#64748b" text-anchor="middle">/G=GND</text>
 
-      <!-- Mode 0 Carry Cascade Note -->
-      <rect x="20" y="405" width="1010" height="50" fill="#eff6ff" stroke="#3b82f6" rx="3"/>
-      <text x="35" y="426" font-size="11" font-weight="bold" fill="#1e40af">MODE 0 (8-BIT CASCADE):</text>
-      <text x="35" y="443" font-size="11" fill="#1d4ed8">IC1 74HCT283 Carry Out (Pin 9 C4) ──► Inverted by IC6 (NOT) ──► Connects to 74LS181 Pin 7 (/Cn) for full 8-bit addition!</text>
+      <!-- Output Line Y -->
+      <line x1="360" y1="220" x2="490" y2="220" stroke="#0f172a" stroke-width="3"/>
+      <polygon points="470,214 495,220 470,226" fill="#0f172a"/>
+      <rect x="420" y="195" width="80" height="25" fill="#eff6ff" stroke="#3b82f6" rx="3"/>
+      <text x="460" y="212" font-size="13" font-weight="bold" fill="#1d4ed8" text-anchor="middle">Y1</text>
+    </g>
+
+    <!-- IC9: 74HCT151 (Bit 2 MUX) -->
+    <g transform="translate(30, 1040)">
+      <!-- MUX Box Trapezoid / Rect -->
+      <polygon points="80,20 380,20 340,420 80,420" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
+      <text x="220" y="55" font-size="15" font-weight="bold" fill="#0f172a" text-anchor="middle">IC9: 74HCT151 (Bit 2 MUX)</text>
+
+      <!-- 8 Inputs D0-D7 -->
+      <g transform="translate(80, 70)">
+        <line x1="-50" y1="20" x2="0" y2="20" stroke="#16a34a" stroke-width="2"/>
+        <text x="-55" y="24" font-size="11" font-weight="bold" fill="#15803d" text-anchor="end">D0: ADD (Sum)</text>
+
+        <line x1="-50" y1="55" x2="0" y2="55" stroke="#16a34a" stroke-width="2"/>
+        <text x="-55" y="59" font-size="11" font-weight="bold" fill="#15803d" text-anchor="end">D1: SUB (Sum)</text>
+
+        <line x1="-50" y1="90" x2="0" y2="90" stroke="#2563eb" stroke-width="2"/>
+        <text x="-55" y="94" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">D2: AND</text>
+
+        <line x1="-50" y1="125" x2="0" y2="125" stroke="#2563eb" stroke-width="2"/>
+        <text x="-55" y="129" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">D3: OR</text>
+
+        <line x1="-50" y1="160" x2="0" y2="160" stroke="#2563eb" stroke-width="2"/>
+        <text x="-55" y="164" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">D4: XOR</text>
+
+        <line x1="-50" y1="195" x2="0" y2="195" stroke="#2563eb" stroke-width="2"/>
+        <text x="-55" y="199" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">D5: NOT</text>
+
+        <line x1="-50" y1="230" x2="0" y2="230" stroke="#9333ea" stroke-width="2"/>
+        <text x="-55" y="234" font-size="11" font-weight="bold" fill="#7e22ce" text-anchor="end">D6: SHL</text>
+
+        <line x1="-50" y1="265" x2="0" y2="265" stroke="#9333ea" stroke-width="2"/>
+        <text x="-55" y="269" font-size="11" font-weight="bold" fill="#7e22ce" text-anchor="end">D7: SHR</text>
+      </g>
+
+      <!-- Select lines on bottom -->
+      <line x1="140" y1="420" x2="140" y2="455" stroke="#ea580c" stroke-width="2"/>
+      <text x="140" y="470" font-size="10" font-weight="bold" fill="#c2410c" text-anchor="middle">S0</text>
+      <line x1="200" y1="420" x2="200" y2="455" stroke="#ea580c" stroke-width="2"/>
+      <text x="200" y="470" font-size="10" font-weight="bold" fill="#c2410c" text-anchor="middle">S1</text>
+      <line x1="260" y1="420" x2="260" y2="455" stroke="#ea580c" stroke-width="2"/>
+      <text x="260" y="470" font-size="10" font-weight="bold" fill="#c2410c" text-anchor="middle">S2</text>
+
+      <!-- Enable pin to GND -->
+      <line x1="100" y1="420" x2="100" y2="445" stroke="#000000" stroke-width="2"/>
+      <use href="#gnd" x="100" y="445"/>
+      <text x="100" y="475" font-size="9" fill="#64748b" text-anchor="middle">/G=GND</text>
+
+      <!-- Output Line Y -->
+      <line x1="360" y1="220" x2="490" y2="220" stroke="#0f172a" stroke-width="3"/>
+      <polygon points="470,214 495,220 470,226" fill="#0f172a"/>
+      <rect x="420" y="195" width="80" height="25" fill="#eff6ff" stroke="#3b82f6" rx="3"/>
+      <text x="460" y="212" font-size="13" font-weight="bold" fill="#1d4ed8" text-anchor="middle">Y2</text>
+    </g>
+
+    <!-- IC10: 74HCT151 (Bit 3 MUX) -->
+    <g transform="translate(30, 1520)">
+      <!-- MUX Box Trapezoid / Rect -->
+      <polygon points="80,20 380,20 340,420 80,420" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
+      <text x="220" y="55" font-size="15" font-weight="bold" fill="#0f172a" text-anchor="middle">IC10: 74HCT151 (Bit 3 MUX)</text>
+
+      <!-- 8 Inputs D0-D7 -->
+      <g transform="translate(80, 70)">
+        <line x1="-50" y1="20" x2="0" y2="20" stroke="#16a34a" stroke-width="2"/>
+        <text x="-55" y="24" font-size="11" font-weight="bold" fill="#15803d" text-anchor="end">D0: ADD (Sum)</text>
+
+        <line x1="-50" y1="55" x2="0" y2="55" stroke="#16a34a" stroke-width="2"/>
+        <text x="-55" y="59" font-size="11" font-weight="bold" fill="#15803d" text-anchor="end">D1: SUB (Sum)</text>
+
+        <line x1="-50" y1="90" x2="0" y2="90" stroke="#2563eb" stroke-width="2"/>
+        <text x="-55" y="94" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">D2: AND</text>
+
+        <line x1="-50" y1="125" x2="0" y2="125" stroke="#2563eb" stroke-width="2"/>
+        <text x="-55" y="129" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">D3: OR</text>
+
+        <line x1="-50" y1="160" x2="0" y2="160" stroke="#2563eb" stroke-width="2"/>
+        <text x="-55" y="164" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">D4: XOR</text>
+
+        <line x1="-50" y1="195" x2="0" y2="195" stroke="#2563eb" stroke-width="2"/>
+        <text x="-55" y="199" font-size="11" font-weight="bold" fill="#1d4ed8" text-anchor="end">D5: NOT</text>
+
+        <line x1="-50" y1="230" x2="0" y2="230" stroke="#9333ea" stroke-width="2"/>
+        <text x="-55" y="234" font-size="11" font-weight="bold" fill="#7e22ce" text-anchor="end">D6: SHL</text>
+
+        <line x1="-50" y1="265" x2="0" y2="265" stroke="#9333ea" stroke-width="2"/>
+        <text x="-55" y="269" font-size="11" font-weight="bold" fill="#7e22ce" text-anchor="end">D7: SHR</text>
+      </g>
+
+      <!-- Select lines on bottom -->
+      <line x1="140" y1="420" x2="140" y2="455" stroke="#ea580c" stroke-width="2"/>
+      <text x="140" y="470" font-size="10" font-weight="bold" fill="#c2410c" text-anchor="middle">S0</text>
+      <line x1="200" y1="420" x2="200" y2="455" stroke="#ea580c" stroke-width="2"/>
+      <text x="200" y="470" font-size="10" font-weight="bold" fill="#c2410c" text-anchor="middle">S1</text>
+      <line x1="260" y1="420" x2="260" y2="455" stroke="#ea580c" stroke-width="2"/>
+      <text x="260" y="470" font-size="10" font-weight="bold" fill="#c2410c" text-anchor="middle">S2</text>
+
+      <!-- Enable pin to GND -->
+      <line x1="100" y1="420" x2="100" y2="445" stroke="#000000" stroke-width="2"/>
+      <use href="#gnd" x="100" y="445"/>
+      <text x="100" y="475" font-size="9" fill="#64748b" text-anchor="middle">/G=GND</text>
+
+      <!-- Output Line Y -->
+      <line x1="360" y1="220" x2="490" y2="220" stroke="#0f172a" stroke-width="3"/>
+      <polygon points="470,214 495,220 470,226" fill="#0f172a"/>
+      <rect x="420" y="195" width="80" height="25" fill="#eff6ff" stroke="#3b82f6" rx="3"/>
+      <text x="460" y="212" font-size="13" font-weight="bold" fill="#1d4ed8" text-anchor="middle">Y3</text>
+    </g>
+
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- COLUMN 6: 74LS181 COMMERCIAL ALU & 74HC85 COMPARATOR                      -->
+  <!-- ========================================================================= -->
+  <g id="col-181-85" transform="translate(2080, 130)">
+    <rect x="0" y="0" width="700" height="1260" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" rx="4"/>
+    <text x="20" y="30" font-size="15" font-weight="bold" fill="#0f172a">6. SILICON BENCHMARK &amp; HARDWARE COMPARATOR</text>
+    <text x="20" y="50" font-size="11" fill="#64748b">IC11 (74LS181N 4-Bit ALU) + 4x 4.7kΩ Pull-ups + IC12 (74HC85 Comparator)</text>
+
+    <!-- 74LS181N Block -->
+    <g transform="translate(30, 80)">
+      <rect x="0" y="0" width="300" height="520" fill="#ffffff" stroke="#000000" stroke-width="2.5" rx="4"/>
+      <text x="150" y="30" font-size="15" font-weight="bold" fill="#000000" text-anchor="middle">IC11: 74LS181N</text>
+      <text x="150" y="48" font-size="10" fill="#475569" text-anchor="middle">24-PIN WIDE DIP-600 ALU</text>
+      <line x1="20" y1="58" x2="280" y2="58" stroke="#cbd5e1"/>
+
+      <!-- Inputs on left -->
+      <g transform="translate(0, 70)">
+        <text x="10" y="20" font-size="11">Pin 2: A0</text>
+        <text x="10" y="50" font-size="11">Pin 21: A1</text>
+        <text x="10" y="80" font-size="11">Pin 19: A2</text>
+        <text x="10" y="110" font-size="11">Pin 23: A3</text>
+        <text x="10" y="150" font-size="11">Pin 1: B0</text>
+        <text x="10" y="180" font-size="11">Pin 20: B1</text>
+        <text x="10" y="210" font-size="11">Pin 18: B2</text>
+        <text x="10" y="240" font-size="11">Pin 22: B3</text>
+        <text x="10" y="280" font-size="11" fill="#ea580c">Pins 3..6: S3..S0</text>
+        <text x="10" y="310" font-size="11" fill="#dc2626">Pin 8: Mode M</text>
+        <text x="10" y="340" font-size="11" fill="#ea580c">Pin 7: /Cn (Carry In)</text>
+        <text x="10" y="390" font-size="10" fill="#64748b">Pin 24: +5V | Pin 12: GND</text>
+      </g>
+
+      <!-- Outputs on right -->
+      <g transform="translate(300, 70)">
+        <line x1="0" y1="40" x2="50" y2="40" stroke="#000000" stroke-width="2"/>
+        <text x="-10" y="44" font-size="11" font-weight="bold" text-anchor="end">Pin 9 (F0)</text>
+
+        <line x1="0" y1="100" x2="50" y2="100" stroke="#000000" stroke-width="2"/>
+        <text x="-10" y="104" font-size="11" font-weight="bold" text-anchor="end">Pin 10 (F1)</text>
+
+        <line x1="0" y1="160" x2="50" y2="160" stroke="#000000" stroke-width="2"/>
+        <text x="-10" y="164" font-size="11" font-weight="bold" text-anchor="end">Pin 11 (F2)</text>
+
+        <line x1="0" y1="220" x2="50" y2="220" stroke="#000000" stroke-width="2"/>
+        <text x="-10" y="224" font-size="11" font-weight="bold" text-anchor="end">Pin 13 (F3)</text>
+      </g>
+    </g>
+
+    <!-- 4x 4.7k Pull-up Resistors (Zig-zag) to +5V -->
+    <g transform="translate(360, 110)">
+      <use href="#vcc-arrow" x="30" y="0"/>
+      <line x1="30" y1="0" x2="30" y2="240" stroke="#dc2626" stroke-width="2"/>
+      
+      <!-- 4 Pull-ups -->
+      <use href="#junc-red" x="30" y="40"/>
+      <use href="#resistor-zigzag-h" x="30" y="40"/>
+      <text x="60" y="32" font-size="10" font-weight="bold" fill="#dc2626">4.7kΩ</text>
+      <use href="#junc" x="90" y="40"/>
+
+      <use href="#junc-red" x="30" y="100"/>
+      <use href="#resistor-zigzag-h" x="30" y="100"/>
+      <text x="60" y="92" font-size="10" font-weight="bold" fill="#dc2626">4.7kΩ</text>
+      <use href="#junc" x="90" y="100"/>
+
+      <use href="#junc-red" x="30" y="160"/>
+      <use href="#resistor-zigzag-h" x="30" y="160"/>
+      <text x="60" y="152" font-size="10" font-weight="bold" fill="#dc2626">4.7kΩ</text>
+      <use href="#junc" x="90" y="160"/>
+
+      <use href="#junc-red" x="30" y="220"/>
+      <use href="#resistor-zigzag-h" x="30" y="220"/>
+      <text x="60" y="212" font-size="10" font-weight="bold" fill="#dc2626">4.7kΩ</text>
+      <use href="#junc" x="90" y="220"/>
+    </g>
+
+    <!-- IC12: 74HC85 4-Bit Magnitude Comparator -->
+    <g transform="translate(480, 80)">
+      <rect x="0" y="0" width="190" height="520" fill="#ffffff" stroke="#000000" stroke-width="2.5" rx="4"/>
+      <text x="95" y="30" font-size="14" font-weight="bold" fill="#000000" text-anchor="middle">IC12: 74HC85</text>
+      <text x="95" y="48" font-size="10" fill="#475569" text-anchor="middle">MAGNITUDE COMPARATOR</text>
+      <line x1="15" y1="58" x2="175" y2="58" stroke="#cbd5e1"/>
+
+      <!-- Input B (from 74181 F0..F3) -->
+      <text x="10" y="85" font-size="10" font-weight="bold">Pin 9: B0</text>
+      <text x="10" y="145" font-size="10" font-weight="bold">Pin 11: B1</text>
+      <text x="10" y="205" font-size="10" font-weight="bold">Pin 14: B2</text>
+      <text x="10" y="265" font-size="10" font-weight="bold">Pin 1: B3</text>
+
+      <!-- Input A (from Custom ALU Y0..Y3) -->
+      <text x="10" y="315" font-size="10" fill="#1d4ed8">Pin 10: A0 ◄─ Y0</text>
+      <text x="10" y="340" font-size="10" fill="#1d4ed8">Pin 12: A1 ◄─ Y1</text>
+      <text x="10" y="365" font-size="10" fill="#1d4ed8">Pin 13: A2 ◄─ Y2</text>
+      <text x="10" y="390" font-size="10" fill="#1d4ed8">Pin 15: A3 ◄─ Y3</text>
+
+      <!-- Cascading pins -->
+      <text x="10" y="430" font-size="10" fill="#16a34a">Pin 3 (I_A=B) ──► +5V</text>
+      <text x="10" y="450" font-size="10" fill="#64748b">Pin 2,4 (I_A&lt;B,&gt;B) ──► GND</text>
+
+      <!-- Pin 6 Match Output -->
+      <line x1="190" y1="480" x2="210" y2="480" stroke="#16a34a" stroke-width="3"/>
+      <text x="180" y="475" font-size="11" font-weight="bold" fill="#15803d" text-anchor="end">Pin 6 (A=B)</text>
+    </g>
+
+    <!-- Silicon Match Indicator Circuit (LED + Resistor) -->
+    <g transform="translate(200, 680)">
+      <rect x="0" y="0" width="470" height="200" fill="#f0fdf4" stroke="#16a34a" stroke-width="2" rx="4"/>
+      <text x="20" y="30" font-size="14" font-weight="bold" fill="#166534">HARDWARE SILICON MATCH INDICATOR (PIN 6)</text>
+      
+      <!-- Input Wire from Pin 6 -->
+      <line x1="0" y1="80" x2="60" y2="80" stroke="#16a34a" stroke-width="3"/>
+      <text x="10" y="70" font-size="11" font-weight="bold" fill="#15803d">From 74HC85 P6</text>
+      <use href="#junc" x="60" y="80"/>
+
+      <!-- LED Branch -->
+      <line x1="60" y1="80" x2="100" y2="80" stroke="#16a34a" stroke-width="2"/>
+      <use href="#resistor-zigzag-h" x="100" y="80"/>
+      <text x="130" y="70" font-size="10" font-weight="bold" fill="#166534">2.2kΩ</text>
+      <line x1="160" y1="80" x2="200" y2="80" stroke="#16a34a" stroke-width="2"/>
+      <use href="#symbol-led" x="200" y="80"/>
+      <text x="220" y="65" font-size="11" font-weight="bold" fill="#15803d">GREEN MATCH LED</text>
+      <line x1="247" y1="80" x2="280" y2="80" stroke="#000000" stroke-width="2"/>
+      <use href="#gnd" x="280" y="80"/>
+
+      <!-- Arduino & ESP32 Tap Points -->
+      <line x1="60" y1="80" x2="60" y2="140" stroke="#16a34a" stroke-width="2"/>
+      <use href="#junc" x="60" y="140"/>
+      <line x1="60" y1="140" x2="160" y2="140" stroke="#16a34a" stroke-width="2"/>
+      <text x="170" y="144" font-size="11" font-weight="bold" fill="#15803d">──► To Arduino UNO R4 WiFi Pin A0</text>
+      <line x1="60" y1="140" x2="60" y2="170" stroke="#16a34a" stroke-width="2"/>
+      <line x1="60" y1="170" x2="160" y2="170" stroke="#16a34a" stroke-width="2"/>
+      <text x="170" y="174" font-size="11" font-weight="bold" fill="#15803d">──► To ESP32 Divider ──► GPIO 3</text>
     </g>
   </g>
 
   <!-- ========================================================================= -->
-  <!-- SECTION E: ARDUINO UNO R4 WIFI (VERIFIER & 12x8 MATRIX SCOREBOARD)        -->
+  <!-- COLUMN 7: ARDUINO UNO R4 WIFI & ESP32-S3 HETEROGENEOUS MCUS               -->
   <!-- ========================================================================= -->
-  <g id="section-r4" transform="translate(1620, 1220)">
-    <rect x="0" y="0" width="540" height="680" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" rx="6"/>
-    <rect x="0" y="0" width="540" height="32" fill="#e2e8f0" rx="6"/>
-    <text x="15" y="22" font-size="14" font-weight="bold" fill="#0f172a">ARDUINO UNO R4 WIFI (SOFTWARE GOLDEN MODEL ORACLE)</text>
+  <g id="col-mcus" transform="translate(2820, 130)">
+    <rect x="0" y="0" width="520" height="2020" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" rx="4"/>
+    <text x="20" y="30" font-size="15" font-weight="bold" fill="#0f172a">7. DUAL MCU ORACLE &amp; TELEMETRY INTERFACE</text>
+    <text x="20" y="50" font-size="11" fill="#64748b">Arduino UNO R4 WiFi (5V Golden Verifier) + ESP32-S3 (3.3V Web Dashboard)</text>
 
-    <!-- Board Diagram -->
-    <rect x="25" y="50" width="490" height="605" fill="#ffffff" stroke="#000000" stroke-width="2"/>
-    <text x="270" y="80" font-size="16" font-weight="bold" fill="#000000" text-anchor="middle">ARDUINO UNO R4 WIFI</text>
-    <text x="270" y="100" font-size="12" fill="#475569" text-anchor="middle">Renesas RA4M1 (ARM Cortex-M4 @ 48MHz) · Native 5.0V Logic</text>
+    <!-- Arduino UNO R4 WiFi Card -->
+    <g transform="translate(25, 80)">
+      <rect x="0" y="0" width="470" height="740" fill="#ffffff" stroke="#000000" stroke-width="2" rx="4"/>
+      <text x="235" y="35" font-size="16" font-weight="bold" fill="#0f172a" text-anchor="middle">ARDUINO UNO R4 WIFI</text>
+      <text x="235" y="55" font-size="11" fill="#64748b" text-anchor="middle">Software Golden Model &amp; 12×8 LED Matrix Scoreboard</text>
+      <line x1="20" y1="68" x2="450" y2="68" stroke="#cbd5e1"/>
 
-    <!-- 12x8 LED Matrix Graphic -->
-    <rect x="170" y="125" width="200" height="140" fill="#0f172a" rx="4"/>
-    <text x="270" y="150" font-size="12" font-weight="bold" fill="#38bdf8" text-anchor="middle">12×8 LED MATRIX HUD</text>
-    <!-- Checkmark representation -->
-    <path d="M 230 205 L 255 230 L 310 175" fill="none" stroke="#22c55e" stroke-width="5" stroke-linecap="round"/>
-    <text x="270" y="252" font-size="11" font-weight="bold" fill="#22c55e" text-anchor="middle">PASS CHECKMARK</text>
+      <!-- Matrix Representation -->
+      <rect x="135" y="85" width="200" height="130" fill="#0f172a" rx="4"/>
+      <text x="235" y="110" font-size="12" font-weight="bold" fill="#38bdf8" text-anchor="middle">12×8 LED MATRIX HUD</text>
+      <path d="M 195 160 L 225 190 L 285 130" fill="none" stroke="#22c55e" stroke-width="5" stroke-linecap="round"/>
+      <text x="235" y="205" font-size="11" font-weight="bold" fill="#22c55e" text-anchor="middle">PASS / FAIL SCROLLER</text>
 
-    <!-- Digital Pin Mapping Table -->
-    <g transform="translate(40, 285)">
-      <text x="0" y="15" font-size="12" font-weight="bold" fill="#0f172a">DIRECT 5V OUTPUT BUS SAMPLING (D2 - D9):</text>
-      <text x="0" y="38" font-size="11" fill="#1e293b">Pin D2 ◄── Custom ALU Y0 (IC7 Pin 5)</text>
-      <text x="0" y="58" font-size="11" fill="#1e293b">Pin D3 ◄── Custom ALU Y1 (IC8 Pin 5)</text>
-      <text x="0" y="78" font-size="11" fill="#1e293b">Pin D4 ◄── Custom ALU Y2 (IC9 Pin 5)</text>
-      <text x="0" y="98" font-size="11" fill="#1e293b">Pin D5 ◄── Custom ALU Y3 (IC10 Pin 5)</text>
-      <text x="0" y="118" font-size="11" fill="#1e293b">Pin D6 ◄── 74LS181 F0 (Pin 9)</text>
-      <text x="0" y="138" font-size="11" fill="#1e293b">Pin D7 ◄── 74LS181 F1 (Pin 10)</text>
-      <text x="0" y="158" font-size="11" fill="#1e293b">Pin D8 ◄── 74LS181 F2 (Pin 11)</text>
-      <text x="0" y="178" font-size="11" fill="#1e293b">Pin D9 ◄── 74LS181 F3 (Pin 13)</text>
+      <!-- Pinout Hookups -->
+      <g transform="translate(30, 240)">
+        <text x="0" y="20" font-size="12" font-weight="bold" fill="#0f172a">DIRECT 5V OUTPUT BUS READING (D2 - D9):</text>
+        <text x="0" y="45" font-size="11">Pin D2 ◄── Custom ALU Y0 (IC7 Pin 5)</text>
+        <text x="0" y="65" font-size="11">Pin D3 ◄── Custom ALU Y1 (IC8 Pin 5)</text>
+        <text x="0" y="85" font-size="11">Pin D4 ◄── Custom ALU Y2 (IC9 Pin 5)</text>
+        <text x="0" y="105" font-size="11">Pin D5 ◄── Custom ALU Y3 (IC10 Pin 5)</text>
+        <text x="0" y="125" font-size="11">Pin D6 ◄── 74LS181 F0 (Pin 9)</text>
+        <text x="0" y="145" font-size="11">Pin D7 ◄── 74LS181 F1 (Pin 10)</text>
+        <text x="0" y="165" font-size="11">Pin D8 ◄── 74LS181 F2 (Pin 11)</text>
+        <text x="0" y="185" font-size="11">Pin D9 ◄── 74LS181 F3 (Pin 13)</text>
 
-      <line x1="0" y1="195" x2="460" y2="195" stroke="#cbd5e1"/>
-      <text x="0" y="215" font-size="12" font-weight="bold" fill="#0f172a">CONTROL &amp; STATUS HOOKUPS:</text>
-      <text x="0" y="235" font-size="11" fill="#475569">Pins D10, D11, D12 ◄── Opcode Select S0, S1, S2</text>
-      <text x="0" y="255" font-size="11" fill="#475569">Pin D13 ◄── Mode Select Switch (0 = 8-Bit, 1 = Verify)</text>
-      <text x="0" y="275" font-size="11" font-weight="bold" fill="#16a34a">Pin A0 ◄── IC12 74HC85 Pin 6 (Hardware Match Flag)</text>
-      <text x="0" y="295" font-size="11" fill="#15803d">Pin A4 ──► [2.2kΩ Resistor] ──► Green PASS LED</text>
-      <text x="0" y="315" font-size="11" fill="#dc2626">Pin A5 ──► [2.2kΩ Resistor] ──► Red FAIL LED</text>
-      <text x="0" y="335" font-size="11" font-weight="bold" fill="#000000">GND ──► Breadboard Main Ground Rail (Common GND)</text>
+        <line x1="0" y1="205" x2="410" y2="205" stroke="#e2e8f0"/>
+        <text x="0" y="225" font-size="12" font-weight="bold" fill="#0f172a">CONTROL &amp; STATUS HOOKUPS:</text>
+        <text x="0" y="245" font-size="11">Pins D10, D11, D12 ◄── Opcode S0, S1, S2</text>
+        <text x="0" y="265" font-size="11">Pin D13 ◄── Mode Select Switch</text>
+        <text x="0" y="285" font-size="11" font-weight="bold" fill="#16a34a">Pin A0 ◄── IC12 74HC85 Pin 6 (Match Flag)</text>
+        <text x="0" y="310" font-size="11" fill="#15803d">Pin A4 ──► [2.2kΩ] ──► Green PASS LED</text>
+        <text x="0" y="330" font-size="11" fill="#dc2626">Pin A5 ──► [2.2kΩ] ──► Red FAIL LED</text>
+        <text x="0" y="355" font-size="11" font-weight="bold" fill="#000000">GND Pin ──► Breadboard Common GND Rail</text>
+      </g>
     </g>
-  </g>
 
-  <!-- ========================================================================= -->
-  <!-- SECTION F: ESP32-S3 N16R8 (WEB TELEMETRY & LEVEL SHIFTERS)                -->
-  <!-- ========================================================================= -->
-  <g id="section-esp32" transform="translate(2190, 1220)">
-    <rect x="0" y="0" width="550" height="680" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" rx="6"/>
-    <rect x="0" y="0" width="550" height="32" fill="#e2e8f0" rx="6"/>
-    <text x="15" y="22" font-size="14" font-weight="bold" fill="#0f172a">ESP32-S3 N16R8 (IOT CONSOLE &amp; VOLTAGE DIVIDERS)</text>
+    <!-- ESP32-S3 IoT Console Card -->
+    <g transform="translate(25, 860)">
+      <rect x="0" y="0" width="470" height="1120" fill="#ffffff" stroke="#000000" stroke-width="2" rx="4"/>
+      <text x="235" y="35" font-size="16" font-weight="bold" fill="#000000" text-anchor="middle">ESP32-S3 N16R8</text>
+      <text x="235" y="55" font-size="11" fill="#64748b" text-anchor="middle">IoT Web Dashboard &amp; Remote Test Vector Injector</text>
+      <line x1="20" y1="68" x2="450" y2="68" stroke="#cbd5e1"/>
 
-    <rect x="25" y="50" width="500" height="605" fill="#ffffff" stroke="#000000" stroke-width="2"/>
-    <text x="275" y="80" font-size="16" font-weight="bold" fill="#000000" text-anchor="middle">ESP32-S3 N16R8</text>
-    <text x="275" y="100" font-size="12" fill="#475569" text-anchor="middle">Dual-Core LX7 @ 240MHz · 16MB Flash · 8MB Octal PSRAM</text>
+      <!-- 9x Voltage Dividers Representation -->
+      <g transform="translate(30, 85)">
+        <rect x="0" y="0" width="410" height="190" fill="#f0fdf4" stroke="#16a34a" rx="4"/>
+        <text x="15" y="25" font-size="13" font-weight="bold" fill="#166534">9x VOLTAGE DIVIDERS (5V ──► 3.40V SAFE):</text>
+        
+        <!-- Schematic diagram of divider -->
+        <g transform="translate(40, 50)">
+          <text x="-30" y="14" font-size="11" font-weight="bold">5V In</text>
+          <line x1="10" y1="10" x2="30" y2="10" stroke="#000000" stroke-width="2"/>
+          <use href="#resistor-zigzag-h" x="30" y="10"/>
+          <text x="60" y="0" font-size="10" font-weight="bold" fill="#166534">2.2kΩ</text>
+          
+          <line x1="90" y1="10" x2="130" y2="10" stroke="#000000" stroke-width="2"/>
+          <use href="#junc" x="130" y="10"/>
+          
+          <!-- Tap to ESP32 -->
+          <line x1="130" y1="10" x2="170" y2="10" stroke="#16a34a" stroke-width="2.5"/>
+          <polygon points="160,5 180,10 160,15" fill="#16a34a"/>
+          <text x="190" y="14" font-size="11" font-weight="bold" fill="#15803d">To ESP32 Pin (3.40V)</text>
 
-    <!-- Voltage Divider Schematic Box -->
-    <rect x="40" y="125" width="470" height="130" fill="#f0fdf4" stroke="#16a34a" rx="4"/>
-    <text x="50" y="145" font-size="12" font-weight="bold" fill="#166534">9x PRECISION RESISTOR DIVIDERS (5.0V ──► 3.40V SAFE):</text>
-    <text x="50" y="165" font-size="11" fill="#15803d">V_out = 5.0V × [ 4.7kΩ / (2.2kΩ + 4.7kΩ) ] = 3.40V</text>
-    <text x="50" y="185" font-size="10" fill="#14532d">• Top Resistor: 2.2kΩ (from 5V output pin to ESP32 pin)</text>
-    <text x="50" y="200" font-size="10" fill="#14532d">• Bottom Resistor: 4.7kΩ (from ESP32 pin to GND)</text>
-    <text x="50" y="215" font-size="10" fill="#14532d">• Protects ESP32 GPIOs while providing crisp, sub-microsecond edges</text>
-    <text x="50" y="235" font-size="10" font-weight="bold" fill="#166534">★ Fulfills entire project with user's exact 2.2k &amp; 4.7k stock!</text>
+          <!-- Bottom resistor to GND -->
+          <line x1="130" y1="10" x2="130" y2="35" stroke="#000000" stroke-width="2"/>
+          <use href="#resistor-zigzag-v" x="130" y="35"/>
+          <text x="145" y="65" font-size="10" font-weight="bold" fill="#64748b">4.7kΩ</text>
+          <use href="#gnd" x="130" y="95"/>
+        </g>
 
-    <!-- ESP32 Pin Allocation Table -->
-    <g transform="translate(40, 275)">
-      <text x="0" y="15" font-size="12" font-weight="bold" fill="#0f172a">DIVIDER INPUT CHANNELS (MONITORING):</text>
-      <text x="0" y="38" font-size="11" fill="#1e293b">GPIO 38 ◄── Divider ◄── Y0 | GPIO 39 ◄── Divider ◄── Y1</text>
-      <text x="0" y="58" font-size="11" fill="#1e293b">GPIO 40 ◄── Divider ◄── Y2 | GPIO 41 ◄── Divider ◄── Y3</text>
-      <text x="0" y="78" font-size="11" fill="#1e293b">GPIO 42 ◄── Divider ◄── Y4 | GPIO 47 ◄── Divider ◄── Y5</text>
-      <text x="0" y="98" font-size="11" fill="#1e293b">GPIO 48 ◄── Divider ◄── Y6 | GPIO 21 ◄── Divider ◄── Y7</text>
-      <text x="0" y="118" font-size="11" font-weight="bold" fill="#16a34a">GPIO 3  ◄── Divider ◄── IC12 74HC85 Pin 6 (Silicon Match)</text>
+        <text x="15" y="170" font-size="10" fill="#14532d">Formula: V_out = 5.0V × (4.7k / (2.2k + 4.7k)) = 3.40V (Safe!)</text>
+      </g>
 
-      <line x1="0" y1="135" x2="470" y2="135" stroke="#cbd5e1"/>
-      <text x="0" y="155" font-size="12" font-weight="bold" fill="#0f172a">HYBRID INPUT DRIVE CHANNELS (4.7kΩ OVERRIDE):</text>
-      <text x="0" y="175" font-size="11" fill="#475569">GPIO 1..5   ──► [4.7kΩ] ──► Operands A0..A3</text>
-      <text x="0" y="195" font-size="11" fill="#475569">GPIO 10..13 ──► [4.7kΩ] ──► Operands B0..B3</text>
-      <text x="0" y="215" font-size="11" fill="#475569">GPIO 18,35,36 ──► [4.7kΩ] ──► Opcode S0, S1, S2</text>
-      <text x="0" y="235" font-size="11" fill="#475569">GPIO 37     ──► [4.7kΩ] ──► Mode Switch</text>
-      <text x="0" y="255" font-size="11" font-weight="bold" fill="#000000">GND ──► Breadboard Main Ground Rail (Common GND)</text>
+      <!-- Pin Map Details -->
+      <g transform="translate(30, 300)">
+        <text x="0" y="20" font-size="12" font-weight="bold" fill="#0f172a">VOLTAGE DIVIDER INPUT CHANNELS:</text>
+        <text x="0" y="42" font-size="11">GPIO 38..41 ◄── Dividers from Y0..Y3</text>
+        <text x="0" y="62" font-size="11">GPIO 42,47,48,21 ◄── Dividers from Y4..Y7 (74181)</text>
+        <text x="0" y="82" font-size="11" font-weight="bold" fill="#16a34a">GPIO 3 ◄── Divider from IC12 P6 (Silicon Match)</text>
 
-      <rect x="0" y="280" width="470" height="75" fill="#eff6ff" stroke="#3b82f6" rx="4"/>
-      <text x="15" y="302" font-size="11" font-weight="bold" fill="#1e40af">STANDALONE WI-FI WEB SERVER &amp; WEBSOCKETS:</text>
-      <text x="15" y="322" font-size="10" fill="#1d4ed8">• SSID: "DECA-ALU" | Pass: "decaalu2024" | IP: 192.168.4.1</text>
-      <text x="15" y="338" font-size="10" fill="#1d4ed8">• Port 80: HTML5 Dashboard | Port 81: 100ms Live Telemetry Stream</text>
+        <line x1="0" y1="105" x2="410" y2="105" stroke="#e2e8f0"/>
+        <text x="0" y="125" font-size="12" font-weight="bold" fill="#0f172a">HYBRID OVERRIDE OUTPUT CHANNELS (4.7kΩ):</text>
+        <text x="0" y="147" font-size="11">GPIO 1..5   ──► [4.7kΩ] ──► Operands A0..A3</text>
+        <text x="0" y="167" font-size="11">GPIO 10..13 ──► [4.7kΩ] ──► Operands B0..B3</text>
+        <text x="0" y="187" font-size="11">GPIO 18,35,36 ──► [4.7kΩ] ──► Opcode S0, S1, S2</text>
+        <text x="0" y="207" font-size="11">GPIO 37     ──► [4.7kΩ] ──► Mode Switch</text>
+        <text x="0" y="227" font-size="11" font-weight="bold" fill="#000000">GND Pin ──► Breadboard Common GND Rail</text>
+      </g>
     </g>
   </g>
 
