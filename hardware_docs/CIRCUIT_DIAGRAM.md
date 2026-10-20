@@ -1,5 +1,5 @@
 # Complete Hardware Circuit Schematic & Netlist
-## Dual-Mode Discrete & Silicon ALU Processor (74xx Discrete + 74LS181N + 74HCT85)
+## Dual-Mode Discrete & Silicon ALU Processor (Discrete Logic + 74LS181N + 74HCT85)
 ### Heterogeneous 3-Board Infrastructure: ESP32-S3 N16R8, Arduino UNO R4 WiFi & Arduino UNO R4 Minima
 
 This document provides the exhaustive hardware circuit schematics, ASCII circuit blueprints, operational data flows, and a complete pin-by-pin netlist for the **Dual-Mode Discrete & Silicon ALU Processor**.
@@ -180,7 +180,7 @@ Each of the 20 input lines ($A[7:0], B[7:0], S[2:0], \text{MODE}$) features this
                  └─────────────┘            │             │
         A0 ────────────────────────────────►│ A1       Σ3 ├───► MUX3 D0, D1 (IC10 Pins 4,3)
         A1 ────────────────────────────────►│ A2          │
-        A2 ────────────────────────────────►│ A3       C4 ├───► Carry Out (IC1 Pin 9)
+        A2 ────────────────────────────────►│ A3       C4 ├───► Carry Out (IC1 Pin 14)
         A3 ────────────────────────────────►│ A4       C0 │      │
                                             └──────┬──────┘      ▼
                                                    ▲      ┌──────────────┐
@@ -407,7 +407,7 @@ Every bit-slice $i \in \{0, 1, 2, 3\}$ uses one 74HCT151:
 ### 3.5 Custom 4-Bit ALU Internal Function Nets
 | Net Name | Source Pin | Destination Pin | Logic Function |
 | :--- | :--- | :--- | :--- |
-| **NET_SUM_0** | IC1 Pin 9 ($\Sigma_1$) | IC7 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Addition/Subtraction Bit 0 |
+| **NET_SUM_0** | IC1 Pin 14 ($\Sigma_1$) | IC7 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Addition/Subtraction Bit 0 |
 | **NET_SUM_1** | IC1 Pin 6 ($\Sigma_2$) | IC8 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Addition/Subtraction Bit 1 |
 | **NET_SUM_2** | IC1 Pin 2 ($\Sigma_3$) | IC9 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Addition/Subtraction Bit 2 |
 | **NET_SUM_3** | IC1 Pin 1 ($\Sigma_4$) | IC10 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Addition/Subtraction Bit 3 |

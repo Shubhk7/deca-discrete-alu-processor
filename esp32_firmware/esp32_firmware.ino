@@ -13,13 +13,13 @@
 // System Responsibilities:
 // 1. Dual-Mode Hybrid Architecture Management:
 //    - MODE 0: 8-Bit Cascaded Compute
-//      * Lower Nibble Y[3:0]: Custom 4-Bit ALU (74xx283 + 74xx86/08/32/04 + 74xx151 MUXes)
+//      * Lower Nibble Y[3:0]: Custom 4-Bit ALU (74LS83N + 74HC86N/08/32/04 + 74HCT151 MUXes)
 //      * Upper Nibble Y[7:4]: Commercial 74LS181N 4-Bit ALU
-//      * Carry Cascade: IC1 (74xx283) C4 cascades directly into 74LS181N /Cn
+//      * Carry Cascade: IC1 (74LS83N) C4 cascades directly into 74LS181N /Cn
 //    - MODE 1: Real-Time Silicon Verification
 //      * Custom 4-Bit ALU and 74LS181N receive IDENTICAL 4-bit inputs A[3:0] and B[3:0]
-//      * IC12 (74xx85 4-Bit Magnitude Comparator) verifies Custom Y[3:0] vs 74LS181 F[3:0]
-//      * 74xx85 Pin 6 (A=B Output) asserts HIGH on hardware match
+//      * IC12 (74HCT85 4-Bit Magnitude Comparator) verifies Custom Y[3:0] vs 74LS181 F[3:0]
+//      * 74HCT85 Pin 6 (A=B Output) asserts HIGH on hardware match
 // 2. Heterogeneous 3-Board Infrastructure:
 //    - ESP32-S3 N16R8 ("The Brain"): SoftAP Wi-Fi ('DECA-ALU'), WebSocket telemetry, UI
 //    - Arduino UNO R4 WiFi ("The Verifier"): 5V bus sniffer, Golden Model, 12x8 Matrix HUD
@@ -66,7 +66,7 @@ uint8_t currentY = 0;           // ALU Hardware Output Bus (8-bit)
 uint8_t customAluY = 0;         // Custom 4-Bit ALU Output (Y[3:0])
 uint8_t ls181AluY = 0;          // 74LS181N 4-Bit ALU Output (Y[7:4])
 uint8_t expectedY = 0;          // Software Golden Model Expected Output
-bool hw7485Pass = false;        // 74xx85 Pin 6 (A=B Output) hardware match flag
+bool hw7485Pass = false;        // 74HCT85 Pin 6 (A=B Output) hardware match flag
 bool goldenMatch = false;       // Software Golden Model match flag
 bool siliconMatch = false;      // Custom ALU vs 74LS181 direct silicon match flag
 bool overallPass = false;       // Comprehensive system verification pass flag
@@ -162,7 +162,7 @@ void updateHardwareStates() {
     customAluY = currentY & 0x0F;        // Lower Nibble: Custom 4-Bit ALU
     ls181AluY = (currentY >> 4) & 0x0F;  // Upper Nibble: Commercial 74LS181N ALU
 
-    // Read 74xx85 4-Bit Magnitude Comparator Pin 6 (A=B Output)
+    // Read 74HCT85 4-Bit Magnitude Comparator Pin 6 (A=B Output)
     hw7485Pass = (digitalRead(PIN_7485_PASS) == HIGH);
 
     // Compute expected result via Software Golden Model
@@ -183,7 +183,7 @@ void updateHardwareStates() {
         uint8_t exp4 = expectedY & 0x0F;
         goldenMatch = (customAluY == exp4 && ls181AluY == exp4);
 
-        // 3. Hardware Comparator: IC12 (74xx85) Pin 6 must be HIGH
+        // 3. Hardware Comparator: IC12 (74HCT85) Pin 6 must be HIGH
         overallPass = siliconMatch && goldenMatch && hw7485Pass;
     }
 }
@@ -422,7 +422,7 @@ void setup() {
         pinMode(PINS_BUS_Y[i], INPUT_PULLDOWN);
     }
 
-    // 2. Configure 74xx85 Hardware Silicon Match Monitor Pin (Pin 6 A=B via divider)
+    // 2. Configure 74HCT85 Hardware Silicon Match Monitor Pin (Pin 6 A=B via divider)
     pinMode(PIN_7485_PASS, INPUT_PULLDOWN);
 
     // 3. Configure Hybrid Bidirectional Pins as Inputs by default (Passive physical DIP mode)

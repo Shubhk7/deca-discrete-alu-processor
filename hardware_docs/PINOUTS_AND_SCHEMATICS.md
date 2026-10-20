@@ -1,5 +1,5 @@
 # Pinouts, Truth Tables, and Complete Interconnection Schematics
-## Dual-Mode Discrete & Silicon ALU Processor (74xx Discrete + 74LS181N + 74xx85)
+## Dual-Mode Discrete & Silicon ALU Processor (Discrete Logic + 74LS181N + 74HCT85)
 ### With ESP32-S3 IoT Dashboard, Arduino UNO R4 WiFi Verifier & Arduino UNO R4 Minima Power Station
 
 This document provides the exhaustive hardware reference, ASCII pinouts, logic truth tables, gate-level schematics, opcode translation matrices, and multi-board power distribution blueprints for the **Dual-Mode Discrete & Silicon ALU Processor**.
@@ -20,7 +20,7 @@ The processor implements a reconfigurable hybrid architecture utilizing the user
      │      8-BIT CASCADED ALU       │               │ REAL-TIME SILICON BENCHMARK   │
      │  Lower 4-Bit : Custom ALU     │               │  Custom 4-Bit ALU  vs 74LS181 │
      │  Upper 4-Bit : 74LS181N ALU   │               │  Identical Inputs A[3:0], B   │
-     │  Carry Link  : C4 -> /Cn      │               │  Hardware 74xx85 Equivalence  │
+     │  Carry Link  : C4 -> /Cn      │               │  Hardware 74HCT85 Equivalence  │
      │  Result Bus  : Y[7:0]         │               │  Pin 6 (A=B) -> Green PASS LED│
      └───────────────────────────────┘               └───────────────────────────────┘
 ```
@@ -130,7 +130,7 @@ All chips are standard Dual In-line Packages (DIP) viewed from above with the in
 
 > [!CAUTION]
 > **CRITICAL HARDWARE WARNING — 74LS83N NON-STANDARD POWER PINS**:
-> Unlike standard TTL chips (such as the 74283 which uses Pin 16 for VCC and Pin 8 for GND), the **74LS83N** features non-standard power pin locations:
+> Unlike standard TTL chips (such as the 74LS83N which uses Pin 16 for VCC and Pin 8 for GND), the **74LS83N** features non-standard power pin locations:
 > - **Pin 5 is $V_{CC}$ (+5V)**!
 > - **Pin 12 is GND (0V)**!
 > **DO NOT** connect Pin 16 to +5V or Pin 8 to GND! On a 74LS83N, Pin 16 is Operand $B_4$ and Pin 8 is Operand $A_2$. Connecting Pin 16 to +5V will damage the input!
@@ -442,12 +442,12 @@ All chips are standard Dual In-line Packages (DIP) viewed from above with the in
 
 ---
 
-### IC12: 74xx85 (4-Bit Magnitude Comparator) — 16-Pin DIP
+### IC12: 74HCT85 (4-Bit Magnitude Comparator) — 16-Pin DIP
 * **Role**: Nanosecond-speed hardware equivalence verifier comparing Custom ALU outputs against 74LS181N silicon outputs.
 * **Supply**: Pin 16 = $+5\text{V}$, Pin 8 = $\text{GND}$.
 
 ```
-                          74xx85 (IC12)
+                          74HCT85 (IC12)
                        ┌───---───┐
                     B3 │ 1    16 │  VCC (+5V)
                  I A<B │ 2    15 │  A3
@@ -523,7 +523,7 @@ The mode steering network switches signal routing between the 8-bit cascaded pro
     A[3:0] ──► Custom 4-Bit Discrete ALU ────► Lower Output Bus Y[3:0]
     B[3:0] ──► (IC1, IC2, IC3, IC4, IC5, IC6, IC7..IC10)
                  │
-                 ▼ C4 (IC1 Pin 9)
+                 ▼ C4 (IC1 Pin 14)
              [ IC6 Inverter ] ──► /Cn (Pin 7)
                                       │
     A[7:4] ───────────────────────────┼──────► 74LS181N Silicon ALU (IC11) ──► Upper Bus Y[7:4]
@@ -535,7 +535,7 @@ The mode steering network switches signal routing between the 8-bit cascaded pro
   Input Operands:
     A[3:0] ──┬───────────────────────────────► Custom 4-Bit ALU ──► Y_custom[3:0] ──┐
              │                                                                      ▼ (Word A)
-             └───────────────────────────────► 74LS181N Silicon ──► Y_181[3:0] ────► 74xx85 (IC12)
+             └───────────────────────────────► 74LS181N Silicon ──► Y_181[3:0] ────► 74HCT85 (IC12)
     B[3:0] ──┬───────────────────────────────► Custom 4-Bit ALU                     ▲ (Word B)
              │                                                                      │
              └───────────────────────────────► 74LS181N Silicon ────────────────────┘
@@ -546,9 +546,9 @@ The mode steering network switches signal routing between the 8-bit cascaded pro
 
 ---
 
-## 6. IC12 (74xx85) Hardware Equivalence Comparator Subsystem
+## 6. IC12 (74HCT85) Hardware Equivalence Comparator Subsystem
 
-The `74xx85` executes parallel 4-bit magnitude comparison in silicon. When comparing $Y_{custom}[3:0]$ vs $F_{181}[3:0]$:
+The `74HCT85` executes parallel 4-bit magnitude comparison in silicon. When comparing $Y_{custom}[3:0]$ vs $F_{181}[3:0]$:
 
 ```
           Custom ALU Bits Y[3..0]            74LS181 Output Bits F[3..0]
@@ -558,7 +558,7 @@ The `74xx85` executes parallel 4-bit magnitude comparison in silicon. When compa
              Pins 10, 12, 13, 15                   Pins 9, 11, 14, 1
              (Inputs A0,A1,A2,A3)                  (Inputs B0,B1,B2,B3)
              ┌────────────────────────────────────────────────────────┐
-             │                 IC12: 74xx85 COMPARATOR                │
+             │                 IC12: 74HCT85 COMPARATOR                │
              │                                                        │
              │   Pin 3 (I A=B) ◄─── +5V (VCC)                         │
              │   Pin 2 (I A<B) ◄─── GND                               │
@@ -578,7 +578,7 @@ The `74xx85` executes parallel 4-bit magnitude comparison in silicon. When compa
                                                         GND
 ```
 
-### Truth Table for 74xx85 Equivalence Checking:
+### Truth Table for 74HCT85 Equivalence Checking:
 | Comparing Inputs | Cascading Inputs | Outputs | Hardware Indicator |
 | :---: | :---: | :---: | :--- |
 | $A_3..A_0 == B_3..B_0$ | $I_{A=B}=1, I_{A<B}=0, I_{A>B}=0$ | $Q_{A=B} = \mathbf{1},\ Q_{A<B} = 0,\ Q_{A>B} = 0$ | 🟢 **PASS LED ON** (+5V output) |

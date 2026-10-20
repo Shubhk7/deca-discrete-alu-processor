@@ -190,7 +190,7 @@ This document is the **definitive physical benchtop assembly manual** for the Du
 | **8** | 4Y | **IC10 Pin 14 ($D_5$)** | Bit 3 Inverted ($\overline{A_3}$) to MUX3 | White |
 | **9** | 4A | **Input Bus $A_3$** | Bit 3 Operand A | Yellow |
 | **10** | 5Y | **IC11 Pin 7 ($\bar{C}_n$, via Mode Switch)** | Inverted Carry: $\overline{C_4}$ (Active-LOW for 74LS181) | Orange |
-| **11** | 5A | **IC1 Pin 14 ($C_4$)** | Raw Carry-out from 74xx283 Adder | Orange |
+| **11** | 5A | **IC1 Pin 14 ($C_4$)** | Raw Carry-out from 74LS83N Adder | Orange |
 | **12** | 6Y | **NC (Unconnected)** | Spare Inverter Output | - |
 | **13** | 6A | **Breadboard Common Ground Rail** | Spare Input (Tied LOW to prevent floating oscillation) | Black |
 | **14** | $V_{CC}$ | **Breadboard +5V Master Power Rail** | +5V Logic Supply | Red |
@@ -205,8 +205,8 @@ This document is the **definitive physical benchtop assembly manual** for the Du
 | :---: | :---: | :--- | :--- | :---: |
 | **1** | $D_3$ | **IC5 Pin 3 (1Y)** | Bitwise OR Result ($A_0 + B_0$) | Purple |
 | **2** | $D_2$ | **IC4 Pin 3 (1Y)** | Bitwise AND Result ($A_0 \cdot B_0$) | Brown |
-| **3** | $D_1$ | **IC1 Pin 9 ($\Sigma_1$)** | Subtraction Result ($A_0 - B_0$) | Blue |
-| **4** | $D_0$ | **IC1 Pin 9 ($\Sigma_1$)** | Addition Result ($A_0 + B_0$) | Blue |
+| **3** | $D_1$ | **IC1 Pin 14 ($\Sigma_1$)** | Subtraction Result ($A_0 - B_0$) | Blue |
+| **4** | $D_0$ | **IC1 Pin 14 ($\Sigma_1$)** | Addition Result ($A_0 + B_0$) | Blue |
 | **5** | Y | **IC12 Pin 10 ($A_0$), Arduino R4 D2, ESP32 GPIO 38 (via 1k/2.2k)** | **Custom ALU Bit 0 Output ($Y_0$)** | Blue |
 | **6** | W | **NC (Unconnected)** | Complementary Output (Unused) | - |
 | **7** | $\bar{E}$ / $\bar{G}$ | **Breadboard Common Ground Rail** | Strobe / Enable (Active-LOW, permanently enabled) | Black |
@@ -374,7 +374,7 @@ This document is the **definitive physical benchtop assembly manual** for the Du
 | **D9** | $Y_7$ | IC11 Pin 13 | Upper Nibble / Silicon ALU Bit 3 |
 | **D10** | PASS Output | $220\ \Omega \to$ Anode of 🟢 Green PASS LED | Software Golden Model Pass Indicator |
 | **D11** | FAIL Output | $220\ \Omega \to$ Anode of 🔴 Red FAIL LED | Software Golden Model Fail Indicator |
-| **D12** | HW Equiv In | IC12 Pin 6 ($Q_{A=B}$) | Direct read of hardware 74xx85 match flag |
+| **D12** | HW Equiv In | IC12 Pin 6 ($Q_{A=B}$) | Direct read of hardware 74HCT85 match flag |
 | **A0** | Opcode $S_0$ | Opcode Bus $S_0$ Node | Monitors active Opcode Bit 0 |
 | **A1** | Opcode $S_1$ | Opcode Bus $S_1$ Node | Monitors active Opcode Bit 1 |
 | **A2** | Opcode $S_2$ | Opcode Bus $S_2$ Node | Monitors active Opcode Bit 2 |

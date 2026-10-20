@@ -39,13 +39,13 @@ This guide provides an exhaustive engineering manual for transferring the **12-I
 | Socket Type | Width / Pitch | Qty | Target IC Designator | Functional Role in Circuit |
 | :---: | :---: | :---: | :--- | :--- |
 | **24-Pin DIP Socket** | **600-mil (0.6") Wide** | **1** | **IC11 (`74LS181N`)** | Upper 4-Bit ALU in Mode 0; Silicon Verification Benchmark in Mode 1 |
-| **16-Pin DIP Socket** | **300-mil (0.3") Standard**| **1** | **IC1 (`74xx283`)**  | 4-Bit Binary Full Adder with Fast Carry (Custom ALU core) |
-| **16-Pin DIP Socket** | **300-mil (0.3") Standard**| **1** | **IC12 (`74xx85`)**  | 4-Bit Magnitude Comparator (Hardware Equivalence $A=B$) |
-| **16-Pin DIP Socket** | **300-mil (0.3") Standard**| **4** | **IC7, IC8, IC9, IC10 (`74xx151`)** | 8:1 Multiplexers for Bit Slices $Y_0, Y_1, Y_2, Y_3$ |
-| **14-Pin DIP Socket** | **300-mil (0.3") Standard**| **2** | **IC2, IC3 (`74xx86`)** | IC2: Subtraction Inversion; IC3: Bitwise XOR Logic Array |
-| **14-Pin DIP Socket** | **300-mil (0.3") Standard**| **1** | **IC4 (`74xx08`)**  | Quad 2-Input AND Gate (Bitwise AND Logic Array) |
-| **14-Pin DIP Socket** | **300-mil (0.3") Standard**| **1** | **IC5 (`74xx32`)**  | Quad 2-Input OR Gate (Bitwise OR Logic Array) |
-| **14-Pin DIP Socket** | **300-mil (0.3") Standard**| **1** | **IC6 (`74xx04`)**  | Hex Inverter (Bitwise NOT Logic Array + Control Inversion) |
+| **16-Pin DIP Socket** | **300-mil (0.3") Standard**| **1** | **IC1 (`74LS83N`)**  | 4-Bit Binary Full Adder with Fast Carry (Custom ALU core) |
+| **16-Pin DIP Socket** | **300-mil (0.3") Standard**| **1** | **IC12 (`74HCT85`)**  | 4-Bit Magnitude Comparator (Hardware Equivalence $A=B$) |
+| **16-Pin DIP Socket** | **300-mil (0.3") Standard**| **4** | **IC7, IC8, IC9, IC10 (`74HCT151`)** | 8:1 Multiplexers for Bit Slices $Y_0, Y_1, Y_2, Y_3$ |
+| **14-Pin DIP Socket** | **300-mil (0.3") Standard**| **2** | **IC2, IC3 (`74HC86N`)** | IC2: Subtraction Inversion; IC3: Bitwise XOR Logic Array |
+| **14-Pin DIP Socket** | **300-mil (0.3") Standard**| **1** | **IC4 (`74HCT08`)**  | Quad 2-Input AND Gate (Bitwise AND Logic Array) |
+| **14-Pin DIP Socket** | **300-mil (0.3") Standard**| **1** | **IC5 (`74HCT32`)**  | Quad 2-Input OR Gate (Bitwise OR Logic Array) |
+| **14-Pin DIP Socket** | **300-mil (0.3") Standard**| **1** | **IC6 (`74HCT04`)**  | Hex Inverter (Bitwise NOT Logic Array + Control Inversion) |
 | **TOTAL DIP SOCKETS** | — | **12** | — | **1× 24-Pin DIP, 6× 16-Pin DIP, 5× 14-Pin DIP** |
 
 ### 2.2 Mechanical Substrate & Board Size:
@@ -200,12 +200,12 @@ Follow this disciplined 6-phase sequence from lowest-profile components to highe
    - Solder the 8 Blue bus LEDs, 1 Amber carry LED, 1 Green match LED, 1 Green PASS LED, and 1 Red FAIL LED.
 
 ### Phase 4: Custom 4-Bit ALU Core Wiring (IC1 - IC10)
-1. **IC2 (74xx86 Subtraction Conditioning)**:
+1. **IC2 (74HC86N Subtraction Conditioning)**:
    - Wire SUB control line to IC2 pins 2, 5, 10, 13.
    - Wire $B[0..3]$ to IC2 pins 1, 4, 9, 12.
    - Wire outputs $B'[0..3]$ (pins 3, 6, 8, 11) to IC1 (74LS83N) inputs (pins 11, 7, 4, 16).
    - Wire SUB control line also to IC1 pin 13 ($C_0$).
-2. **IC1 (74xx283 Binary Adder)**:
+2. **IC1 (74LS83N Binary Adder)**:
    - Wire $A[0..3]$ to IC1 (74LS83N) pins 10, 8, 3, 15.
    - Wire sum outputs $\Sigma[0..3]$ (pins 9, 6, 2, 1) to MUX channels $D_0$ and $D_1$ on IC7..IC10.
 3. **Logic Gate Arrays (IC3, IC4, IC5, IC6)**:
@@ -215,7 +215,7 @@ Follow this disciplined 6-phase sequence from lowest-profile components to highe
      * IC5 OR outputs $\to D_3$ (Pin 1) of IC7..IC10.
      * IC3 XOR outputs $\to D_4$ (Pin 15) of IC7..IC10.
      * IC6 NOT outputs $\to D_5$ (Pin 14) of IC7..IC10.
-4. **Multiplexers (IC7 - IC10: 74xx151)**:
+4. **Multiplexers (IC7 - IC10: 74HCT151)**:
    - Daisy-chain select lines: Opcode $S_0 \to$ Pin 11, $S_1 \to$ Pin 10, $S_2 \to$ Pin 9 on all 4 MUXes.
    - Tie Pin 7 ($\overline{E}$) to GND on all 4 MUXes.
    - Wire hardwired shifts:
@@ -224,13 +224,13 @@ Follow this disciplined 6-phase sequence from lowest-profile components to highe
      * IC9 (Bit 2): $D_6 = A_1$, $D_7 = A_3$
      * IC10 (Bit 3): $D_6 = A_2$, $D_7 = \text{GND}$
 
-### Phase 5: 74LS181N (IC11) & 74xx85 Comparator (IC12) Wiring
+### Phase 5: 74LS181N (IC11) & 74HCT85 Comparator (IC12) Wiring
 1. **IC11 (74LS181N 24-Pin DIP)**:
    - Connect Pin 24 to $+5\text{V}$, Pin 12 to $\text{GND}$.
    - Connect control lines ($M$, $S_3..S_0$, $\overline{C_n}$) per the opcode translation network.
    - Wire upper inputs $A[7:4]$ and $B[7:4]$ (or identical $A[3:0], B[3:0]$ in Mode 1) to IC11 pins 2, 23, 21, 19 and 1, 22, 20, 18.
    - Wire outputs $F[0..3]$ (pins 9, 10, 11, 13) to output bus lines $Y[4..7]$ and Comparator inputs $B[0..3]$.
-2. **IC12 (74xx85 Comparator)**:
+2. **IC12 (74HCT85 Comparator)**:
    - Connect Socket 1 (74LS83N) Pin 5 to $+5\text{V}$, Pin 12 to $\text{GND}$. Other 16-pin sockets connect Pin 16 to $+5\text{V}$, Pin 8 to $\text{GND}$.
    - Tie Pin 3 ($I_{A=B}$) to $+5\text{V}$; tie Pins 2 ($I_{A<B}$) and 4 ($I_{A>B}$) to $\text{GND}$.
    - Connect Inputs A ($A_0..A_3$, pins 10, 12, 13, 15) to Custom ALU outputs $Y_{custom}[0..3]$ (IC7..IC10 Pin 5).
@@ -276,7 +276,7 @@ Never apply power to a newly soldered board without executing every step of this
 - [ ] Connect the **Arduino UNO R4 Minima 5V Power Station** to the 2-pin screw terminal block.
 - [ ] Measure DC voltage at the terminal block: must read **$+4.95\text{V} - +5.10\text{V}$**.
 - [ ] Probe the $V_{CC}$ pin on every single empty DIP socket:
-  - IC1 (74283): Pin 16 = $+5.0\text{V}$
+  - IC1 (74LS83N): Pin 16 = $+5.0\text{V}$
   - IC2, IC3, IC4, IC5, IC6 (14-pin ICs): Pin 14 = $+5.0\text{V}$
   - IC7, IC8, IC9, IC10 (74151 MUXes): Pin 16 = $+5.0\text{V}$
   - IC11 (74LS181N): Pin 24 = $+5.0\text{V}$
@@ -291,7 +291,7 @@ Insert ICs stage-by-stage to isolate any component issues:
    - Measure power supply current: typical draw $\approx 5\text{ mA} - 15\text{ mA}$.
 2. **Insert IC7 through IC10** (Multiplexers).
    - Reapply power. Verify all 4 MUXes stay cool.
-3. **Insert IC12** (74xx85 Comparator).
+3. **Insert IC12** (74HCT85 Comparator).
    - Reapply power. Verify chip stays cool.
 4. **Insert IC11** (74LS181N 24-Pin DIP).
    - Reapply power. The `74LS181N` is a bipolar device and will run lukewarm to the touch ($\approx 40^\circ\text{C} - 45^\circ\text{C}$), which is normal.
@@ -315,6 +315,6 @@ Insert ICs stage-by-stage to isolate any component issues:
 | **Phase 2: Electrical** | Power Bus Impedance (No ICs) | $R_{VCC-GND} > 100\text{ k}\Omega$ | PASS [ ] | ________________ |
 | **Phase 3: Voltage** | Pin 14/16/24 $V_{CC}$ Supply | $+4.90\text{V} - +5.15\text{V}$ | PASS [ ] | ________________ |
 | **Phase 4: Thermal** | IC Operating Temperatures | Cool to lukewarm ($< 48^\circ\text{C}$) | PASS [ ] | ________________ |
-| **Phase 5: Equivalence** | 74xx85 Hardware Match Flag | Asserted HIGH (+5V) on match | PASS [ ] | ________________ |
+| **Phase 5: Equivalence** | 74HCT85 Hardware Match Flag | Asserted HIGH (+5V) on match | PASS [ ] | ________________ |
 | **Phase 6: HIL Oracle**| Arduino R4 12×8 Matrix HUD | 100% Validated Checkmark (`✓`)| PASS [ ] | ________________ |
 | **Phase 7: IoT Telemetry**| ESP32-S3 Web Dashboard Sweep | 2,048 / 2,048 Vectors Passed | PASS [ ] | ________________ |

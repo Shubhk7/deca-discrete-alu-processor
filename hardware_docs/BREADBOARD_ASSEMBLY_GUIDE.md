@@ -9,15 +9,15 @@ This guide provides a rigorous, step-by-step physical assembly protocol for cons
 
 ### The System at a Glance:
 1. **The 12-IC Core Logic Engine**:
-   - **IC1**: `74xx283` (4-Bit Binary Full Adder with Fast Carry)
-   - **IC2**: `74xx86` (Quad 2-Input XOR — Subtraction Inversion Conditioning)
-   - **IC3**: `74xx86` (Quad 2-Input XOR — Bitwise XOR Logic Array)
-   - **IC4**: `74xx08` (Quad 2-Input AND — Bitwise AND Logic Array)
-   - **IC5**: `74xx32` (Quad 2-Input OR — Bitwise OR Logic Array)
-   - **IC6**: `74xx04` (Hex Inverter — Bitwise NOT Logic Array)
-   - **IC7 - IC10**: 4× `74xx151` (8:1 Multiplexers for Bits 0, 1, 2, 3)
+   - **IC1**: `74LS83N` (4-Bit Binary Full Adder with Fast Carry)
+   - **IC2**: `74HC86N` (Quad 2-Input XOR — Subtraction Inversion Conditioning)
+   - **IC3**: `74HC86N` (Quad 2-Input XOR — Bitwise XOR Logic Array)
+   - **IC4**: `74HCT08` (Quad 2-Input AND — Bitwise AND Logic Array)
+   - **IC5**: `74HCT32` (Quad 2-Input OR — Bitwise OR Logic Array)
+   - **IC6**: `74HCT04` (Hex Inverter — Bitwise NOT Logic Array)
+   - **IC7 - IC10**: 4× `74HCT151` (8:1 Multiplexers for Bits 0, 1, 2, 3)
    - **IC11**: `74LS181N` (4-Bit Monolithic High-Speed Arithmetic Logic Unit)
-   - **IC12**: `74xx85` (4-Bit Magnitude Comparator — Real-Time Silicon Match Detector)
+   - **IC12**: `74HCT85` (4-Bit Magnitude Comparator — Real-Time Silicon Match Detector)
 
 2. **The Heterogeneous 3-Board Instrumentation Infrastructure**:
    - **Arduino UNO R4 Minima ("The Power Station")**: Dedicated clean +5V/1A USB-C power rail supplying all breadboard logic and eliminating TTL switching transients.
@@ -26,7 +26,7 @@ This guide provides a rigorous, step-by-step physical assembly protocol for cons
 
 3. **Dual Reconfigurable Operational Modes**:
    - **Mode 0 (8-Bit Cascaded ALU Processor)**: Custom 4-Bit ALU computes the lower nibble ($Y[3:0]$) and cascades carry-out ($C_4$) into the `74LS181N` computing the upper nibble ($Y[7:4]$), forming a true 8-bit parallel arithmetic processor slice ($Y[7:0]$).
-   - **Mode 1 (Real-Time Silicon Verification)**: Both Custom ALU and `74LS181N` receive identical 4-bit inputs ($A[3:0], B[3:0]$) and identical opcodes. The `74xx85` comparator tests outputs in nanosecond hardware ($A=B$), lighting an instant Green PASS LED.
+   - **Mode 1 (Real-Time Silicon Verification)**: Both Custom ALU and `74LS181N` receive identical 4-bit inputs ($A[3:0], B[3:0]$) and identical opcodes. The `74HCT85` comparator tests outputs in nanosecond hardware ($A=B$), lighting an instant Green PASS LED.
 
 ```
  ============================================================================================================
@@ -62,13 +62,13 @@ This guide provides a rigorous, step-by-step physical assembly protocol for cons
      +------------------------------------------+         +------------------------------------------+
      |     4-BIT CUSTOM DISCRETE ALU SLICE      |         |          74LS181N 4-BIT SILICON ALU      |
      |------------------------------------------|         |------------------------------------------|
-     | - Adder/Subtractor: 74xx283 4-Bit Adder  |         | - Industry-Standard Bipolar ALU IC       |
-     | - B-Invert (SUB): 74xx86 (IC2)           |         | - Internal Lookahead Carry Generation    |
-     | - Bitwise XOR:    74xx86 (IC3)           |         | - 16 Arithmetic + 16 Logic Functions     |
-     | - Bitwise AND:    74xx08 (IC4)           |         | - Function Mapped via S[3:0], M, Cn      |
-     | - Bitwise OR:     74xx32 (IC5)           |         +------------------------------------------+
-     | - Bitwise NOT:    74xx04 (IC6)           |                              |
-     | - Operation MUX: 4x 74xx151 (IC7-IC10)   |                              |
+     | - Adder/Subtractor: 74LS83N 4-Bit Adder  |         | - Industry-Standard Bipolar ALU IC       |
+     | - B-Invert (SUB): 74HC86N (IC2)           |         | - Internal Lookahead Carry Generation    |
+     | - Bitwise XOR:    74HC86N (IC3)           |         | - 16 Arithmetic + 16 Logic Functions     |
+     | - Bitwise AND:    74HCT08 (IC4)           |         | - Function Mapped via S[3:0], M, Cn      |
+     | - Bitwise OR:     74HCT32 (IC5)           |         +------------------------------------------+
+     | - Bitwise NOT:    74HCT04 (IC6)           |                              |
+     | - Operation MUX: 4x 74HCT151 (IC7-IC10)   |                              |
      +------------------------------------------+                              |
                  |                     |                                       |
           Custom Carry C4         Custom Result                          74LS181 Result
@@ -91,7 +91,7 @@ This guide provides a rigorous, step-by-step physical assembly protocol for cons
            Y[7:0] = { Y_181[3:0], Y_custom[3:0] }                      |
                      |                                                 v
                      |                                   +------------------------------------+
-                     |                                   |  74xx85 4-Bit Magnitude Comparator |
+                     |                                   |  74HCT85 4-Bit Magnitude Comparator |
                      |                                   |------------------------------------|
                      |                                   | Input A: Y_custom[3:0]             |
                      |                                   | Input B: Y_181[3:0]                |
@@ -162,14 +162,14 @@ Assemble 4 standard 830-tie-point solderless breadboards side-by-side:
 |  - ESP32-S3 4.7k Override Resistor Header                                                               |
 +---------------------------------------------------------------------------------------------------------+
 |                                  BREADBOARD 2: CUSTOM 4-BIT ALU CORE                                    |
-|  - IC1: 74xx283 (Adder)              - IC2: 74xx86 (Subtraction XOR)                                    |
-|  - IC3: 74xx86 (Bitwise XOR)         - IC4: 74xx08 (Bitwise AND)                                        |
-|  - IC5: 74xx32 (Bitwise OR)          - IC6: 74xx04 (Hex Inverter)                                       |
+|  - IC1: 74LS83N (Adder)              - IC2: 74HC86N (Subtraction XOR)                                    |
+|  - IC3: 74HC86N (Bitwise XOR)         - IC4: 74HCT08 (Bitwise AND)                                        |
+|  - IC5: 74HCT32 (Bitwise OR)          - IC6: 74HCT04 (Hex Inverter)                                       |
 +---------------------------------------------------------------------------------------------------------+
 |                                  BREADBOARD 3: MULTIPLEXERS & COMPARATOR                                |
-|  - IC7:  74xx151 (MUX Bit 0)         - IC8:  74xx151 (MUX Bit 1)                                        |
-|  - IC9:  74xx151 (MUX Bit 2)         - IC10: 74xx151 (MUX Bit 3)                                        |
-|  - IC12: 74xx85 (4-Bit Magnitude Comparator)                                                            |
+|  - IC7:  74HCT151 (MUX Bit 0)         - IC8:  74HCT151 (MUX Bit 1)                                        |
+|  - IC9:  74HCT151 (MUX Bit 2)         - IC10: 74HCT151 (MUX Bit 3)                                        |
+|  - IC12: 74HCT85 (4-Bit Magnitude Comparator)                                                            |
 +---------------------------------------------------------------------------------------------------------+
 |                                  BREADBOARD 4: 74LS181N SILICON & INSTRUMENTATION                       |
 |  - IC11: 74LS181N (24-pin DIP 4-Bit ALU)                                                                |
@@ -246,13 +246,13 @@ In this stage, you build the **Custom 4-Bit Discrete ALU Slice** consisting of 1
                     │              │                  │
                     │              ▼                  │
                     │      +---------------+          │
-                    │      | IC2: 74xx86   | ◄── SUB (Opcode 001)
+                    │      | IC2: 74HC86N   | ◄── SUB (Opcode 001)
                     │      | B-Invert (SUB)|          │
                     │      +-------┬-------+          │
                     │              │ B'[3:0]          │
                     ▼              ▼                  │
             +------------------------------+          │
-            |  IC1: 74xx283 4-Bit Adder    |          │
+            |  IC1: 74LS83N 4-Bit Adder    |          │
             |  A[3:0] + B'[3:0] + Cin(SUB) |          │
             +--------------┬---------------+          │
                            │ Sum[3:0]                 │
@@ -260,7 +260,7 @@ In this stage, you build the **Custom 4-Bit Discrete ALU Slice** consisting of 1
                            │                          │               │
                            ▼                          ▼               ▼
                    +---------------+          +---------------+  +---------------+
-                   | IC4: 74xx08   |          | IC5: 74xx32   |  | IC3: 74xx86   |
+                   | IC4: 74HCT08   |          | IC5: 74HCT32   |  | IC3: 74HC86N   |
                    | Bitwise AND   |          | Bitwise OR    |  | Bitwise XOR   |
                    +-------┬-------+          +-------┬-------+  +-------┬-------+
                            │                          │                  │
@@ -268,7 +268,7 @@ In this stage, you build the **Custom 4-Bit Discrete ALU Slice** consisting of 1
                                            │
                                            ▼
             +--------------------------------------------------------------+
-            | IC7 - IC10: 4× 74xx151 8:1 Multiplexers                      |
+            | IC7 - IC10: 4× 74HCT151 8:1 Multiplexers                      |
             | D0=ADD, D1=SUB, D2=AND, D3=OR, D4=XOR, D5=NOT, D6=SHL, D7=SHR |
             +------------------------------┬-------------------------------+
                                            │
@@ -284,14 +284,14 @@ Place all ICs straddling the center divider groove with notches facing **LEFT**:
 > - **Pin 12 is GND (0V)**
 > DO NOT wire Pin 16 to +5V or Pin 8 to GND! Place a $0.1\ \mu\text{F}$ cap directly between Pin 5 and Pin 12.
 * **IC1**: `74LS83N` (16-Pin DIP) — Pin 5 to $+5\text{V}$, Pin 12 to $\text{GND}$.
-* **IC2**: `74xx86` (14-Pin DIP) — Pin 14 to $+5\text{V}$, Pin 7 to $\text{GND}$, $0.1\ \mu\text{F}$ cap across Pins 14 & 7.
-* **IC3**: `74xx86` (14-Pin DIP) — Pin 14 to $+5\text{V}$, Pin 7 to $\text{GND}$, $0.1\ \mu\text{F}$ cap across Pins 14 & 7.
-* **IC4**: `74xx08` (14-Pin DIP) — Pin 14 to $+5\text{V}$, Pin 7 to $\text{GND}$, $0.1\ \mu\text{F}$ cap across Pins 14 & 7.
-* **IC5**: `74xx32` (14-Pin DIP) — Pin 14 to $+5\text{V}$, Pin 7 to $\text{GND}$, $0.1\ \mu\text{F}$ cap across Pins 14 & 7.
-* **IC6**: `74xx04` (14-Pin DIP) — Pin 14 to $+5\text{V}$, Pin 7 to $\text{GND}$, $0.1\ \mu\text{F}$ cap across Pins 14 & 7.
-* **IC7 - IC10**: 4× `74xx151` (16-Pin DIP) — Pin 16 to $+5\text{V}$, Pin 8 to $\text{GND}$, Pin 7 ($\overline{E}$ / Strobe) tied to $\text{GND}$, $0.1\ \mu\text{F}$ cap across Pins 16 & 8.
+* **IC2**: `74HC86N` (14-Pin DIP) — Pin 14 to $+5\text{V}$, Pin 7 to $\text{GND}$, $0.1\ \mu\text{F}$ cap across Pins 14 & 7.
+* **IC3**: `74HC86N` (14-Pin DIP) — Pin 14 to $+5\text{V}$, Pin 7 to $\text{GND}$, $0.1\ \mu\text{F}$ cap across Pins 14 & 7.
+* **IC4**: `74HCT08` (14-Pin DIP) — Pin 14 to $+5\text{V}$, Pin 7 to $\text{GND}$, $0.1\ \mu\text{F}$ cap across Pins 14 & 7.
+* **IC5**: `74HCT32` (14-Pin DIP) — Pin 14 to $+5\text{V}$, Pin 7 to $\text{GND}$, $0.1\ \mu\text{F}$ cap across Pins 14 & 7.
+* **IC6**: `74HCT04` (14-Pin DIP) — Pin 14 to $+5\text{V}$, Pin 7 to $\text{GND}$, $0.1\ \mu\text{F}$ cap across Pins 14 & 7.
+* **IC7 - IC10**: 4× `74HCT151` (16-Pin DIP) — Pin 16 to $+5\text{V}$, Pin 8 to $\text{GND}$, Pin 7 ($\overline{E}$ / Strobe) tied to $\text{GND}$, $0.1\ \mu\text{F}$ cap across Pins 16 & 8.
 
-### 2.2 Subtraction Conditioning Wiring (IC2: 74xx86):
+### 2.2 Subtraction Conditioning Wiring (IC2: 74HC86N):
 IC2 conditionally inverts $B[3:0]$ whenever Opcode is `001` (SUB active):
 * Connect the **SUB control signal** to IC2 Pin 2 (1B), Pin 5 (2B), Pin 10 (3B), and Pin 13 (4B).
 * Connect Operand $B[0]$ to IC2 Pin 1 (1A) $\to$ Output Pin 3 is $B'_0$.
@@ -300,7 +300,7 @@ IC2 conditionally inverts $B[3:0]$ whenever Opcode is `001` (SUB active):
 * Connect Operand $B[3]$ to IC2 Pin 12 (4A) $\to$ Output Pin 11 is $B'_3$.
 * Connect the **SUB control signal** also to IC1 Pin 13 ($C_0$ / Carry-In of adder) to provide the $+1$ for two's complement.
 
-### 2.3 4-Bit Adder Wiring (IC1: 74xx283):
+### 2.3 4-Bit Adder Wiring (IC1: 74LS83N):
 Wire operands $A[3:0]$ and conditioned $B'[3:0]$ to IC1:
 * Bit 0: Pin 5 (A1) $\leftarrow A_0$, Pin 6 (B1) $\leftarrow B'_0$ (IC2 Pin 3). Sum output: Pin 4 ($\Sigma 1$).
 * Bit 1: Pin 3 (A2) $\leftarrow A_1$, Pin 2 (B2) $\leftarrow B'_1$ (IC2 Pin 6). Sum output: Pin 1 ($\Sigma 2$).
@@ -310,28 +310,28 @@ Wire operands $A[3:0]$ and conditioned $B'[3:0]$ to IC1:
 * Carry-out: Pin 9 ($C_4$) $\to$ Custom Core Carry-Out (held for Stage 5).
 
 ### 2.4 Logic Gate Arrays (IC3, IC4, IC5, IC6):
-* **IC3 (Bitwise XOR - 74xx86)**:
+* **IC3 (Bitwise XOR - 74HC86N)**:
   - Gate 1: Pin 1 ($A_0$), Pin 2 ($B_0$) $\to$ Pin 3 ($A_0 \oplus B_0$).
   - Gate 2: Pin 4 ($A_1$), Pin 5 ($B_1$) $\to$ Pin 6 ($A_1 \oplus B_1$).
   - Gate 3: Pin 9 ($A_2$), Pin 10 ($B_2$) $\to$ Pin 8 ($A_2 \oplus B_2$).
   - Gate 4: Pin 12 ($A_3$), Pin 13 ($B_3$) $\to$ Pin 11 ($A_3 \oplus B_3$).
-* **IC4 (Bitwise AND - 74xx08)**:
+* **IC4 (Bitwise AND - 74HCT08)**:
   - Gate 1: Pin 1 ($A_0$), Pin 2 ($B_0$) $\to$ Pin 3 ($A_0 \cdot B_0$).
   - Gate 2: Pin 4 ($A_1$), Pin 5 ($B_1$) $\to$ Pin 6 ($A_1 \cdot B_1$).
   - Gate 3: Pin 9 ($A_2$), Pin 10 ($B_2$) $\to$ Pin 8 ($A_2 \cdot B_2$).
   - Gate 4: Pin 12 ($A_3$), Pin 13 ($B_3$) $\to$ Pin 11 ($A_3 \cdot B_3$).
-* **IC5 (Bitwise OR - 74xx32)**:
+* **IC5 (Bitwise OR - 74HCT32)**:
   - Gate 1: Pin 1 ($A_0$), Pin 2 ($B_0$) $\to$ Pin 3 ($A_0 + B_0$).
   - Gate 2: Pin 4 ($A_1$), Pin 5 ($B_1$) $\to$ Pin 6 ($A_1 + B_1$).
   - Gate 3: Pin 9 ($A_2$), Pin 10 ($B_2$) $\to$ Pin 8 ($A_2 + B_2$).
   - Gate 4: Pin 12 ($A_3$), Pin 13 ($B_3$) $\to$ Pin 11 ($A_3 + B_3$).
-* **IC6 (Bitwise NOT - 74xx04)**:
+* **IC6 (Bitwise NOT - 74HCT04)**:
   - Gate 1: Pin 1 ($A_0$) $\to$ Pin 2 ($\overline{A_0}$).
   - Gate 2: Pin 3 ($A_1$) $\to$ Pin 4 ($\overline{A_1}$).
   - Gate 3: Pin 5 ($A_2$) $\to$ Pin 6 ($\overline{A_2}$).
   - Gate 4: Pin 9 ($A_3$) $\to$ Pin 8 ($\overline{A_3}$).
 
-### 2.5 Multiplexer Bank Routing (IC7 - IC10: 74xx151):
+### 2.5 Multiplexer Bank Routing (IC7 - IC10: 74HCT151):
 Connect common select lines across all 4 MUXes:
 * Opcode $S_0 \to$ Pin 11 (A) of IC7, IC8, IC9, IC10.
 * Opcode $S_1 \to$ Pin 10 (B) of IC7, IC8, IC9, IC10.
@@ -428,16 +428,16 @@ To align the `74LS181N` with the 3-bit Opcode $S[2:0]$, configure control pins:
 
 ---
 
-## Stage 4: 74xx85 Hardware Comparator Integration (IC12)
+## Stage 4: 74HCT85 Hardware Comparator Integration (IC12)
 
-The `74xx85` 4-bit magnitude comparator performs **nanosecond-level physical hardware equivalence checking** between the Custom 4-Bit Discrete ALU and the historical `74LS181N` benchmark.
+The `74HCT85` 4-bit magnitude comparator performs **nanosecond-level physical hardware equivalence checking** between the Custom 4-Bit Discrete ALU and the historical `74LS181N` benchmark.
 
 ```
-                 74xx85 (16-Pin DIP)
+                 74HCT85 (16-Pin DIP)
                    ┌───────∪───────┐
                B3  1 ─┤               ├─ 16  VCC (+5V)
             I(A<B) 2 ─┤               ├─ 15  A3
-            I(A=B) 3 ─┤   74xx85      ├─ 14  B2
+            I(A=B) 3 ─┤   74HCT85      ├─ 14  B2
             I(A>B) 4 ─┤   4-Bit       ├─ 13  A2
             O(A>B) 5 ─┤ Comparator    ├─ 12  A1
             O(A=B) 6 ─┤               ├─ 11  B1
@@ -501,7 +501,7 @@ The system reconfigures dynamically between **Mode 0** (Unified 8-Bit Cascaded A
     - Custom 4-Bit ALU receives Lower Nibble: A[3:0], B[3:0]
     - 74LS181N receives Upper Nibble: A[7:4], B[7:4]
   * Carry Chain:
-    - IC1 Pin 9 (C4 of 74xx283) is routed to IC11 Pin 7 (/Cn of 74LS181)
+    - IC1 Pin 14 (C4 of 74LS83N) is routed to IC11 Pin 7 (/Cn of 74LS181)
   * Outputs:
     - Y[3:0] = Custom ALU Pin Y_custom[3:0]
     - Y[7:4] = 74LS181 Pin F[3:0]
@@ -673,6 +673,6 @@ To allow the 3.3V ESP32 to safely read the 5V output bus $Y[7:0]$, connect a res
 Upon completing Stages 1 through 7:
 1. **Power**: Stable $+5.0\text{V}$ delivered by Arduino R4 Minima. Total idle current draw $\approx 180\text{ mA} - 250\text{ mA}$.
 2. **Mode 0 (8-Bit Cascaded ALU)**: Full 8-bit parallel arithmetic with verified inter-nibble ripple carry ($C_4 \to \overline{C_n}$).
-3. **Mode 1 (Silicon Equivalence)**: Real-time hardware comparison ($t_{pd} < 25\text{ ns}$) asserted by `74xx85` with Green Silicon Match LED illuminated.
+3. **Mode 1 (Silicon Equivalence)**: Real-time hardware comparison ($t_{pd} < 25\text{ ns}$) asserted by `74HCT85` with Green Silicon Match LED illuminated.
 4. **Software Oracle**: Arduino UNO R4 WiFi golden model confirming 100% equivalence on onboard 12×8 LED Matrix HUD.
 5. **IoT Telemetry**: ESP32-S3 responsive web dashboard streaming live packets and providing remote vector injection.

@@ -8,18 +8,18 @@
 // ============================================================================
 // Dual-Mode Hybrid Architecture Specification:
 // 1. MODE 0: 8-Bit Cascaded Compute
-//    - Lower Nibble Y[3:0]: Custom 4-Bit ALU (74xx283 + XOR/AND/OR/NOT + 74xx151 MUXes)
+//    - Lower Nibble Y[3:0]: Custom 4-Bit ALU (74LS83N + XOR/AND/OR/NOT + 74HCT151 MUXes)
 //    - Upper Nibble Y[7:4]: Commercial 74LS181N 4-Bit High-Functionality ALU
-//    - Carry Cascade: IC1 (74xx283) C4 cascades directly into 74LS181N /Cn
+//    - Carry Cascade: IC1 (74LS83N) C4 cascades directly into 74LS181N /Cn
 //    - Verifier reads full 8-bit Y[7:0] bus and checks against 8-bit Software Golden Model.
 // 2. MODE 1: Real-Time Silicon Verification
 //    - Both Custom 4-Bit ALU and 74LS181N receive IDENTICAL 4-bit inputs A[3:0], B[3:0]
-//    - IC12 (74xx85 4-Bit Magnitude Comparator) verifies Custom Y[3:0] vs 74LS181 F[3:0] in hardware
+//    - IC12 (74HCT85 4-Bit Magnitude Comparator) verifies Custom Y[3:0] vs 74LS181 F[3:0] in hardware
 //    - Verifier reads:
 //      * Custom ALU Y[3:0] (Pins 2..5)
 //      * Commercial 74LS181 F[3:0] (Pins 6..9)
-//      * IC12 (74xx85) Pin 6 (A=B Output on Pin A0)
-//    - Verifies 3-way equivalence: Custom ALU == 74LS181 == Software Golden Model == 74xx85 Match
+//      * IC12 (74HCT85) Pin 6 (A=B Output on Pin A0)
+//    - Verifies 3-way equivalence: Custom ALU == 74LS181 == Software Golden Model == 74HCT85 Match
 // 3. 12x8 LED Matrix HUD Scoreboard:
 //    - Displays Checkmark icon (✓) on PASS, X-Mark icon (✗) on FAIL
 //    - Scrolls Mode and Opcode name with PASS/FAIL diagnostic message
@@ -34,7 +34,7 @@ ArduinoLEDMatrix matrix;
 // ----------------------------------------------------------------------------
 
 // 8-Bit Hardware ALU Output Bus (Y0..Y7) - Digital Inputs from 5.0V Breadboard
-// Y[3:0] (Pins 2..5) = Custom 4-Bit ALU (IC1 74xx283 + 74xx151 MUXes)
+// Y[3:0] (Pins 2..5) = Custom 4-Bit ALU (IC1 74LS83N + 74HCT151 MUXes)
 // Y[7:4] (Pins 6..9) = Commercial 74LS181N ALU (F0..F3)
 const uint8_t PIN_Y[8] = { 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -42,8 +42,8 @@ const uint8_t PIN_Y[8] = { 2, 3, 4, 5, 6, 7, 8, 9 };
 const uint8_t PIN_OPCODE[3] = { 10, 11, 12 }; // S0, S1, S2
 const uint8_t PIN_MODE = 13;                  // Datapath Mode: 0 = 8-Bit Cascaded, 1 = Silicon Verification
 
-// IC12 (74xx85 4-Bit Magnitude Comparator) Hardware Match Pin
-// Connects directly to 74xx85 Pin 6 (A=B Output)
+// IC12 (74HCT85 4-Bit Magnitude Comparator) Hardware Match Pin
+// Connects directly to 74HCT85 Pin 6 (A=B Output)
 const uint8_t PIN_7485_MATCH = A0;
 
 // Dedicated Physical Status LED Indicators
@@ -306,7 +306,7 @@ void setup() {
     Serial.println("\n========================================================");
     Serial.println("  Arduino UNO R4 WiFi - DECA ALU Software Golden Verifier");
     Serial.println("  Author: Shubh Kashyap | Architecture: Dual-Mode Hybrid");
-    Serial.println("  Custom 4-Bit ALU + 74LS181N + 74xx85 Hardware Comparator");
+    Serial.println("  Custom 4-Bit ALU + 74LS181N + 74HCT85 Hardware Comparator");
     Serial.println("========================================================");
 
     // Initialize 12x8 LED Matrix
@@ -324,7 +324,7 @@ void setup() {
     }
     pinMode(PIN_MODE, INPUT_PULLDOWN);
 
-    // Configure 74xx85 Hardware Match Pin (Pin 6 A=B Output)
+    // Configure 74HCT85 Hardware Match Pin (Pin 6 A=B Output)
     pinMode(PIN_7485_MATCH, INPUT_PULLDOWN);
 
     // Configure Modular Input Monitoring Pins
@@ -385,7 +385,7 @@ void loop() {
                 pass = (stableHW == expected);
             } else {
                 // Mode 1: Real-Time Silicon Verification
-                // Verifies Custom ALU vs 74LS181 vs Software Golden Model & 74xx85 Match
+                // Verifies Custom ALU vs 74LS181 vs Software Golden Model & 74HCT85 Match
                 uint8_t exp4 = expected & 0x0F;
                 bool siliconMatch = (stableCustomY == stableLS181Y);
                 bool goldenMatch = (stableCustomY == exp4 && stableLS181Y == exp4);

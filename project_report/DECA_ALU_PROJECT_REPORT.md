@@ -472,7 +472,7 @@ The dashboard features:
 | **74HC86N Inverter 1**| Pin 6 ($2Y$) | 74LS83N Adder | Pin 2 ($B_2$) | Inverted/True B Bit 1 |
 | **74HC86N Inverter 1**| Pin 8 ($3Y$) | 74LS83N Adder | Pin 15 ($B_3$) | Inverted/True B Bit 2 |
 | **74HC86N Inverter 1**| Pin 11 ($4Y$) | 74LS83N Adder | Pin 11 ($B_4$) | Inverted/True B Bit 3 |
-| **Opcode S0 (SUB)** | Pin 18 (GPIO 18)| 74HC86N Inverter 1 & 74283 | Pins 2, 5, 10, 13 & Pin 7 | Subtraction Control & Carry-In $C_0$ |
+| **Opcode S0 (SUB)** | Pin 18 (GPIO 18)| 74HC86N Inverter 1 & 74LS83N | Pins 2, 5, 10, 13 & Pin 7 | Subtraction Control & Carry-In $C_0$ |
 | **74LS83N Adder** | Pin 9 ($C_4$) | 74LS181N ALU (Mode 0) | Pin 2 ($\overline{C_n}$) | Lower-to-Upper Nibble Carry Cascade |
 | **Custom ALU MUX 0**| Pin 5 ($Y$) | IC12 74HCT85 / Arduino D2 / ESP32 38 | Pin 12 ($A_0$) | Custom ALU Output Bit 0 ($Y_0$) |
 | **Custom ALU MUX 1**| Pin 5 ($Y$) | IC12 74HCT85 / Arduino D3 / ESP32 39 | Pin 11 ($A_1$) | Custom ALU Output Bit 1 ($Y_1$) |
@@ -589,9 +589,7 @@ Below are 25 exhaustive questions and answers designed specifically for universi
 2. **Arduino UNO R4 WiFi**: Operates at native 5.0V; acts as a non-intrusive bus sniffer, computes the Software Golden Model, and drives the $12\times 8$ matrix HUD and status LEDs.
 3. **Arduino UNO R4 Minima**: Serves as a dedicated clean $+5.0\text{ V} / 1.0\text{ A}$ power supply rail for all breadboard ICs, preventing supply droop and ground loops.
 
-### Q5: How does the 74LS83N adder differ from an older 74xx83 adder?
-**Answer**: The 74LS83N and 74xx83 are functionally identical 4-bit binary full adders with internal carry lookahead. However, the 74LS83N features an optimized pinout where $V_{CC}$ (Pin 16) and GND (Pin 8) are on standard corner pins, whereas the older 74xx83 has $V_{CC}$ on Pin 5 and GND on Pin 12, making breadboard wiring and decoupling far easier on the 74LS83N.
-
+### Q5: How does your 74LS83N adder differ from a standard 74LS283 adder?\n**Answer**: The 74LS83N and 74LS283 are functionally identical 4-bit binary full adders with internal fast lookahead carry. However, they feature completely different pinouts: The 74LS283 has standard corner power pins ({CC} = \text{Pin 16}$, $\text{GND} = \text{Pin 8}$). Our **74LS83N features non-standard mid-side power pins**: **Pin 5 is {CC}$ (+5V)** and **Pin 12 is GND (0V)**. Crucially, on the 74LS83N, Pin 16 is Operand Input $ and Pin 8 is Operand Input $. If wired like a 74283, the chip would remain unpowered and 5V would be applied directly to an input pin!\n
 ### Q6: How is two's complement subtraction achieved in the Custom ALU?
 **Answer**: Subtraction $A - B$ is computed as $A + \overline{B} + 1$. A 74HC86N Quad XOR gate conditionally inverts $B$ ($B_i \oplus SUB$). When $SUB = 1$, each bit of $B$ is inverted, and $SUB$ is simultaneously applied to the adder's carry-in $C_0$, adding the required $+1$.
 
@@ -599,8 +597,7 @@ Below are 25 exhaustive questions and answers designed specifically for universi
 **Answer**: The 74HCT151 is an 8-to-1 data selector with 3 address select lines ($S_2, S_1, S_0$), matching our 8 operations (ADD, SUB, AND, OR, XOR, NOT, SHL, SHR). The 74xx157 is a quad 2-to-1 multiplexer with only 1 select line, which would require multi-stage cascading to select between 8 operations.
 
 ### Q8: How is the carry signal cascaded between the Custom ALU and the 74LS181N in Mode 0?
-**Answer**: The 74LS83N Carry-Out ($C_4$, Pin 9) generates an active-high carry signal. The 74LS181N Carry-In ($\overline{C_n}$, Pin 2) expects an active-low carry signal in active-high data mode. The carry signal is inverted or mapped to match the active-low input requirements of the 74LS181N.
-
+**Answer**: The 74LS83N Carry-Out ($, Pin 14) generates an active-high carry signal. The 74LS181N Carry-In ($\overline{C_n}$, Pin 7) expects an active-low carry signal in active-high data mode. The carry signal is inverted through a 74HCT04 inverter (IC6 Pins 11 -> 10) to match the active-low carry-in requirement of the 74LS181N in Mode 0.\n
 ### Q9: How does the level translation between 5.0 V logic and the 3.3 V ESP32-S3 work?
 **Answer**: A resistor divider with $R_1 = 1.0\text{ k}\Omega$ and $R_2 = 2.2\text{ k}\Omega$ scales the 5.0V signals down:
 $$V = 5.0\text{ V} \times \frac{2200}{1000 + 2200} = 3.43\text{ V}$$

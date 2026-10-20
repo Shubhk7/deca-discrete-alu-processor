@@ -199,7 +199,7 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
     <header>
       <div class="header-text">
         <h1>DECA Dual-Mode Hybrid ALU Processor Dashboard</h1>
-        <p>Custom 4-Bit ALU + 74LS181N + 74xx85 Comparator · Author: Shubh Kashyap · Golden Model: Arduino R4 WiFi</p>
+        <p>Custom 4-Bit ALU + 74LS181N + 74HCT85 Comparator · Author: Shubh Kashyap · Golden Model: Arduino R4 WiFi</p>
       </div>
       <div class="conn-badge" id="conn-status">
         <span class="conn-dot" id="conn-dot"></span>
@@ -212,7 +212,7 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
       <div class="status-left">
         <div class="status-title" id="mode-title">MODE 0: 8-BIT CASCADED COMPUTE</div>
         <div class="status-desc" id="mode-desc">
-          Lower Nibble Y[3:0]: Custom 4-Bit ALU (74283 + Gates) | Upper Nibble Y[7:4]: 74LS181N ALU | Carry C4 cascades into /Cn
+          Lower Nibble Y[3:0]: Custom 4-Bit ALU (74LS83N + Gates) | Upper Nibble Y[7:4]: 74LS181N ALU | Carry C4 cascades into /Cn
         </div>
       </div>
       <div class="pill-group">
@@ -222,13 +222,13 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
 
     <!-- Verification & Silicon Match Strip -->
     <div class="verification-strip">
-      <!-- IC12 (74xx85) Hardware Silicon Match Box -->
+      <!-- IC12 (74HCT85) Hardware Silicon Match Box -->
       <div class="verify-box" id="box-7485">
         <div>
-          <div class="vb-title">IC12 (74xx85) Silicon Equivalence</div>
+          <div class="vb-title">IC12 (74HCT85) Silicon Equivalence</div>
           <div class="vb-status pass" id="status-7485">
             <span>●</span>
-            <span id="text-7485">74xx85 PIN 6 (A=B): MATCH</span>
+            <span id="text-7485">74HCT85 PIN 6 (A=B): MATCH</span>
           </div>
           <div class="vb-sub" id="detail-7485">Custom Y[3:0] (0x0) == 74LS181 F[3:0] (0x0)</div>
         </div>
@@ -583,17 +583,17 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
         modeBanner.className = "status-banner";
         modeTitle.className = "status-title";
         modeTitle.textContent = "MODE 0: 8-BIT CASCADED COMPUTE";
-        modeDesc.textContent = "Lower Nibble Y[3:0]: Custom 4-Bit ALU (74283 + Gates) | Upper Nibble Y[7:4]: Commercial 74LS181N ALU | Carry C4 cascades into /Cn";
+        modeDesc.textContent = "Lower Nibble Y[3:0]: Custom 4-Bit ALU (74LS83N + Gates) | Upper Nibble Y[7:4]: Commercial 74LS181N ALU | Carry C4 cascades into /Cn";
         busDivider.className = "nibble-divider";
       } else {
         modeBanner.className = "status-banner mode1";
         modeTitle.className = "status-title mode1";
         modeTitle.textContent = "MODE 1: REAL-TIME SILICON VERIFICATION";
-        modeDesc.textContent = "Custom 4-Bit ALU Y[3:0] vs Commercial 74LS181N F[3:0] evaluated in real-time hardware via IC12 (74xx85 Magnitude Comparator Pin 6 A=B)";
+        modeDesc.textContent = "Custom 4-Bit ALU Y[3:0] vs Commercial 74LS181N F[3:0] evaluated in real-time hardware via IC12 (74HCT85 Magnitude Comparator Pin 6 A=B)";
         busDivider.className = "nibble-divider comparator";
       }
 
-      // 6. 74xx85 Silicon Match Box
+      // 6. 74HCT85 Silicon Match Box
       const box7485 = document.getElementById('box-7485');
       const status7485 = document.getElementById('status-7485');
       const text7485 = document.getElementById('text-7485');
@@ -602,18 +602,18 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
       if (data.mode === 0) {
         box7485.className = "verify-box neutral";
         status7485.className = "vb-status info";
-        text7485.textContent = "74xx85 COMPARATOR: IDLE IN MODE 0";
+        text7485.textContent = "74HCT85 COMPARATOR: IDLE IN MODE 0";
         detail7485.textContent = "Datapath configured for 8-bit cascaded compute (Nibbles chained via carry)";
       } else {
         if (data.hw_7485_pass) {
           box7485.className = "verify-box";
           status7485.className = "vb-status pass";
-          text7485.textContent = "74xx85 PIN 6 (A=B): MATCH (PASS)";
+          text7485.textContent = "74HCT85 PIN 6 (A=B): MATCH (PASS)";
           detail7485.textContent = `Custom Y[3:0] (0x${customNibble.toString(16).toUpperCase()}) == 74LS181 F[3:0] (0x${ls181Nibble.toString(16).toUpperCase()})`;
         } else {
           box7485.className = "verify-box fail";
           status7485.className = "vb-status fail";
-          text7485.textContent = "74xx85 PIN 6 (A=B): MISMATCH (FAIL)";
+          text7485.textContent = "74HCT85 PIN 6 (A=B): MISMATCH (FAIL)";
           detail7485.textContent = `Custom Y[3:0] (0x${customNibble.toString(16).toUpperCase()}) != 74LS181 F[3:0] (0x${ls181Nibble.toString(16).toUpperCase()})`;
         }
       }

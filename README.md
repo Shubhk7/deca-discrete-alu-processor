@@ -134,7 +134,7 @@ The core innovation of this architecture is the **hardware-reconfigurable topolo
 
 ```
   MODE SWITCH = 0 : 8-Bit Cascaded ALU Mode
-  MODE SWITCH = 1 : Real-Time Silicon Verification Mode (Custom 74xx vs 74LS181)
+  MODE SWITCH = 1 : Real-Time Silicon Verification Mode (Custom Discrete ALU vs 74LS181)
 ```
 
 ### Mode 0: 8-Bit Cascaded ALU Processor
@@ -232,7 +232,7 @@ This bill of materials reflects the **exact physical inventory** and component c
 | **74HCT32** | Quad 2-Input OR Gate | HC / HCT / LS | DIP-14 | **1** | **2** | **3** | Bitwise OR logic array |
 | **74HCT04** | Hex Inverter (NOT) | HC / HCT / LS | DIP-14 | **1** | **2** | **3** | Bitwise NOT array ($A_3..A_0$) + control signal inversion |
 | **74HCT151** | 8-Channel / 8:1 Data Selector / Multiplexer| HC / HCT / LS | DIP-16 | **4** | **5** | **9** | Bit-slice operation multiplexers for custom ALU ($Y_0..Y_3$) |
-| **74xx245** | Octal Bus Transceiver (Optional Buffer) | HC / HCT / LS | DIP-20 | **1** | **0** | **1** | Output bus isolation and LED drive buffering |
+| **74HCT245** | Octal Bus Transceiver (Optional Buffer) | HC / HCT / LS | DIP-20 | **1** | **0** | **1** | Output bus isolation and LED drive buffering |
 
 ### Microcontrollers & Development Boards
 
@@ -402,7 +402,7 @@ To guarantee rock-solid electrical stability, the system uses a **dedicated powe
            +----------------------------------+
            |                                  |
            v                                  v
- [ Breadboard Logic Rail ]          [ 74LS181N + 74xx IC Array ]
+ [ Breadboard Logic Rail ]          [ 74LS181N + Discrete IC Array ]
    - 100uF Bulk Electrolytic          - 0.1uF Decoupling per IC
    - 0.1uF High-Frequency Caps        - Low-impedance bus bars
 ```
@@ -447,7 +447,7 @@ To guarantee rock-solid electrical stability, the system uses a **dedicated powe
 4. Mount the ICs in logical order:
    - **Board 1**: Input DIP switches, 10k pull-downs, and 4.7k override resistors.
    - **Board 2**: Custom 4-Bit ALU (`74LS83N`, `74HC86N`, `74HCT08`, `74HCT32`, `74HCT04`).
-   - **Board 3**: Four `74HCT151` 8:1 Multiplexers + output buffer (`74xx245`).
+   - **Board 3**: Four `74HCT151` 8:1 Multiplexers + output buffer (`74HCT245`).
    - **Board 4**: `74LS181N` ALU + `74HCT85` Magnitude Comparator + Mode Switch.
 
 ### Step 2: Wiring the Custom 4-Bit ALU & MUX Bank

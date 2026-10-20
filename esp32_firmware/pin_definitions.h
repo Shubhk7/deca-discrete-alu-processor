@@ -9,16 +9,16 @@
 // Dual-Mode Hybrid Architecture Specification:
 // 1. Hardware ALU Under Test:
 //    - MODE 0: 8-Bit Cascaded Compute
-//      * Lower Nibble Y[3:0]: Custom 4-Bit ALU synthesized from 74xx283 4-bit binary
-//        full adder, 74xx86 XOR, 74xx08 AND, 74xx32 OR, 74xx04 NOT, and 4x 74xx151 8:1 MUXes.
+//      * Lower Nibble Y[3:0]: Custom 4-Bit ALU synthesized from 74LS83N 4-bit binary
+//        full adder, 74HC86N XOR, 74HCT08 AND, 74HCT32 OR, 74HCT04 NOT, and 4x 74HCT151 8:1 MUXes.
 //      * Upper Nibble Y[7:4]: Commercial 74LS181N 4-Bit High-Functionality ALU.
-//      * Carry Cascade: IC1 (74xx283) Carry Out (C4) connects to 74LS181N Carry In (/Cn).
+//      * Carry Cascade: IC1 (74LS83N) Carry Out (C4) connects to 74LS181N Carry In (/Cn).
 //    - MODE 1: Real-Time Silicon Verification
 //      * Both Custom 4-Bit ALU and 74LS181N receive IDENTICAL 4-bit inputs A[3:0], B[3:0]
 //        and opcode control signals.
-//      * IC12 (74xx85 4-Bit Magnitude Comparator) performs real-time hardware equivalence
+//      * IC12 (74HCT85 4-Bit Magnitude Comparator) performs real-time hardware equivalence
 //        checking between Custom ALU Y[3:0] and 74LS181N F[3:0].
-//      * 74xx85 Pin 6 (A=B Output) goes HIGH on exact hardware match, lighting an external
+//      * 74HCT85 Pin 6 (A=B Output) goes HIGH on exact hardware match, lighting an external
 //        Green PASS LED and signaling both Arduino UNO R4 WiFi and ESP32-S3.
 //
 // 2. Heterogeneous 3-Board Infrastructure:
@@ -80,7 +80,7 @@
 // ----------------------------------------------------------------------------
 // GROUP 3: Opcode Bus (S0..S2) & Mode Control - Hybrid Bidirectional (4 Pins)
 // INPUT mode = monitor physical switches | OUTPUT mode = remote override
-// Opcode Selection Table (74xx151 8:1 MUX Select & 74LS181 Function Mapping):
+// Opcode Selection Table (74HCT151 8:1 MUX Select & 74LS181 Function Mapping):
 //   000 = ADD  (Mode 0: 8-Bit Cascaded Add | Mode 1: 4-Bit Silicon Add Verify)
 //   001 = SUB  (Mode 0: 8-Bit Cascaded Sub | Mode 1: 4-Bit Silicon Sub Verify)
 //   010 = AND  (Mode 0: 8-Bit Bitwise AND  | Mode 1: 4-Bit Silicon AND Verify)
@@ -91,7 +91,7 @@
 //   111 = SHR  (Mode 0: 8-Bit Logical Shift Right)
 // Mode Selection:
 //   MODE = 0 : 8-Bit Cascaded Compute (Lower Custom ALU + Upper 74LS181)
-//   MODE = 1 : Real-Time Silicon Verification (Custom ALU vs 74LS181 via 74xx85)
+//   MODE = 1 : Real-Time Silicon Verification (Custom ALU vs 74LS181 via 74HCT85)
 // ----------------------------------------------------------------------------
 #define PIN_OPCODE_S0       18  // Opcode Select S0 (LSB)
 #define PIN_OPCODE_S1       35  // Opcode Select S1
@@ -101,7 +101,7 @@
 // ----------------------------------------------------------------------------
 // GROUP 4: 8-Bit ALU Hardware Output Bus (Y0..Y7) - Dedicated Inputs (8 Pins)
 // Receives 5V logic via 1.0kΩ / 2.2kΩ dividers.
-// Bits 0..3 (Y0..Y3) = Custom 4-Bit ALU Output (from 4x 74xx151 MUX outputs)
+// Bits 0..3 (Y0..Y3) = Custom 4-Bit ALU Output (from 4x 74HCT151 MUX outputs)
 // Bits 4..7 (Y4..Y7) = Commercial 74LS181N 4-Bit ALU Output (F0..F3)
 // ----------------------------------------------------------------------------
 #define PIN_ALU_Y0          38  // Bit 0 (LSB) - Custom 4-Bit ALU MUX 0 Output
@@ -114,11 +114,11 @@
 #define PIN_ALU_Y7          21  // Bit 7 (MSB) - 74LS181N Output F3
 
 // ----------------------------------------------------------------------------
-// GROUP 5: 74xx85 Hardware Silicon Match Monitor Pin
-// Receives HIGH (1) from IC12 (74xx85) Pin 6 (A=B Output) via 1.0kΩ / 2.2kΩ divider
+// GROUP 5: 74HCT85 Hardware Silicon Match Monitor Pin
+// Receives HIGH (1) from IC12 (74HCT85) Pin 6 (A=B Output) via 1.0kΩ / 2.2kΩ divider
 // HIGH = Hardware Silicon Equivalence Confirmed between Custom ALU and 74LS181N
 // ----------------------------------------------------------------------------
-#define PIN_7485_PASS       3   // Monitor 74xx85 Pin 6 (A=B Match Output)
+#define PIN_7485_PASS       3   // Monitor 74HCT85 Pin 6 (A=B Match Output)
 #define PIN_VERIFIER_PASS   3   // Alias for backwards compatibility
 
 // ----------------------------------------------------------------------------
