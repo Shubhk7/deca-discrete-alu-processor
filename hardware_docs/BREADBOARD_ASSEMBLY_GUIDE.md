@@ -119,18 +119,18 @@ This guide provides a rigorous, step-by-step physical assembly protocol for cons
 
 | Item | Component | Package | Qty | Description & Circuit Role |
 | :---: | :--- | :---: | :---: | :--- |
-| **IC1** | **74xx283** | DIP-16 | 1 | 4-Bit Binary Full Adder with Fast Ripple Carry |
-| **IC2** | **74xx86** | DIP-14 | 1 | Quad 2-Input XOR (B-inversion for two's complement subtraction) |
-| **IC3** | **74xx86** | DIP-14 | 1 | Quad 2-Input XOR (Bitwise XOR logic array) |
-| **IC4** | **74xx08** | DIP-14 | 1 | Quad 2-Input AND (Bitwise AND logic array) |
-| **IC5** | **74xx32** | DIP-14 | 1 | Quad 2-Input OR (Bitwise OR logic array) |
-| **IC6** | **74xx04** | DIP-14 | 1 | Hex Inverter (Bitwise NOT array + control inverter) |
-| **IC7** | **74xx151** | DIP-16 | 1 | 8:1 Multiplexer (Selects Bit 0 Result $Y_0$) |
-| **IC8** | **74xx151** | DIP-16 | 1 | 8:1 Multiplexer (Selects Bit 1 Result $Y_1$) |
-| **IC9** | **74xx151** | DIP-16 | 1 | 8:1 Multiplexer (Selects Bit 2 Result $Y_2$) |
-| **IC10**| **74xx151** | DIP-16 | 1 | 8:1 Multiplexer (Selects Bit 3 Result $Y_3$) |
+| **IC1** | **74LS83N** | DIP-16 | 1 | 4-Bit Binary Full Adder with Fast Carry (VCC=P5, GND=P12) |
+| **IC2** | **74HC86N** | DIP-14 | 1 | Quad 2-Input XOR (B-inversion for two's complement subtraction) |
+| **IC3** | **74HC86N** | DIP-14 | 1 | Quad 2-Input XOR (Bitwise XOR logic array) |
+| **IC4** | **74HCT08** | DIP-14 | 1 | Quad 2-Input AND (Bitwise AND logic array) |
+| **IC5** | **74HCT32** | DIP-14 | 1 | Quad 2-Input OR (Bitwise OR logic array) |
+| **IC6** | **74HCT04** | DIP-14 | 1 | Hex Inverter (Bitwise NOT array + control inverter) |
+| **IC7** | **74HCT151** | DIP-16 | 1 | 8:1 Multiplexer (Selects Bit 0 Result $Y_0$) |
+| **IC8** | **74HCT151** | DIP-16 | 1 | 8:1 Multiplexer (Selects Bit 1 Result $Y_1$) |
+| **IC9** | **74HCT151** | DIP-16 | 1 | 8:1 Multiplexer (Selects Bit 2 Result $Y_2$) |
+| **IC10**| **74HCT151** | DIP-16 | 1 | 8:1 Multiplexer (Selects Bit 3 Result $Y_3$) |
 | **IC11**| **74LS181N**| DIP-24 | 1 | 4-Bit Monolithic Bipolar Arithmetic Logic Unit (Upper nibble / Golden silicon) |
-| **IC12**| **74xx85**  | DIP-16 | 1 | 4-Bit Magnitude Comparator (Real-time $A=B$ hardware equivalence) |
+| **IC12**| **74HCT85**  | DIP-16 | 1 | 4-Bit Magnitude Comparator (Real-time $A=B$ hardware equivalence) |
 | **MCU1**| **Arduino UNO R4 Minima** | Board | 1 | Dedicated Clean 5V/1A USB-C Power Station |
 | **MCU2**| **Arduino UNO R4 WiFi**   | Board | 1 | 5V Software Golden Model Verifier + 12×8 LED Matrix HUD |
 | **MCU3**| **ESP32-S3 N16R8**        | Board | 1 | Web Dashboard AP + Hybrid Input Injector |
@@ -278,7 +278,12 @@ In this stage, you build the **Custom 4-Bit Discrete ALU Slice** consisting of 1
 
 ### 2.1 IC Placement & Power Hookups (Breadboards 2 & 3):
 Place all ICs straddling the center divider groove with notches facing **LEFT**:
-* **IC1**: `74xx283` (16-Pin DIP) — Pin 16 to $+5\text{V}$, Pin 8 to $\text{GND}$, $0.1\ \mu\text{F}$ ceramic cap across Pins 16 & 8.
+> [!CAUTION]
+> **CRITICAL POWER WARNING FOR 74LS83N**:
+> - **Pin 5 is +5V (VCC)**
+> - **Pin 12 is GND (0V)**
+> DO NOT wire Pin 16 to +5V or Pin 8 to GND! Place a $0.1\ \mu\text{F}$ cap directly between Pin 5 and Pin 12.
+* **IC1**: `74LS83N` (16-Pin DIP) — Pin 5 to $+5\text{V}$, Pin 12 to $\text{GND}$.
 * **IC2**: `74xx86` (14-Pin DIP) — Pin 14 to $+5\text{V}$, Pin 7 to $\text{GND}$, $0.1\ \mu\text{F}$ cap across Pins 14 & 7.
 * **IC3**: `74xx86` (14-Pin DIP) — Pin 14 to $+5\text{V}$, Pin 7 to $\text{GND}$, $0.1\ \mu\text{F}$ cap across Pins 14 & 7.
 * **IC4**: `74xx08` (14-Pin DIP) — Pin 14 to $+5\text{V}$, Pin 7 to $\text{GND}$, $0.1\ \mu\text{F}$ cap across Pins 14 & 7.
@@ -293,7 +298,7 @@ IC2 conditionally inverts $B[3:0]$ whenever Opcode is `001` (SUB active):
 * Connect Operand $B[1]$ to IC2 Pin 4 (2A) $\to$ Output Pin 6 is $B'_1$.
 * Connect Operand $B[2]$ to IC2 Pin 9 (3A) $\to$ Output Pin 8 is $B'_2$.
 * Connect Operand $B[3]$ to IC2 Pin 12 (4A) $\to$ Output Pin 11 is $B'_3$.
-* Connect the **SUB control signal** also to IC1 Pin 7 ($C_0$ / Carry-In of adder) to provide the $+1$ for two's complement.
+* Connect the **SUB control signal** also to IC1 Pin 13 ($C_0$ / Carry-In of adder) to provide the $+1$ for two's complement.
 
 ### 2.3 4-Bit Adder Wiring (IC1: 74xx283):
 Wire operands $A[3:0]$ and conditioned $B'[3:0]$ to IC1:

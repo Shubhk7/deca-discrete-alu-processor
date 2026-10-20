@@ -1,5 +1,5 @@
 # Complete Hardware Circuit Schematic & Netlist
-## Dual-Mode Discrete & Silicon ALU Processor (74xx Discrete + 74LS181N + 74xx85)
+## Dual-Mode Discrete & Silicon ALU Processor (74xx Discrete + 74LS181N + 74HCT85)
 ### Heterogeneous 3-Board Infrastructure: ESP32-S3 N16R8, Arduino UNO R4 WiFi & Arduino UNO R4 Minima
 
 This document provides the exhaustive hardware circuit schematics, ASCII circuit blueprints, operational data flows, and a complete pin-by-pin netlist for the **Dual-Mode Discrete & Silicon ALU Processor**.
@@ -25,13 +25,13 @@ flowchart TD
     end
 
     subgraph CustomALU ["3. Lower Nibble Custom 4-Bit Discrete ALU Slice"]
-        IC2_XOR["IC2: 74xx86 Quad XOR<br/>B-Invert: B'[3:0] = B[3:0] ⊕ SUB"]
-        IC1_ADD["IC1: 74xx283 4-Bit Adder<br/>ADD / SUB Core (Cin = SUB)"]
-        IC3_XOR["IC3: 74xx86 Quad XOR<br/>Bitwise XOR: A[3:0] ⊕ B[3:0]"]
-        IC4_AND["IC4: 74xx08 Quad AND<br/>Bitwise AND: A[3:0] · B[3:0]"]
-        IC5_OR["IC5: 74xx32 Quad OR<br/>Bitwise OR: A[3:0] + B[3:0]"]
-        IC6_NOT["IC6: 74xx04 Hex Inverter<br/>Bitwise NOT: ~A[3:0] & Carry Invert"]
-        IC7_10_MUX["IC7..IC10: 4× 74xx151 8:1 MUXes<br/>Operation Select Y_custom[3:0]"]
+        IC2_XOR["IC2: 74HC86N Quad XOR<br/>B-Invert: B'[3:0] = B[3:0] ⊕ SUB"]
+        IC1_ADD["IC1: 74LS83N 4-Bit Adder<br/>ADD / SUB Core (Cin = SUB)"]
+        IC3_XOR["IC3: 74HC86N Quad XOR<br/>Bitwise XOR: A[3:0] ⊕ B[3:0]"]
+        IC4_AND["IC4: 74HCT08 Quad AND<br/>Bitwise AND: A[3:0] · B[3:0]"]
+        IC5_OR["IC5: 74HCT32 Quad OR<br/>Bitwise OR: A[3:0] + B[3:0]"]
+        IC6_NOT["IC6: 74HCT04 Hex Inverter<br/>Bitwise NOT: ~A[3:0] & Carry Invert"]
+        IC7_10_MUX["IC7..IC10: 4× 74HCT151 8:1 MUXes<br/>Operation Select Y_custom[3:0]"]
     end
 
     subgraph SiliconALU ["4. Upper Nibble / Benchmark Silicon ALU (74LS181N)"]
@@ -40,7 +40,7 @@ flowchart TD
     end
 
     subgraph HardwareVerify ["5. Real-Time Hardware Equivalence (Mode 1)"]
-        IC12_COMP["IC12: 74xx85 4-Bit Magnitude Comparator<br/>Word A: Y_custom[3:0] vs Word B: F[3:0]"]
+        IC12_COMP["IC12: 74HCT85 4-Bit Magnitude Comparator<br/>Word A: Y_custom[3:0] vs Word B: F[3:0]"]
         MATCH_LED["🟢 PASS LED (Hardware Match Pin 6)"]
     end
 
@@ -171,9 +171,9 @@ Each of the 20 input lines ($A[7:0], B[7:0], S[2:0], \text{MODE}$) features this
                         ▼                          ▼
                  ┌─────────────┐            ┌─────────────┐
         B0 ─────►│ 1A       1Y ├──── B'0 ──►│ B1       Σ0 ├───► MUX0 D0, D1 (IC7 Pins 4,3)
-                 │  IC2: 7486  │            │             │
+                 │  IC2: 74HC86N  │            │             │
         B1 ─────►│ 2A       2Y ├──── B'1 ──►│ B2       Σ1 ├───► MUX1 D0, D1 (IC8 Pins 4,3)
-                 │ (B-Invert)  │            │  IC1: 74283 │
+                 │ (B-Invert)  │            │  IC1: 74LS83N │
         B2 ─────►│ 3A       3Y ├──── B'2 ──►│ B3 (4-Bit)  │
                  │             │            │    Adder    │
         B3 ─────►│ 4A       4Y ├──── B'3 ──►│ B4       Σ2 ├───► MUX2 D0, D1 (IC9 Pins 4,3)
@@ -184,7 +184,7 @@ Each of the 20 input lines ($A[7:0], B[7:0], S[2:0], \text{MODE}$) features this
         A3 ────────────────────────────────►│ A4       C0 │      │
                                             └──────┬──────┘      ▼
                                                    ▲      ┌──────────────┐
-                                                   │      │ IC6: 74xx04  │
+                                                   │      │ IC6: 74HCT04  │
                                                    └──────┤ Pin 11 -> 10 ├─► /Cn (Cascaded Carry)
                                                           └──────────────┘
 
@@ -194,7 +194,7 @@ Each of the 20 input lines ($A[7:0], B[7:0], S[2:0], \text{MODE}$) features this
         B[3:0] ──┼──────────┼──────────┼──────────┤
                  ▼          ▼          ▼          ▼
             ┌─────────┐┌─────────┐┌─────────┐┌─────────┐
-            │IC4: 7408││IC5: 7432││IC3: 7486││IC6: 7404│
+            │IC4: 74HCT08││IC5: 74HCT32││IC3: 74HC86N││IC6: 74HCT04│
             │(AND Gate││(OR Gate)││(XOR Gate││(NOT Gate│
             └────┬────┘└────┬────┘└────┬────┘└────┬────┘
                  │          │          │          │
@@ -205,8 +205,8 @@ Each of the 20 input lines ($A[7:0], B[7:0], S[2:0], \text{MODE}$) features this
 
 ---
 
-### 2.4 Subsystem 4: Multiplexer Array (IC7..IC10 4× 74xx151 8:1 MUXes)
-Every bit-slice $i \in \{0, 1, 2, 3\}$ uses one 74xx151:
+### 2.4 Subsystem 4: Multiplexer Array (IC7..IC10 4× 74HCT151 8:1 MUXes)
+Every bit-slice $i \in \{0, 1, 2, 3\}$ uses one 74HCT151:
 
 ```
                  Opcode Bus S[2..0]
@@ -216,7 +216,7 @@ Every bit-slice $i \in \{0, 1, 2, 3\}$ uses one 74xx151:
                ┌───────────────────┐            │
      Adder Σi ─┤ 4  D0           5 ├─ Yi        │
       Diff Σi ─┤ 3  D1             │            ▼ (Identical for IC8, IC9, IC10)
-     AND Ai·Bi ┤ 2  D2   74xx151   │
+     AND Ai·Bi ┤ 2  D2   74HCT151   │
      OR  Ai+Bi ┤ 1  D3   (IC7)     │
     XOR  Ai⊕Bi ┤ 15 D4             │
      NOT   ~Ai ┤ 14 D5             │
@@ -270,7 +270,7 @@ Every bit-slice $i \in \{0, 1, 2, 3\}$ uses one 74xx151:
 
 ---
 
-### 2.6 Subsystem 6: Hardware Equivalence Comparator (IC12 74xx85)
+### 2.6 Subsystem 6: Hardware Equivalence Comparator (IC12 74HCT85)
 
 ```
       Custom ALU Outputs Y[3:0]          74LS181 Silicon Outputs F[3:0]
@@ -284,7 +284,7 @@ Every bit-slice $i \in \{0, 1, 2, 3\}$ uses one 74xx151:
                              │
                              ▼
               ┌─────────────────────────────┐
-              │   IC12: 74xx85 COMPARATOR   │
+              │   IC12: 74HCT85 COMPARATOR   │
               │                             │
               │  Pin 3 (I A=B) ◄─── +5V     │
               │  Pin 2 (I A<B) ◄─── GND     │
@@ -354,18 +354,18 @@ Every bit-slice $i \in \{0, 1, 2, 3\}$ uses one 74xx151:
 ### 3.1 Power & Ground Nets
 | Net Name | Origin Source | Destination Pins / Components | Function |
 | :--- | :--- | :--- | :--- |
-| **+5V_MASTER** | Arduino UNO R4 Minima 5V Pin | IC1 Pin 16, IC2 Pin 14, IC3 Pin 14, IC4 Pin 14, IC5 Pin 14, IC6 Pin 14, IC7 Pin 16, IC8 Pin 16, IC9 Pin 16, IC10 Pin 16, IC11 Pin 16 (or 24), IC12 Pin 16, IC12 Pin 3 ($I_{A=B}$), DIP Switch Common Rails, $100\ \mu\text{F}$ Electrolytic (+) | System +5V logic supply rail |
-| **COMMON_GND** | Arduino UNO R4 Minima GND Pin | IC1 Pin 8, IC2 Pin 7, IC3 Pin 7, IC4 Pin 7, IC5 Pin 7, IC6 Pin 7, IC7 Pins 7 & 8, IC8 Pins 7 & 8, IC9 Pins 7 & 8, IC10 Pins 7 & 8, IC11 Pin 12, IC12 Pins 2, 4, 8, Arduino UNO R4 WiFi GND, ESP32-S3 GND, all 10kΩ pull-downs, all 2.2kΩ divider shunts, LED cathodes, $100\ \mu\text{F}$ Electrolytic (-) | Unified 0V star ground plane |
+| **+5V_MASTER** | Arduino UNO R4 Minima 5V Pin | IC1 Pin 5, IC2 Pin 14, IC3 Pin 14, IC4 Pin 14, IC5 Pin 14, IC6 Pin 14, IC7 Pin 16, IC8 Pin 16, IC9 Pin 16, IC10 Pin 16, IC11 Pin 16 (or 24), IC12 Pin 16, IC12 Pin 3 ($I_{A=B}$), DIP Switch Common Rails, $100\ \mu\text{F}$ Electrolytic (+) | System +5V logic supply rail |
+| **COMMON_GND** | Arduino UNO R4 Minima GND Pin | IC1 Pin 12, IC2 Pin 7, IC3 Pin 7, IC4 Pin 7, IC5 Pin 7, IC6 Pin 7, IC7 Pins 7 & 8, IC8 Pins 7 & 8, IC9 Pins 7 & 8, IC10 Pins 7 & 8, IC11 Pin 12, IC12 Pins 2, 4, 8, Arduino UNO R4 WiFi GND, ESP32-S3 GND, all 10kΩ pull-downs, all 2.2kΩ divider shunts, LED cathodes, $100\ \mu\text{F}$ Electrolytic (-) | Unified 0V star ground plane |
 
 ---
 
 ### 3.2 Input Operand A Bus Nets
 | Net Name | Primary Source | Secondary Source | Destination Pins | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| **NET_A0** | DIP SW A Bit 0 | ESP32 GPIO 1 (4.7kΩ) | IC1 Pin 5 ($A_1$), IC3 Pin 1 (1A), IC4 Pin 1 (1A), IC5 Pin 1 (1A), IC6 Pin 1 (1A), IC8 Pin 13 ($D_6$), IC11 Pin 2 (Mode 1) | Operand A Bit 0 |
-| **NET_A1** | DIP SW A Bit 1 | ESP32 GPIO 2 (4.7kΩ) | IC1 Pin 3 ($A_2$), IC3 Pin 4 (2A), IC4 Pin 4 (2A), IC5 Pin 4 (2A), IC6 Pin 3 (2A), IC7 Pin 12 ($D_7$), IC9 Pin 13 ($D_6$), IC11 Pin 19 (Mode 1) | Operand A Bit 1 |
-| **NET_A2** | DIP SW A Bit 2 | ESP32 GPIO 4 (4.7kΩ) | IC1 Pin 14 ($A_3$), IC3 Pin 9 (3A), IC4 Pin 9 (3A), IC5 Pin 9 (3A), IC6 Pin 5 (3A), IC8 Pin 12 ($D_7$), IC10 Pin 13 ($D_6$), IC11 Pin 21 (Mode 1) | Operand A Bit 2 |
-| **NET_A3** | DIP SW A Bit 3 | ESP32 GPIO 5 (4.7kΩ) | IC1 Pin 12 ($A_4$), IC3 Pin 12 (4A), IC4 Pin 12 (4A), IC5 Pin 12 (4A), IC6 Pin 9 (4A), IC9 Pin 12 ($D_7$), IC11 Pin 23 (Mode 1) | Operand A Bit 3 |
+| **NET_A0** | DIP SW A Bit 0 | ESP32 GPIO 1 (4.7kΩ) | IC1 Pin 10 ($A_1$), IC3 Pin 1 (1A), IC4 Pin 1 (1A), IC5 Pin 1 (1A), IC6 Pin 1 (1A), IC8 Pin 13 ($D_6$), IC11 Pin 2 (Mode 1) | Operand A Bit 0 |
+| **NET_A1** | DIP SW A Bit 1 | ESP32 GPIO 2 (4.7kΩ) | IC1 Pin 8 ($A_2$), IC3 Pin 4 (2A), IC4 Pin 4 (2A), IC5 Pin 4 (2A), IC6 Pin 3 (2A), IC7 Pin 12 ($D_7$), IC9 Pin 13 ($D_6$), IC11 Pin 19 (Mode 1) | Operand A Bit 1 |
+| **NET_A2** | DIP SW A Bit 2 | ESP32 GPIO 4 (4.7kΩ) | IC1 Pin 3 ($A_3$), IC3 Pin 9 (3A), IC4 Pin 9 (3A), IC5 Pin 9 (3A), IC6 Pin 5 (3A), IC8 Pin 12 ($D_7$), IC10 Pin 13 ($D_6$), IC11 Pin 21 (Mode 1) | Operand A Bit 2 |
+| **NET_A3** | DIP SW A Bit 3 | ESP32 GPIO 5 (4.7kΩ) | IC1 Pin 15 ($A_4$), IC3 Pin 12 (4A), IC4 Pin 12 (4A), IC5 Pin 12 (4A), IC6 Pin 9 (4A), IC9 Pin 12 ($D_7$), IC11 Pin 23 (Mode 1) | Operand A Bit 3 |
 | **NET_A4** | DIP SW A Bit 4 | ESP32 GPIO 6 (4.7kΩ) | IC11 Pin 2 ($\bar{A}_0$, Mode 0), IC10 Pin 12 ($D_7$, Mode 0) | Operand A Bit 4 |
 | **NET_A5** | DIP SW A Bit 5 | ESP32 GPIO 7 (4.7kΩ) | IC11 Pin 19 ($\bar{A}_1$, Mode 0) | Operand A Bit 5 |
 | **NET_A6** | DIP SW A Bit 6 | ESP32 GPIO 8 (4.7kΩ) | IC11 Pin 21 ($\bar{A}_2$, Mode 0) | Operand A Bit 6 |
@@ -377,13 +377,13 @@ Every bit-slice $i \in \{0, 1, 2, 3\}$ uses one 74xx151:
 | Net Name | Origin | Conditioning Gate | Destination Pins | Description |
 | :--- | :--- | :--- | :--- | :--- |
 | **NET_B0** | DIP SW B Bit 0 | Direct | IC2 Pin 1 (1A), IC3 Pin 2 (1B), IC4 Pin 2 (1B), IC5 Pin 2 (1B), IC11 Pin 1 (Mode 1) | Operand B Bit 0 raw |
-| **NET_B0_COND**| IC2 Pin 3 (1Y) | $B_0 \oplus SUB$ | IC1 Pin 6 ($B_1$) | Conditioned Operand B Bit 0 |
+| **NET_B0_COND**| IC2 Pin 3 (1Y) | $B_0 \oplus SUB$ | IC1 Pin 11 ($B_1$) | Conditioned Operand B Bit 0 |
 | **NET_B1** | DIP SW B Bit 1 | Direct | IC2 Pin 4 (2A), IC3 Pin 5 (2B), IC4 Pin 5 (2B), IC5 Pin 5 (2B), IC11 Pin 20 (Mode 1) | Operand B Bit 1 raw |
-| **NET_B1_COND**| IC2 Pin 6 (2Y) | $B_1 \oplus SUB$ | IC1 Pin 2 ($B_2$) | Conditioned Operand B Bit 1 |
+| **NET_B1_COND**| IC2 Pin 6 (2Y) | $B_1 \oplus SUB$ | IC1 Pin 7 ($B_2$) | Conditioned Operand B Bit 1 |
 | **NET_B2** | DIP SW B Bit 2 | Direct | IC2 Pin 9 (3A), IC3 Pin 10 (3B), IC4 Pin 10 (3B), IC5 Pin 10 (3B), IC11 Pin 22 (Mode 1) | Operand B Bit 2 raw |
-| **NET_B2_COND**| IC2 Pin 8 (3Y) | $B_2 \oplus SUB$ | IC1 Pin 15 ($B_3$) | Conditioned Operand B Bit 2 |
+| **NET_B2_COND**| IC2 Pin 8 (3Y) | $B_2 \oplus SUB$ | IC1 Pin 4 ($B_3$) | Conditioned Operand B Bit 2 |
 | **NET_B3** | DIP SW B Bit 3 | Direct | IC2 Pin 12 (4A), IC3 Pin 13 (4B), IC4 Pin 13 (4B), IC5 Pin 13 (4B), IC11 Pin 24 (Mode 1) | Operand B Bit 3 raw |
-| **NET_B3_COND**| IC2 Pin 11 (4Y)| $B_3 \oplus SUB$ | IC1 Pin 11 ($B_4$) | Conditioned Operand B Bit 3 |
+| **NET_B3_COND**| IC2 Pin 11 (4Y)| $B_3 \oplus SUB$ | IC1 Pin 16 ($B_4$) | Conditioned Operand B Bit 3 |
 | **NET_B4** | DIP SW B Bit 4 | Direct | IC11 Pin 1 ($\bar{B}_0$, Mode 0) | Operand B Bit 4 |
 | **NET_B5** | DIP SW B Bit 5 | Direct | IC11 Pin 20 ($\bar{B}_1$, Mode 0) | Operand B Bit 5 |
 | **NET_B6** | DIP SW B Bit 6 | Direct | IC11 Pin 22 ($\bar{B}_2$, Mode 0) | Operand B Bit 6 |
@@ -397,9 +397,9 @@ Every bit-slice $i \in \{0, 1, 2, 3\}$ uses one 74xx151:
 | **NET_OPCODE_S0** | DIP SW Op Bit 0 | ESP32 GPIO 18 (4.7kΩ) | IC7 Pin 11, IC8 Pin 11, IC9 Pin 11, IC10 Pin 11, Arduino A0, $SUB$ Net | Opcode Bit 0 (LSB) |
 | **NET_OPCODE_S1** | DIP SW Op Bit 1 | ESP32 GPIO 35 (4.7kΩ) | IC7 Pin 10, IC8 Pin 10, IC9 Pin 10, IC10 Pin 10, Arduino A1 | Opcode Bit 1 |
 | **NET_OPCODE_S2** | DIP SW Op Bit 2 | ESP32 GPIO 36 (4.7kΩ) | IC7 Pin 9, IC8 Pin 9, IC9 Pin 9, IC10 Pin 9, Arduino A2 | Opcode Bit 2 (MSB) |
-| **NET_SUB** | Opcode S0 Line | Conditioning | IC1 Pin 7 ($C_0$), IC2 Pins 2, 5, 10, 13 (1B, 2B, 3B, 4B) | Subtraction Control Line ($SUB=1$) |
+| **NET_SUB** | Opcode S0 Line | Conditioning | IC1 Pin 13 ($C_0$), IC2 Pins 2, 5, 10, 13 (1B, 2B, 3B, 4B) | Subtraction Control Line ($SUB=1$) |
 | **NET_MODE** | Mode Switch Pin | ESP32 GPIO 37 (4.7kΩ) | Steering Multiplexers / Jumpers, Arduino A3 | Datapath Mode: 0 = 8-Bit, 1 = Verify |
-| **NET_CASCADE_C4**| IC1 Pin 9 ($C_4$) | IC1 Carry Out | IC6 Pin 11 (5A) | Raw Carry-out from Lower Nibble Adder |
+| **NET_CASCADE_C4**| IC1 Pin 14 ($C_4$) | IC1 Carry Out | IC6 Pin 11 (5A) | Raw Carry-out from Lower Nibble Adder |
 | **NET_CASCADE_CN**| IC6 Pin 10 (5Y) | Inverted Carry | IC11 Pin 7 ($\bar{C}_n$, active LOW carry in for 74LS181) | Inverted Carry to Upper Nibble in Mode 0 |
 
 ---
@@ -407,10 +407,10 @@ Every bit-slice $i \in \{0, 1, 2, 3\}$ uses one 74xx151:
 ### 3.5 Custom 4-Bit ALU Internal Function Nets
 | Net Name | Source Pin | Destination Pin | Logic Function |
 | :--- | :--- | :--- | :--- |
-| **NET_SUM_0** | IC1 Pin 4 ($\Sigma_0$) | IC7 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Addition/Subtraction Bit 0 |
-| **NET_SUM_1** | IC1 Pin 1 ($\Sigma_1$) | IC8 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Addition/Subtraction Bit 1 |
-| **NET_SUM_2** | IC1 Pin 13 ($\Sigma_2$) | IC9 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Addition/Subtraction Bit 2 |
-| **NET_SUM_3** | IC1 Pin 10 ($\Sigma_3$) | IC10 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Addition/Subtraction Bit 3 |
+| **NET_SUM_0** | IC1 Pin 9 ($\Sigma_1$) | IC7 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Addition/Subtraction Bit 0 |
+| **NET_SUM_1** | IC1 Pin 6 ($\Sigma_2$) | IC8 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Addition/Subtraction Bit 1 |
+| **NET_SUM_2** | IC1 Pin 2 ($\Sigma_3$) | IC9 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Addition/Subtraction Bit 2 |
+| **NET_SUM_3** | IC1 Pin 1 ($\Sigma_4$) | IC10 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Addition/Subtraction Bit 3 |
 | **NET_AND_0** | IC4 Pin 3 (1Y) | IC7 Pin 2 ($D_2$) | Bitwise AND Bit 0 ($A_0 \cdot B_0$) |
 | **NET_AND_1** | IC4 Pin 6 (2Y) | IC8 Pin 2 ($D_2$) | Bitwise AND Bit 1 ($A_1 \cdot B_1$) |
 | **NET_AND_2** | IC4 Pin 8 (3Y) | IC9 Pin 2 ($D_2$) | Bitwise AND Bit 2 ($A_2 \cdot B_2$) |

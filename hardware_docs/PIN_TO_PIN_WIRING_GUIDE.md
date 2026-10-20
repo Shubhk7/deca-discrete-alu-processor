@@ -10,18 +10,18 @@ This document is the **definitive physical benchtop assembly manual** for the Du
 
 | IC Designator | Chip Model | Logic Function & Architectural Role | Package | Breadboard Location |
 | :--- | :--- | :--- | :---: | :---: |
-| **IC1** | **74xx283** | 4-Bit Binary Full Adder with Fast Carry (Lower Nibble ADD/SUB Core) | 16-Pin DIP | Breadboard 2 |
-| **IC2** | **74xx86** | Quad 2-Input Exclusive-OR Gate (Conditional Subtraction Inversion: $B \oplus SUB$) | 14-Pin DIP | Breadboard 2 |
-| **IC3** | **74xx86** | Quad 2-Input Exclusive-OR Gate (Bitwise XOR Logic Array: $A \oplus B$) | 14-Pin DIP | Breadboard 2 |
-| **IC4** | **74xx08** | Quad 2-Input AND Gate (Bitwise AND Logic Array: $A \cdot B$) | 14-Pin DIP | Breadboard 2 |
-| **IC5** | **74xx32** | Quad 2-Input OR Gate (Bitwise OR Logic Array: $A + B$) | 14-Pin DIP | Breadboard 2 |
-| **IC6** | **74xx04** | Hex Inverter (Bitwise NOT Array: $\bar{A}$ + Carry Inversion $C_4 \to \bar{C}_n$) | 14-Pin DIP | Breadboard 2 |
-| **IC7** | **74xx151** | 8:1 Multiplexer (Operation Selector for Custom ALU Bit 0: $Y_0$) | 16-Pin DIP | Breadboard 3 |
-| **IC8** | **74xx151** | 8:1 Multiplexer (Operation Selector for Custom ALU Bit 1: $Y_1$) | 16-Pin DIP | Breadboard 3 |
-| **IC9** | **74xx151** | 8:1 Multiplexer (Operation Selector for Custom ALU Bit 2: $Y_2$) | 16-Pin DIP | Breadboard 3 |
-| **IC10** | **74xx151** | 8:1 Multiplexer (Operation Selector for Custom ALU Bit 3: $Y_3$) | 16-Pin DIP | Breadboard 3 |
+| **IC1** | **74LS83N** | 4-Bit Binary Full Adder with Fast Carry (Lower Nibble ADD/SUB Core) | 16-Pin DIP | Breadboard 2 |
+| **IC2** | **74HC86N** | Quad 2-Input Exclusive-OR Gate (Conditional Subtraction Inversion: $B \oplus SUB$) | 14-Pin DIP | Breadboard 2 |
+| **IC3** | **74HC86N** | Quad 2-Input Exclusive-OR Gate (Bitwise XOR Logic Array: $A \oplus B$) | 14-Pin DIP | Breadboard 2 |
+| **IC4** | **74HCT08** | Quad 2-Input AND Gate (Bitwise AND Logic Array: $A \cdot B$) | 14-Pin DIP | Breadboard 2 |
+| **IC5** | **74HCT32** | Quad 2-Input OR Gate (Bitwise OR Logic Array: $A + B$) | 14-Pin DIP | Breadboard 2 |
+| **IC6** | **74HCT04** | Hex Inverter (Bitwise NOT Array: $\bar{A}$ + Carry Inversion $C_4 \to \bar{C}_n$) | 14-Pin DIP | Breadboard 2 |
+| **IC7** | **74HCT151** | 8:1 Multiplexer (Operation Selector for Custom ALU Bit 0: $Y_0$) | 16-Pin DIP | Breadboard 3 |
+| **IC8** | **74HCT151** | 8:1 Multiplexer (Operation Selector for Custom ALU Bit 1: $Y_1$) | 16-Pin DIP | Breadboard 3 |
+| **IC9** | **74HCT151** | 8:1 Multiplexer (Operation Selector for Custom ALU Bit 2: $Y_2$) | 16-Pin DIP | Breadboard 3 |
+| **IC10** | **74HCT151** | 8:1 Multiplexer (Operation Selector for Custom ALU Bit 3: $Y_3$) | 16-Pin DIP | Breadboard 3 |
 | **IC11** | **74LS181N** | 4-Bit Bipolar ALU (Upper Nibble in Mode 0 / Silicon Target in Mode 1) | 24-Pin DIP (0.6") | Breadboard 4 |
-| **IC12** | **74xx85** | 4-Bit Magnitude Comparator (Hardware Equivalence Verifier: $Y_{custom}$ vs $F_{181}$) | 16-Pin DIP | Breadboard 4 |
+| **IC12** | **74HCT85** | 4-Bit Magnitude Comparator (Hardware Equivalence Verifier: $Y_{custom}$ vs $F_{181}$) | 16-Pin DIP | Breadboard 4 |
 
 ---
 
@@ -46,32 +46,39 @@ This document is the **definitive physical benchtop assembly manual** for the Du
 
 ---
 
-### IC1: 74xx283 (4-Bit Binary Full Adder with Fast Carry) — 16-Pin DIP
-* **Location**: Breadboard 2 | **Power**: Pin 16 $\to$ +5V Rail, Pin 8 $\to$ GND Rail
-* **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 16 and Pin 8.
+> [!CAUTION]
+> **CRITICAL HARDWARE PINOUT WARNING — 74LS83N POWER PINS**:
+> The **74LS83N** does NOT use standard corner power pins!
+> - **Pin 5 is $V_{CC}$ (+5V)**
+> - **Pin 12 is GND (0V)**
+> DO NOT connect Pin 16 to +5V or Pin 8 to GND! Pin 16 is Data Input $B_4$ and Pin 8 is Data Input $A_2$. Connecting Pin 16 to +5V will damage the input!
+
+### IC1: 74LS83N (4-Bit Binary Full Adder with Fast Carry) — 16-Pin DIP
+* **Location**: Breadboard 2 | **Power**: Pin 5 $\to$ +5V Rail, Pin 12 $\to$ GND Rail
+* **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 5 and Pin 12.
 
 | Pin | Pin Name | Connected To (Exact Source / Destination) | Signal Function / Notes | Wire Color |
 | :---: | :---: | :--- | :--- | :---: |
-| **1** | $\Sigma_1$ | **IC8 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Bit 1 ADD / SUB Result ($S_1$) | Blue |
-| **2** | $B_2$ | **IC2 Pin 6 (2Y)** | Bit 1 Conditioned Operand $B'_1 = B_1 \oplus SUB$ | Green |
-| **3** | $A_2$ | **Input Bus $A_1$ (DIP SW A Pin 2 / ESP32 GPIO 2 via 4.7kΩ)** | Bit 1 Operand A input | Yellow |
-| **4** | $\Sigma_0$ | **IC7 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Bit 0 ADD / SUB Result ($S_0$) | Blue |
-| **5** | $A_1$ | **Input Bus $A_0$ (DIP SW A Pin 1 / ESP32 GPIO 1 via 4.7kΩ)** | Bit 0 Operand A input | Yellow |
-| **6** | $B_1$ | **IC2 Pin 3 (1Y)** | Bit 0 Conditioned Operand $B'_0 = B_0 \oplus SUB$ | Green |
-| **7** | $C_0$ | **$SUB$ Line (Opcode DIP SW Pin 1 / ESP32 GPIO 18 via 4.7kΩ)** | Carry-in for lower nibble ($C_0 = 1$ on subtraction) | Violet |
-| **8** | GND | **Breadboard Common Ground Rail** | 0V Power Ground | Black |
-| **9** | $C_4$ | **IC6 Pin 11 (5A)** | Raw Carry Out from Bit 3 (fed to inverter for 74LS181) | Orange |
-| **10** | $\Sigma_3$ | **IC10 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Bit 3 ADD / SUB Result ($S_3$) | Blue |
-| **11** | $B_4$ | **IC2 Pin 11 (4Y)** | Bit 3 Conditioned Operand $B'_3 = B_3 \oplus SUB$ | Green |
-| **12** | $A_4$ | **Input Bus $A_3$ (DIP SW A Pin 4 / ESP32 GPIO 5 via 4.7kΩ)** | Bit 3 Operand A input | Yellow |
-| **13** | $\Sigma_2$ | **IC9 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Bit 2 ADD / SUB Result ($S_2$) | Blue |
-| **14** | $A_3$ | **Input Bus $A_2$ (DIP SW A Pin 3 / ESP32 GPIO 4 via 4.7kΩ)** | Bit 2 Operand A input | Yellow |
-| **15** | $B_3$ | **IC2 Pin 8 (3Y)** | Bit 2 Conditioned Operand $B'_2 = B_2 \oplus SUB$ | Green |
-| **16** | $V_{CC}$ | **Breadboard +5V Master Power Rail** | +5V Logic Supply | Red |
+| **1** | $\Sigma_4$ | **IC10 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Bit 3 ADD / SUB Result ($S_3$) | Blue |
+| **2** | $\Sigma_3$ | **IC9 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Bit 2 ADD / SUB Result ($S_2$) | Blue |
+| **3** | $A_3$ | **Input Bus $A_2$ (DIP SW A Pin 3 / ESP32 GPIO 4 via 4.7kΩ)** | Bit 2 Operand A input | Yellow |
+| **4** | $B_3$ | **IC2 Pin 8 (3Y)** | Bit 2 Conditioned Operand $B'_2 = B_2 \oplus SUB$ | Green |
+| **5** | $V_{CC}$ | **Breadboard +5V Master Power Rail** | +5V Logic Supply (⚠️ NON-STANDARD PIN) | Red |
+| **6** | $\Sigma_2$ | **IC8 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Bit 1 ADD / SUB Result ($S_1$) | Blue |
+| **7** | $B_2$ | **IC2 Pin 6 (2Y)** | Bit 1 Conditioned Operand $B'_1 = B_1 \oplus SUB$ | Green |
+| **8** | $A_2$ | **Input Bus $A_1$ (DIP SW A Pin 2 / ESP32 GPIO 2 via 4.7kΩ)** | Bit 1 Operand A input | Yellow |
+| **9** | $\Sigma_1$ | **IC7 Pin 4 ($D_0$) and Pin 3 ($D_1$)** | Bit 0 ADD / SUB Result ($S_0$) | Blue |
+| **10** | $A_1$ | **Input Bus $A_0$ (DIP SW A Pin 1 / ESP32 GPIO 1 via 4.7kΩ)** | Bit 0 Operand A input | Yellow |
+| **11** | $B_1$ | **IC2 Pin 3 (1Y)** | Bit 0 Conditioned Operand $B'_0 = B_0 \oplus SUB$ | Green |
+| **12** | GND | **Breadboard Common Ground Rail** | 0V Power Ground (⚠️ NON-STANDARD PIN) | Black |
+| **13** | $C_0$ | **$SUB$ Line (Opcode DIP SW Pin 1 / ESP32 GPIO 18 via 4.7kΩ)** | Carry-in for lower nibble ($C_0 = 1$ on subtraction) | Violet |
+| **14** | $C_4$ | **IC6 Pin 11 (5A)** | Raw Carry Out from Bit 3 (fed to inverter for 74LS181) | Orange |
+| **15** | $A_4$ | **Input Bus $A_3$ (DIP SW A Pin 4 / ESP32 GPIO 5 via 4.7kΩ)** | Bit 3 Operand A input | Yellow |
+| **16** | $B_4$ | **IC2 Pin 11 (4Y)** | Bit 3 Conditioned Operand $B'_3 = B_3 \oplus SUB$ | Green |
 
 ---
 
-### IC2: 74xx86 (Quad 2-Input XOR Gate #1) — Subtraction Inverter — 14-Pin DIP
+### IC2: 74HC86N (Quad 2-Input XOR Gate #1) — Subtraction Inverter — 14-Pin DIP
 * **Location**: Breadboard 2 | **Power**: Pin 14 $\to$ +5V Rail, Pin 7 $\to$ GND Rail
 * **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 14 and Pin 7.
 * **Function**: Inverts Operand B when $SUB = 1$: $B'_i = B_i \oplus SUB$.
@@ -80,22 +87,22 @@ This document is the **definitive physical benchtop assembly manual** for the Du
 | :---: | :---: | :--- | :--- | :---: |
 | **1** | 1A | **Input Bus $B_0$ (DIP SW B Pin 1 / ESP32 GPIO 10 via 4.7kΩ)** | Bit 0 Operand B raw input | Green |
 | **2** | 1B | **$SUB$ Line (Opcode S0 line)** | Subtraction mode control signal | Violet |
-| **3** | 1Y | **IC1 Pin 6 ($B_1$)** | Conditioned Bit 0: $B'_0 = B_0 \oplus SUB$ | White |
+| **3** | 1Y | **IC1 Pin 11 ($B_1$)** | Conditioned Bit 0: $B'_0 = B_0 \oplus SUB$ | White |
 | **4** | 2A | **Input Bus $B_1$ (DIP SW B Pin 2 / ESP32 GPIO 11 via 4.7kΩ)** | Bit 1 Operand B raw input | Green |
 | **5** | 2B | **$SUB$ Line (Opcode S0 line)** | Subtraction mode control signal | Violet |
-| **6** | 2Y | **IC1 Pin 2 ($B_2$)** | Conditioned Bit 1: $B'_1 = B_1 \oplus SUB$ | White |
+| **6** | 2Y | **IC1 Pin 7 ($B_2$)** | Conditioned Bit 1: $B'_1 = B_1 \oplus SUB$ | White |
 | **7** | GND | **Breadboard Common Ground Rail** | 0V Power Ground | Black |
-| **8** | 3Y | **IC1 Pin 15 ($B_3$)** | Conditioned Bit 2: $B'_2 = B_2 \oplus SUB$ | White |
+| **8** | 3Y | **IC1 Pin 4 ($B_3$)** | Conditioned Bit 2: $B'_2 = B_2 \oplus SUB$ | White |
 | **9** | 3A | **Input Bus $B_2$ (DIP SW B Pin 3 / ESP32 GPIO 12 via 4.7kΩ)** | Bit 2 Operand B raw input | Green |
 | **10** | 3B | **$SUB$ Line (Opcode S0 line)** | Subtraction mode control signal | Violet |
-| **11** | 4Y | **IC1 Pin 11 ($B_4$)** | Conditioned Bit 3: $B'_3 = B_3 \oplus SUB$ | White |
+| **11** | 4Y | **IC1 Pin 16 ($B_4$)** | Conditioned Bit 3: $B'_3 = B_3 \oplus SUB$ | White |
 | **12** | 4A | **Input Bus $B_3$ (DIP SW B Pin 4 / ESP32 GPIO 13 via 4.7kΩ)** | Bit 3 Operand B raw input | Green |
 | **13** | 4B | **$SUB$ Line (Opcode S0 line)** | Subtraction mode control signal | Violet |
 | **14** | $V_{CC}$ | **Breadboard +5V Master Power Rail** | +5V Logic Supply | Red |
 
 ---
 
-### IC3: 74xx86 (Quad 2-Input XOR Gate #2) — Bitwise XOR Logic Array — 14-Pin DIP
+### IC3: 74HC86N (Quad 2-Input XOR Gate #2) — Bitwise XOR Logic Array — 14-Pin DIP
 * **Location**: Breadboard 2 | **Power**: Pin 14 $\to$ +5V Rail, Pin 7 $\to$ GND Rail
 * **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 14 and Pin 7.
 * **Function**: Computes $A_i \oplus B_i$ for lower nibble.
@@ -119,7 +126,7 @@ This document is the **definitive physical benchtop assembly manual** for the Du
 
 ---
 
-### IC4: 74xx08 (Quad 2-Input AND Gate) — Bitwise AND Logic Array — 14-Pin DIP
+### IC4: 74HCT08 (Quad 2-Input AND Gate) — Bitwise AND Logic Array — 14-Pin DIP
 * **Location**: Breadboard 2 | **Power**: Pin 14 $\to$ +5V Rail, Pin 7 $\to$ GND Rail
 * **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 14 and Pin 7.
 * **Function**: Computes $A_i \cdot B_i$ for lower nibble.
@@ -143,7 +150,7 @@ This document is the **definitive physical benchtop assembly manual** for the Du
 
 ---
 
-### IC5: 74xx32 (Quad 2-Input OR Gate) — Bitwise OR Logic Array — 14-Pin DIP
+### IC5: 74HCT32 (Quad 2-Input OR Gate) — Bitwise OR Logic Array — 14-Pin DIP
 * **Location**: Breadboard 2 | **Power**: Pin 14 $\to$ +5V Rail, Pin 7 $\to$ GND Rail
 * **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 14 and Pin 7.
 * **Function**: Computes $A_i + B_i$ for lower nibble.
@@ -167,7 +174,7 @@ This document is the **definitive physical benchtop assembly manual** for the Du
 
 ---
 
-### IC6: 74xx04 (Hex Inverter) — Bitwise NOT & Carry Inversion — 14-Pin DIP
+### IC6: 74HCT04 (Hex Inverter) — Bitwise NOT & Carry Inversion — 14-Pin DIP
 * **Location**: Breadboard 2 | **Power**: Pin 14 $\to$ +5V Rail, Pin 7 $\to$ GND Rail
 * **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 14 and Pin 7.
 
@@ -183,14 +190,14 @@ This document is the **definitive physical benchtop assembly manual** for the Du
 | **8** | 4Y | **IC10 Pin 14 ($D_5$)** | Bit 3 Inverted ($\overline{A_3}$) to MUX3 | White |
 | **9** | 4A | **Input Bus $A_3$** | Bit 3 Operand A | Yellow |
 | **10** | 5Y | **IC11 Pin 7 ($\bar{C}_n$, via Mode Switch)** | Inverted Carry: $\overline{C_4}$ (Active-LOW for 74LS181) | Orange |
-| **11** | 5A | **IC1 Pin 9 ($C_4$)** | Raw Carry-out from 74xx283 Adder | Orange |
+| **11** | 5A | **IC1 Pin 14 ($C_4$)** | Raw Carry-out from 74xx283 Adder | Orange |
 | **12** | 6Y | **NC (Unconnected)** | Spare Inverter Output | - |
 | **13** | 6A | **Breadboard Common Ground Rail** | Spare Input (Tied LOW to prevent floating oscillation) | Black |
 | **14** | $V_{CC}$ | **Breadboard +5V Master Power Rail** | +5V Logic Supply | Red |
 
 ---
 
-### IC7: 74xx151 (8-to-1 Multiplexer) — Bit 0 Result Selector ($Y_0$) — 16-Pin DIP
+### IC7: 74HCT151 (8-to-1 Multiplexer) — Bit 0 Result Selector ($Y_0$) — 16-Pin DIP
 * **Location**: Breadboard 3 | **Power**: Pin 16 $\to$ +5V Rail, Pin 8 $\to$ GND Rail
 * **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 16 and Pin 8.
 
@@ -198,8 +205,8 @@ This document is the **definitive physical benchtop assembly manual** for the Du
 | :---: | :---: | :--- | :--- | :---: |
 | **1** | $D_3$ | **IC5 Pin 3 (1Y)** | Bitwise OR Result ($A_0 + B_0$) | Purple |
 | **2** | $D_2$ | **IC4 Pin 3 (1Y)** | Bitwise AND Result ($A_0 \cdot B_0$) | Brown |
-| **3** | $D_1$ | **IC1 Pin 4 ($\Sigma_0$)** | Subtraction Result ($A_0 - B_0$) | Blue |
-| **4** | $D_0$ | **IC1 Pin 4 ($\Sigma_0$)** | Addition Result ($A_0 + B_0$) | Blue |
+| **3** | $D_1$ | **IC1 Pin 9 ($\Sigma_1$)** | Subtraction Result ($A_0 - B_0$) | Blue |
+| **4** | $D_0$ | **IC1 Pin 9 ($\Sigma_1$)** | Addition Result ($A_0 + B_0$) | Blue |
 | **5** | Y | **IC12 Pin 10 ($A_0$), Arduino R4 D2, ESP32 GPIO 38 (via 1k/2.2k)** | **Custom ALU Bit 0 Output ($Y_0$)** | Blue |
 | **6** | W | **NC (Unconnected)** | Complementary Output (Unused) | - |
 | **7** | $\bar{E}$ / $\bar{G}$ | **Breadboard Common Ground Rail** | Strobe / Enable (Active-LOW, permanently enabled) | Black |
@@ -215,7 +222,7 @@ This document is the **definitive physical benchtop assembly manual** for the Du
 
 ---
 
-### IC8: 74xx151 (8-to-1 Multiplexer) — Bit 1 Result Selector ($Y_1$) — 16-Pin DIP
+### IC8: 74HCT151 (8-to-1 Multiplexer) — Bit 1 Result Selector ($Y_1$) — 16-Pin DIP
 * **Location**: Breadboard 3 | **Power**: Pin 16 $\to$ +5V Rail, Pin 8 $\to$ GND Rail
 * **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 16 and Pin 8.
 
@@ -223,8 +230,8 @@ This document is the **definitive physical benchtop assembly manual** for the Du
 | :---: | :---: | :--- | :--- | :---: |
 | **1** | $D_3$ | **IC5 Pin 6 (2Y)** | Bitwise OR Result ($A_1 + B_1$) | Purple |
 | **2** | $D_2$ | **IC4 Pin 6 (2Y)** | Bitwise AND Result ($A_1 \cdot B_1$) | Brown |
-| **3** | $D_1$ | **IC1 Pin 1 ($\Sigma_1$)** | Subtraction Result ($A_1 - B_1$) | Blue |
-| **4** | $D_0$ | **IC1 Pin 1 ($\Sigma_1$)** | Addition Result ($A_1 + B_1$) | Blue |
+| **3** | $D_1$ | **IC1 Pin 6 ($\Sigma_2$)** | Subtraction Result ($A_1 - B_1$) | Blue |
+| **4** | $D_0$ | **IC1 Pin 6 ($\Sigma_2$)** | Addition Result ($A_1 + B_1$) | Blue |
 | **5** | Y | **IC12 Pin 12 ($A_1$), Arduino R4 D3, ESP32 GPIO 39 (via 1k/2.2k)** | **Custom ALU Bit 1 Output ($Y_1$)** | Blue |
 | **6** | W | **NC (Unconnected)** | Complementary Output (Unused) | - |
 | **7** | $\bar{E}$ / $\bar{G}$ | **Breadboard Common Ground Rail** | Strobe / Enable (Active-LOW, permanently enabled) | Black |
@@ -240,7 +247,7 @@ This document is the **definitive physical benchtop assembly manual** for the Du
 
 ---
 
-### IC9: 74xx151 (8-to-1 Multiplexer) — Bit 2 Result Selector ($Y_2$) — 16-Pin DIP
+### IC9: 74HCT151 (8-to-1 Multiplexer) — Bit 2 Result Selector ($Y_2$) — 16-Pin DIP
 * **Location**: Breadboard 3 | **Power**: Pin 16 $\to$ +5V Rail, Pin 8 $\to$ GND Rail
 * **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 16 and Pin 8.
 
@@ -248,8 +255,8 @@ This document is the **definitive physical benchtop assembly manual** for the Du
 | :---: | :---: | :--- | :--- | :---: |
 | **1** | $D_3$ | **IC5 Pin 8 (3Y)** | Bitwise OR Result ($A_2 + B_2$) | Purple |
 | **2** | $D_2$ | **IC4 Pin 8 (3Y)** | Bitwise AND Result ($A_2 \cdot B_2$) | Brown |
-| **3** | $D_1$ | **IC1 Pin 13 ($\Sigma_2$)** | Subtraction Result ($A_2 - B_2$) | Blue |
-| **4** | $D_0$ | **IC1 Pin 13 ($\Sigma_2$)** | Addition Result ($A_2 + B_2$) | Blue |
+| **3** | $D_1$ | **IC1 Pin 2 ($\Sigma_3$)** | Subtraction Result ($A_2 - B_2$) | Blue |
+| **4** | $D_0$ | **IC1 Pin 2 ($\Sigma_3$)** | Addition Result ($A_2 + B_2$) | Blue |
 | **5** | Y | **IC12 Pin 13 ($A_2$), Arduino R4 D4, ESP32 GPIO 40 (via 1k/2.2k)** | **Custom ALU Bit 2 Output ($Y_2$)** | Blue |
 | **6** | W | **NC (Unconnected)** | Complementary Output (Unused) | - |
 | **7** | $\bar{E}$ / $\bar{G}$ | **Breadboard Common Ground Rail** | Strobe / Enable (Active-LOW, permanently enabled) | Black |
@@ -265,7 +272,7 @@ This document is the **definitive physical benchtop assembly manual** for the Du
 
 ---
 
-### IC10: 74xx151 (8-to-1 Multiplexer) — Bit 3 Result Selector ($Y_3$) — 16-Pin DIP
+### IC10: 74HCT151 (8-to-1 Multiplexer) — Bit 3 Result Selector ($Y_3$) — 16-Pin DIP
 * **Location**: Breadboard 3 | **Power**: Pin 16 $\to$ +5V Rail, Pin 8 $\to$ GND Rail
 * **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 16 and Pin 8.
 
@@ -273,8 +280,8 @@ This document is the **definitive physical benchtop assembly manual** for the Du
 | :---: | :---: | :--- | :--- | :---: |
 | **1** | $D_3$ | **IC5 Pin 11 (4Y)** | Bitwise OR Result ($A_3 + B_3$) | Purple |
 | **2** | $D_2$ | **IC4 Pin 11 (4Y)** | Bitwise AND Result ($A_3 \cdot B_3$) | Brown |
-| **3** | $D_1$ | **IC1 Pin 10 ($\Sigma_3$)** | Subtraction Result ($A_3 - B_3$) | Blue |
-| **4** | $D_0$ | **IC1 Pin 10 ($\Sigma_3$)** | Addition Result ($A_3 + B_3$) | Blue |
+| **3** | $D_1$ | **IC1 Pin 1 ($\Sigma_4$)** | Subtraction Result ($A_3 - B_3$) | Blue |
+| **4** | $D_0$ | **IC1 Pin 1 ($\Sigma_4$)** | Addition Result ($A_3 + B_3$) | Blue |
 | **5** | Y | **IC12 Pin 15 ($A_3$), Arduino R4 D5, ESP32 GPIO 41 (via 1k/2.2k)** | **Custom ALU Bit 3 Output ($Y_3$)** | Blue |
 | **6** | W | **NC (Unconnected)** | Complementary Output (Unused) | - |
 | **7** | $\bar{E}$ / $\bar{G}$ | **Breadboard Common Ground Rail** | Strobe / Enable (Active-LOW, permanently enabled) | Black |
@@ -323,7 +330,7 @@ This document is the **definitive physical benchtop assembly manual** for the Du
 
 ---
 
-### IC12: 74xx85 (4-Bit Magnitude Comparator) — 16-Pin DIP
+### IC12: 74HCT85 (4-Bit Magnitude Comparator) — 16-Pin DIP
 * **Location**: Breadboard 4 | **Power**: Pin 16 $\to$ +5V Rail, Pin 8 $\to$ GND Rail
 * **Decoupling**: $0.1\ \mu\text{F}$ capacitor directly between Pin 16 and Pin 8.
 

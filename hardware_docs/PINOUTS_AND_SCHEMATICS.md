@@ -27,11 +27,11 @@ The processor implements a reconfigurable hybrid architecture utilizing the user
 
 ### 1.1 Mode 0: 8-Bit Cascaded Parallel ALU Processor
 - **Lower Nibble ($A[3:0], B[3:0]$)** is processed by the **Custom 4-Bit Discrete ALU**:
-  - IC1 (`74xx283` 4-bit binary adder) computes addition and subtraction.
-  - IC2 (`74xx86` Quad XOR) performs conditional two's complement B-inversion ($B'_i = B_i \oplus SUB$).
-  - IC3 (`74xx86`), IC4 (`74xx08`), IC5 (`74xx32`), and IC6 (`74xx04`) execute bitwise XOR, AND, OR, and NOT.
-  - IC7, IC8, IC9, IC10 (4× `74xx151` 8:1 Multiplexers) select the output for bits $Y_0, Y_1, Y_2, Y_3$.
-  - Carry-Out ($C_4$) from IC1 Pin 9 cascades into the Carry-In of the upper stage.
+  - IC1 (`74LS83N` 4-bit binary adder) computes addition and subtraction (special power pinout: VCC=Pin 5, GND=Pin 12).
+  - IC2 (`74HC86N` Quad XOR) performs conditional two's complement B-inversion ($B'_i = B_i \oplus SUB$).
+  - IC3 (`74HC86N`), IC4 (`74HCT08`), IC5 (`74HCT32`), and IC6 (`74HCT04`) execute bitwise XOR, AND, OR, and NOT.
+  - IC7, IC8, IC9, IC10 (4× `74HCT151` 8:1 Multiplexers) select the output for bits $Y_0, Y_1, Y_2, Y_3$.
+  - Carry-Out ($C_4$) from IC1 Pin 14 cascades into the Carry-In of the upper stage.
 - **Upper Nibble ($A[7:4], B[7:4]$)** is processed by the **74LS181N 4-Bit Silicon ALU** (IC11):
   - Receives upper operands $A[7:4]$ and $B[7:4]$.
   - Receives the cascaded carry bit from the lower custom stage into its Carry-In ($\bar{C}_n$, Pin 7).
@@ -45,7 +45,7 @@ The processor implements a reconfigurable hybrid architecture utilizing the user
     $$A_{custom}[3:0] = A_{181}[3:0] = A[3:0], \quad B_{custom}[3:0] = B_{181}[3:0] = B[3:0]$$
   - Both ALUs execute the exact same operation selected by Opcode $S[2:0]$.
 - **Hardware Equivalence Checking**:
-  - Custom ALU outputs $Y_{custom}[3:0]$ feed Word A ($A_3..A_0$) of IC12 (`74xx85` 4-Bit Magnitude Comparator).
+  - Custom ALU outputs $Y_{custom}[3:0]$ feed Word A ($A_3..A_0$) of IC12 (`74HCT85` 4-Bit Magnitude Comparator).
   - Vintage `74LS181N` outputs $F[3:0]$ feed Word B ($B_3..B_0$) of IC12.
   - Pin 6 ($A=B$ Output) asserts **HIGH (+5V)** within $\approx 15\text{ ns}$ when all 4 bits match identically.
   - Pin 6 drives the **Green PASS LED (Silicon Match)** and signals the Arduino UNO R4 verifier and ESP32-S3 dashboard.
@@ -124,51 +124,58 @@ All chips are standard Dual In-line Packages (DIP) viewed from above with the in
 
 ---
 
-### IC1: 74xx283 (4-Bit Binary Full Adder with Fast Carry) — 16-Pin DIP
+### IC1: 74LS83N (4-Bit Binary Full Adder with Fast Carry) — 16-Pin DIP
 * **Role**: Primary addition and subtraction arithmetic core for the Custom 4-Bit Lower Nibble ALU.
-* **Supply**: Pin 16 = $+5\text{V}$, Pin 8 = $\text{GND}$.
+* **Supply**: Pin 5 = $+5\text{V}$ ($V_{CC}$), Pin 12 = $\text{GND}$ ($0\text{V}$).
+
+> [!CAUTION]
+> **CRITICAL HARDWARE WARNING — 74LS83N NON-STANDARD POWER PINS**:
+> Unlike standard TTL chips (such as the 74283 which uses Pin 16 for VCC and Pin 8 for GND), the **74LS83N** features non-standard power pin locations:
+> - **Pin 5 is $V_{CC}$ (+5V)**!
+> - **Pin 12 is GND (0V)**!
+> **DO NOT** connect Pin 16 to +5V or Pin 8 to GND! On a 74LS83N, Pin 16 is Operand $B_4$ and Pin 8 is Operand $A_2$. Connecting Pin 16 to +5V will damage the input!
 
 ```
-                          74xx283
+                          74LS83N
                        ┌───---───┐
-              Σ1 (S1)  │ 1    16 │  VCC (+5V)
-              B2 (B1)  │ 2    15 │  B3 (B2)
-              A2 (A1)  │ 3    14 │  A3 (A2)
-              Σ0 (S0)  │ 4    13 │  Σ2 (S2)
-              A1 (A0)  │ 5    12 │  A4 (A3)
-              B1 (B0)  │ 6    11 │  B4 (B3)
-             C0 (Cin)  │ 7    10 │  Σ3 (S3)
-            GND (0V)   │ 8     9 │  C4 (Cout)
+                Σ4     │ 1    16 │  B4 (B'3)
+                Σ3     │ 2    15 │  A4 (A3)
+                A3     │ 3    14 │  C4 (Cout)
+                B3     │ 4    13 │  C0 (Cin/SUB)
+             VCC (+5V) │ 5    12 │  GND (0V)
+                Σ2     │ 6    11 │  B1 (B'0)
+                B2     │ 7    10 │  A1 (A0)
+                A2     │ 8     9 │  Σ1 (S0)
                        └─────────┘
 ```
 
 | Pin | Symbol | Connected To | Description |
 | :---: | :---: | :--- | :--- |
-| **1** | $\Sigma_1$ | IC8 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Bit 1 Adder/Subtractor Sum Output ($S_1$) |
-| **2** | $B_2$ | IC2 Pin 6 ($B'_1$) | Bit 1 Conditioned Operand B Input |
-| **3** | $A_2$ | Input Bus $A_1$ | Bit 1 Operand A Input |
-| **4** | $\Sigma_0$ | IC7 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Bit 0 Adder/Subtractor Sum Output ($S_0$) |
-| **5** | $A_1$ | Input Bus $A_0$ | Bit 0 Operand A Input |
-| **6** | $B_1$ | IC2 Pin 3 ($B'_0$) | Bit 0 Conditioned Operand B Input |
-| **7** | $C_0$ | $SUB$ Control Line | Carry-in to Bit 0 ($SUB = 1$ on subtraction for 2's comp) |
-| **8** | GND | Common GND Rail | Ground (0V Reference) |
-| **9** | $C_4$ | Mode Carry Link / IC11 Pin 7 | Carry-out from bit 3 (cascades to upper nibble in Mode 0) |
-| **10** | $\Sigma_3$ | IC10 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Bit 3 Adder/Subtractor Sum Output ($S_3$) |
-| **11** | $B_4$ | IC2 Pin 11 ($B'_3$) | Bit 3 Conditioned Operand B Input |
-| **12** | $A_4$ | Input Bus $A_3$ | Bit 3 Operand A Input |
-| **13** | $\Sigma_2$ | IC9 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Bit 2 Adder/Subtractor Sum Output ($S_2$) |
-| **14** | $A_3$ | Input Bus $A_2$ | Bit 2 Operand A Input |
-| **15** | $B_3$ | IC2 Pin 8 ($B'_2$) | Bit 2 Conditioned Operand B Input |
-| **16** | $V_{CC}$ | +5V Master Power Rail | Positive Supply (+5V DC) |
+| **1** | $\Sigma_4$ | IC10 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Bit 3 Sum Output ($S_3$) |
+| **2** | $\Sigma_3$ | IC9 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Bit 2 Sum Output ($S_2$) |
+| **3** | $A_3$ | Input Bus $A_2$ | Bit 2 Operand A Input |
+| **4** | $B_3$ | IC2 Pin 8 ($3Y$) | Bit 2 Conditioned Operand $B'_2$ Input |
+| **5** | $V_{CC}$ | +5V Master Power Rail | Positive Supply (+5V DC) |
+| **6** | $\Sigma_2$ | IC8 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Bit 1 Sum Output ($S_1$) |
+| **7** | $B_2$ | IC2 Pin 6 ($2Y$) | Bit 1 Conditioned Operand $B'_1$ Input |
+| **8** | $A_2$ | Input Bus $A_1$ | Bit 1 Operand A Input |
+| **9** | $\Sigma_1$ | IC7 Pin 4 ($D_0$) & Pin 3 ($D_1$) | Bit 0 Sum Output ($S_0$) |
+| **10** | $A_1$ | Input Bus $A_0$ | Bit 0 Operand A Input |
+| **11** | $B_1$ | IC2 Pin 3 ($1Y$) | Bit 0 Conditioned Operand $B'_0$ Input |
+| **12** | GND | Common GND Rail | Ground (0V Reference) |
+| **13** | $C_0$ | $SUB$ Control Line | Carry-in to Bit 0 ($SUB = 1$ on subtraction for 2's comp) |
+| **14** | $C_4$ | IC6 Pin 11 ($5A$) | Carry-out from bit 3 (cascades to upper nibble inverter) |
+| **15** | $A_4$ | Input Bus $A_3$ | Bit 3 Operand A Input |
+| **16** | $B_4$ | IC2 Pin 11 ($4Y$) | Bit 3 Conditioned Operand $B'_3$ Input |
 
 ---
 
-### IC2: 74xx86 (Quad 2-Input XOR Gate #1) — Subtraction Inverter — 14-Pin DIP
+### IC2: 74HC86N (Quad 2-Input XOR Gate #1) — Subtraction Inverter — 14-Pin DIP
 * **Role**: Conditional one's complement inversion of lower Operand B ($B'_i = B_i \oplus SUB$).
 * **Supply**: Pin 14 = $+5\text{V}$, Pin 7 = $\text{GND}$.
 
 ```
-                          74xx86 (IC2)
+                          74HC86N (IC2)
                        ┌───---───┐
                    1A  │ 1    14 │  VCC (+5V)
                    1B  │ 2    13 │  4B
@@ -184,22 +191,22 @@ All chips are standard Dual In-line Packages (DIP) viewed from above with the in
 | :---: | :---: | :--- | :--- |
 | **1** | 1A | Input Bus $B_0$ | Operand B Bit 0 |
 | **2** | 1B | $SUB$ Control Line | Subtraction command (Opcode = 001) |
-| **3** | 1Y | IC1 Pin 6 ($B_1$) | Inverted/true operand $B'_0 = B_0 \oplus SUB$ |
+| **3** | 1Y | IC1 Pin 11 ($B_1$) | Inverted/true operand $B'_0 = B_0 \oplus SUB$ to 74LS83 |
 | **4** | 2A | Input Bus $B_1$ | Operand B Bit 1 |
 | **5** | 2B | $SUB$ Control Line | Subtraction command |
-| **6** | 2Y | IC1 Pin 2 ($B_2$) | Inverted/true operand $B'_1 = B_1 \oplus SUB$ |
+| **6** | 2Y | IC1 Pin 7 ($B_2$) | Inverted/true operand $B'_1 = B_1 \oplus SUB$ to 74LS83 |
 | **7** | GND | Common GND Rail | Ground (0V Reference) |
-| **8** | 3Y | IC1 Pin 15 ($B_3$) | Inverted/true operand $B'_2 = B_2 \oplus SUB$ |
+| **8** | 3Y | IC1 Pin 4 ($B_3$) | Inverted/true operand $B'_2 = B_2 \oplus SUB$ to 74LS83 |
 | **9** | 3A | Input Bus $B_2$ | Operand B Bit 2 |
 | **10** | 3B | $SUB$ Control Line | Subtraction command |
-| **11** | 4Y | IC1 Pin 11 ($B_4$) | Inverted/true operand $B'_3 = B_3 \oplus SUB$ |
+| **11** | 4Y | IC1 Pin 16 ($B_4$) | Inverted/true operand $B'_3 = B_3 \oplus SUB$ to 74LS83 |
 | **12** | 4A | Input Bus $B_3$ | Operand B Bit 3 |
 | **13** | 4B | $SUB$ Control Line | Subtraction command |
 | **14** | $V_{CC}$ | +5V Master Power Rail | Positive Supply (+5V DC) |
 
 ---
 
-### IC3: 74xx86 (Quad 2-Input XOR Gate #2) — Bitwise XOR Logic Array — 14-Pin DIP
+### IC3: 74HC86N (Quad 2-Input XOR Gate #2) — Bitwise XOR Logic Array — 14-Pin DIP
 * **Role**: Computes bitwise logical Exclusive-OR: $Y_{XOR,i} = A_i \oplus B_i$ for lower nibble.
 * **Supply**: Pin 14 = $+5\text{V}$, Pin 7 = $\text{GND}$.
 
@@ -222,12 +229,12 @@ All chips are standard Dual In-line Packages (DIP) viewed from above with the in
 
 ---
 
-### IC4: 74xx08 (Quad 2-Input AND Gate) — Bitwise AND Logic Array — 14-Pin DIP
+### IC4: 74HCT08 (Quad 2-Input AND Gate) — Bitwise AND Logic Array — 14-Pin DIP
 * **Role**: Computes bitwise logical AND: $Y_{AND,i} = A_i \cdot B_i$ for lower nibble.
 * **Supply**: Pin 14 = $+5\text{V}$, Pin 7 = $\text{GND}$.
 
 ```
-                          74xx08 (IC4)
+                          74HCT08 (IC4)
                        ┌───---───┐
                    1A  │ 1    14 │  VCC (+5V)
                    1B  │ 2    13 │  4B
@@ -258,12 +265,12 @@ All chips are standard Dual In-line Packages (DIP) viewed from above with the in
 
 ---
 
-### IC5: 74xx32 (Quad 2-Input OR Gate) — Bitwise OR Logic Array — 14-Pin DIP
+### IC5: 74HCT32 (Quad 2-Input OR Gate) — Bitwise OR Logic Array — 14-Pin DIP
 * **Role**: Computes bitwise logical OR: $Y_{OR,i} = A_i + B_i$ for lower nibble.
 * **Supply**: Pin 14 = $+5\text{V}$, Pin 7 = $\text{GND}$.
 
 ```
-                          74xx32 (IC5)
+                          74HCT32 (IC5)
                        ┌───---───┐
                    1A  │ 1    14 │  VCC (+5V)
                    1B  │ 2    13 │  4B
@@ -294,12 +301,12 @@ All chips are standard Dual In-line Packages (DIP) viewed from above with the in
 
 ---
 
-### IC6: 74xx04 (Hex Inverter) — Bitwise NOT & Carry Inversion — 14-Pin DIP
+### IC6: 74HCT04 (Hex Inverter) — Bitwise NOT & Carry Inversion — 14-Pin DIP
 * **Role**: Computes bitwise NOT ($\overline{A_i}$) and inverts active-high carry ($C_4$) to active-low 74LS181 carry-in ($\bar{C}_n$).
 * **Supply**: Pin 14 = $+5\text{V}$, Pin 7 = $\text{GND}$.
 
 ```
-                          74xx04 (IC6)
+                          74HCT04 (IC6)
                        ┌───---───┐
                    1A  │ 1    14 │  VCC (+5V)
                    1Y  │ 2    13 │  6A
@@ -322,20 +329,20 @@ All chips are standard Dual In-line Packages (DIP) viewed from above with the in
 | **7** | GND | Common GND Rail | Ground (0V Reference) |
 | **8** | 4Y | IC10 Pin 14 ($D_5$) | Bit 3 Inverted Output ($\overline{A_3}$) to MUX 3 |
 | **9** | 4A | Input Bus $A_3$ | Operand A Bit 3 |
-| **10** | 5Y | Mode Switch / IC11 Pin 7 ($\bar{C}_n$) | Inverted Carry: $\overline{C_4}$ (converts 74283 active-high $C_4$ to 74181 active-low $\bar{C}_n$) |
-| **11** | 5A | IC1 Pin 9 ($C_4$) | Carry Output from 74xx283 Lower Nibble Adder |
+| **10** | 5Y | Mode Switch / IC11 Pin 7 ($\bar{C}_n$) | Inverted Carry: $\overline{C_4}$ (converts 74LS83 active-high $C_4$ to 74181 active-low $\bar{C}_n$) |
+| **11** | 5A | IC1 Pin 14 ($C_4$) | Carry Output from 74LS83N Lower Nibble Adder |
 | **12** | 6Y | Spare / Control Inversion | Gate 6 Output |
 | **13** | 6A | GND (Tied LOW if unused) | Gate 6 Input (never leave floating!) |
 | **14** | $V_{CC}$ | +5V Master Power Rail | Positive Supply (+5V DC) |
 
 ---
 
-### IC7, IC8, IC9, IC10: 74xx151 (8-to-1 Multiplexers) — 16-Pin DIP
+### IC7, IC8, IC9, IC10: 74HCT151 (8-to-1 Multiplexers) — 16-Pin DIP
 * **Role**: Bit-slice operation multiplexers selecting active operation for Custom ALU bits $Y_0..Y_3$.
 * **Supply**: Pin 16 = $+5\text{V}$, Pin 8 = $\text{GND}$, Pin 7 = $\text{GND}$ (Active-LOW Strobe $\bar{E}$ permanently enabled).
 
 ```
-                          74xx151 (IC7..IC10)
+                          74HCT151 (IC7..IC10)
                        ┌───---───┐
                    D3  │ 1    16 │  VCC (+5V)
                    D2  │ 2    15 │  D4
@@ -360,12 +367,12 @@ All chips are standard Dual In-line Packages (DIP) viewed from above with the in
 
 | Channel | Input Pin | Opcode ($S_2 S_1 S_0$) | Selected Operation | Source IC & Pin |
 | :---: | :---: | :---: | :---: | :--- |
-| **$D_0$** | **Pin 4** | `000` | **ADD** | IC1 74xx283 Sum Output ($\Sigma_i$) |
-| **$D_1$** | **Pin 3** | `001` | **SUB** | IC1 74xx283 Sum Output ($\Sigma_i$) with $B \oplus 1, C_0=1$ |
-| **$D_2$** | **Pin 2** | `010` | **AND** | IC4 74xx08 AND Output ($A_i \cdot B_i$) |
-| **$D_3$** | **Pin 1** | `011` | **OR** | IC5 74xx32 OR Output ($A_i + B_i$) |
-| **$D_4$** | **Pin 15** | `100` | **XOR** | IC3 74xx86 XOR Output ($A_i \oplus B_i$) |
-| **$D_5$** | **Pin 14** | `101` | **NOT** | IC6 74xx04 Inverter Output ($\overline{A_i}$) |
+| **$D_0$** | **Pin 4** | `000` | **ADD** | IC1 74LS83N Sum Output ($\Sigma_i$: Pins 9, 6, 2, 1) |
+| **$D_1$** | **Pin 3** | `001` | **SUB** | IC1 74LS83N Sum Output ($\Sigma_i$) with $B \oplus 1, C_0=1$ |
+| **$D_2$** | **Pin 2** | `010` | **AND** | IC4 74HCT08 AND Output ($A_i \cdot B_i$) |
+| **$D_3$** | **Pin 1** | `011` | **OR** | IC5 74HCT32 OR Output ($A_i + B_i$) |
+| **$D_4$** | **Pin 15** | `100` | **XOR** | IC3 74HC86N XOR Output ($A_i \oplus B_i$) |
+| **$D_5$** | **Pin 14** | `101` | **NOT** | IC6 74HCT04 Inverter Output ($\overline{A_i}$) |
 | **$D_6$** | **Pin 13** | `110` | **SHL** | Hardwired Shift Left ($A_{i-1}$; Bit 0 tied to GND) |
 | **$D_7$** | **Pin 12** | `111` | **SHR** | Hardwired Shift Right ($A_{i+1}$; Bit 3 tied to GND or $A_4$) |
 
@@ -380,6 +387,13 @@ All chips are standard Dual In-line Packages (DIP) viewed from above with the in
 ### IC11: 74LS181N (4-Bit High-Speed Arithmetic Logic Unit) — 24-Pin DIP (0.6" Wide)
 * **Role**: Upper Nibble ALU ($Y[7:4]$) in Mode 0; Golden Silicon Hardware Target in Mode 1.
 * **Supply**: Pin 24 = $V_{CC}$ (+5V) or Pin 16; Pin 12 = $\text{GND}$.
+
+> [!NOTE]
+> Standard 74LS181 / 74181 DIP-24 Pinout:
+> - Pin 12 = GND, Pin 16 = VCC (Internal Bipolar Rails)
+> - Inputs: $A_0..A_3$ on pins 2, 19, 21, 23; $B_0..B_3$ on pins 1, 20, 22, 24.
+> - Outputs: $F_0..F_3$ on pins 9, 10, 11, 13.
+> - Controls: $S_0..S_3$ on pins 6, 5, 4, 3; $M$ on pin 8; $\bar{C}_n$ on pin 7.
 
 ```
                           74LS181N (IC11)

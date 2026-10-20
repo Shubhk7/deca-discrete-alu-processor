@@ -5,7 +5,7 @@
 [![Verifier](https://img.shields.io/badge/Verifier-Arduino%20UNO%20R4%20WiFi-teal.svg?style=for-the-badge)](https://github.com/)
 [![Power Station](https://img.shields.io/badge/Power%20Station-Arduino%20UNO%20R4%20Minima-blueviolet.svg?style=for-the-badge)](https://github.com/)
 [![Dashboard](https://img.shields.io/badge/Dashboard-ESP32--S3%20N16R8-red.svg?style=for-the-badge)](https://github.com/)
-[![Hardware Verification](https://img.shields.io/badge/Hardware%20Equivalence-74xx85%20Comparator-brightgreen.svg?style=for-the-badge)](https://github.com/)
+[![Hardware Verification](https://img.shields.io/badge/Hardware%20Equivalence-74HCT85%20Comparator-brightgreen.svg?style=for-the-badge)](https://github.com/)
 [![Software Verification](https://img.shields.io/badge/Software%20HIL-Golden%20Model%20RA4M1-green.svg?style=for-the-badge)](https://github.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
@@ -20,8 +20,8 @@
 This project presents the design, physical breadboard implementation, and dual-layer verification of an advanced **Dual-Mode Hybrid Arithmetic Logic Unit (ALU)**. Combining classical gate-level logic design with historical integrated silicon, the system bridges fundamental digital computer architecture with modern embedded instrumentation:
 
 1. **Dual-Mode Operation**:
-   - **Mode 0 (8-Bit Cascaded ALU)**: A 4-bit Custom Discrete ALU (constructed from a `74xx283` binary full adder, `74xx86/08/32/04` logic gates, and four `74xx151` 8:1 multiplexers) serves as the lower nibble ($Y[3:0]$) and cascades its carry-out ($C_4$) into a vintage `74LS181N` 4-bit ALU serving as the upper nibble ($Y[7:4]$), realizing an authentic **8-bit parallel processor slice**.
-   - **Mode 1 (Real-Time Silicon Verification)**: Both the Custom Discrete ALU and the historical `74LS181N` ALU compute simultaneously on identical 4-bit input vectors ($A[3:0], B[3:0]$). A dedicated **`74xx85` 4-bit Magnitude Comparator** performs nanosecond-level physical hardware equivalence checking ($A=B$), verifying the custom gate architecture directly against the industry-standard silicon benchmark.
+   - **Mode 0 (8-Bit Cascaded ALU)**: A 4-bit Custom Discrete ALU (constructed from a `74LS83N` binary full adder, `74HC86N/08/32/04` logic gates, and four `74HCT151` 8:1 multiplexers) serves as the lower nibble ($Y[3:0]$) and cascades its carry-out ($C_4$) into a vintage `74LS181N` 4-bit ALU serving as the upper nibble ($Y[7:4]$), realizing an authentic **8-bit parallel processor slice**.
+   - **Mode 1 (Real-Time Silicon Verification)**: Both the Custom Discrete ALU and the historical `74LS181N` ALU compute simultaneously on identical 4-bit input vectors ($A[3:0], B[3:0]$). A dedicated **`74HCT85` 4-bit Magnitude Comparator** performs nanosecond-level physical hardware equivalence checking ($A=B$), verifying the custom gate architecture directly against the industry-standard silicon benchmark.
 2. **Heterogeneous 3-Board Infrastructure**:
    - **ESP32-S3 N16R8**: Hosts an autonomous Wi-Fi Access Point and WebSocket server, running a responsive real-time web telemetry dashboard and driving a non-destructive **hybrid input injection stage** (tactile DIP switches paired with $4.7\text{ k}\Omega$ GPIO override resistors).
    - **Arduino UNO R4 WiFi**: Functions as a native 5V **Software Golden Model HIL Oracle** (32-bit ARM Cortex-M4 @ 48 MHz) that samples the physical ALU output bus, executes an algorithmic C++ reference model, renders real-time PASS/FAIL diagnostics and scoreboard animations on its onboard **12×8 LED Matrix HUD**, and drives external status LEDs.
@@ -65,14 +65,14 @@ This project presents the design, physical breadboard implementation, and dual-l
      +------------------------------------------+         +------------------------------------------+
      |     4-BIT CUSTOM DISCRETE ALU SLICE      |         |          74LS181N 4-BIT SILICON ALU      |
      |------------------------------------------|         |------------------------------------------|
-     | - Adder/Subtractor: 74xx283 4-Bit Adder  |         | - Industry-Standard Bipolar ALU IC       |
-     | - B-Invert (SUB) & XOR: 74xx86 (Quad XOR)|         | - Active-Low / Active-High Dual Tables   |
-     | - Bitwise AND: 74xx08 (Quad AND)         |         | - Internal Lookahead Carry Generation    |
-     | - Bitwise OR:  74xx32 (Quad OR)          |         | - 16 Arithmetic + 16 Logic Functions     |
-     | - Bitwise NOT: 74xx04 (Hex Inverter)     |         | - Function Mapped via S[3:0], M, Cn      |
+     | - Adder/Subtractor: 74LS83N 4-Bit Adder  |         | - Industry-Standard Bipolar ALU IC       |
+     | - B-Invert (SUB) & XOR: 74HC86N (Quad XOR)|         | - Active-Low / Active-High Dual Tables   |
+     | - Bitwise AND: 74HCT08 (Quad AND)         |         | - Internal Lookahead Carry Generation    |
+     | - Bitwise OR:  74HCT32 (Quad OR)          |         | - 16 Arithmetic + 16 Logic Functions     |
+     | - Bitwise NOT: 74HCT04 (Hex Inverter)     |         | - Function Mapped via S[3:0], M, Cn      |
      | - Bit Shifters: SHL (<< 1), SHR (>> 1)   |         |                                          |
      | - Operation Multiplexers:                |         |                                          |
-     |   4x 74xx151 8:1 Multiplexers            |         |                                          |
+     |   4x 74HCT151 8:1 Multiplexers            |         |                                          |
      +------------------------------------------+         +------------------------------------------+
                  |                     |                                       |
           Custom Carry C4         Custom Result                          74LS181 Result
@@ -95,7 +95,7 @@ This project presents the design, physical breadboard implementation, and dual-l
            Y[7:0] = { Y_181[3:0], Y_custom[3:0] }                      |
                      |                                                 v
                      |                                   +------------------------------------+
-                     |                                   |  74xx85 4-Bit Magnitude Comparator |
+                     |                                   |  74HCT85 4-Bit Magnitude Comparator |
                      |                                   |------------------------------------|
                      |                                   | Input A: Y_custom[3:0]             |
                      |                                   | Input B: Y_181[3:0]                |
@@ -141,10 +141,10 @@ The core innovation of this architecture is the **hardware-reconfigurable topolo
 
 In **Mode 0**, the circuit operates as a unified **8-bit parallel arithmetic logic processor**:
 - **Lower Nibble ($A[3:0], B[3:0]$)** is processed by the **Custom 4-Bit Discrete ALU**:
-  - Binary addition/subtraction is executed by the `74xx283` 4-bit binary adder.
-  - Bitwise logic operations (AND, OR, XOR, NOT) and logical shifts (SHL, SHR) are generated across `74xx08`, `74xx32`, `74xx86`, and `74xx04` arrays.
-  - Four `74xx151` 8:1 multiplexers select the active operation for bits $Y_0, Y_1, Y_2, Y_3$.
-  - The carry output ($C_4$) of the `74xx283` is buffered and routed to the carry-in of the upper stage.
+  - Binary addition/subtraction is executed by the `74LS83N` 4-bit binary adder.
+  - Bitwise logic operations (AND, OR, XOR, NOT) and logical shifts (SHL, SHR) are generated across `74HCT08`, `74HCT32`, `74HC86N`, and `74HCT04` arrays.
+  - Four `74HCT151` 8:1 multiplexers select the active operation for bits $Y_0, Y_1, Y_2, Y_3$.
+  - The carry output ($C_4$) of the `74LS83N` is buffered and routed to the carry-in of the upper stage.
 - **Upper Nibble ($A[7:4], B[7:4]$)** is processed by the **74LS181N 4-Bit ALU**:
   - Receives the upper 4 bits of Operands A and B.
   - Receives the inter-nibble carry bit ($C_4$) from the lower custom stage.
@@ -157,7 +157,7 @@ In **Mode 0**, the circuit operates as a unified **8-bit parallel arithmetic log
      |         |                              |         |
      v         v                              v         v
   +---------------+                      +---------------+
-  |   74LS181N    | <------ Carry C4 --- | 74xx283 Custom|
+  |   74LS181N    | <------ Carry C4 --- | 74LS83N Custom|
   | (Upper 4-Bit) |                      | (Lower 4-Bit) |
   +---------------+                      +---------------+
          |                                      |
@@ -174,11 +174,11 @@ In **Mode 1**, the architecture transforms into a high-speed **Hardware Equivale
 - Both the Custom Discrete ALU and the `74LS181N` receive the **exact same 4-bit inputs**:
   $$A_{custom}[3:0] = A_{181}[3:0] = A[3:0], \quad B_{custom}[3:0] = B_{181}[3:0] = B[3:0]$$
 - Both ALUs execute the **exact same operation** determined by Opcode $S[2:0]$.
-- The 4-bit output of the Custom ALU ($Y_{custom}[3:0]$) and the 4-bit output of the `74LS181N` ($Y_{181}[3:0]$) are routed directly into the inputs of a hardware **`74xx85` 4-Bit Magnitude Comparator**:
+- The 4-bit output of the Custom ALU ($Y_{custom}[3:0]$) and the 4-bit output of the `74LS181N` ($Y_{181}[3:0]$) are routed directly into the inputs of a hardware **`74HCT85` 4-Bit Magnitude Comparator**:
   - $A_3..A_0 \leftarrow Y_{custom}[3:0]$
   - $B_3..B_0 \leftarrow Y_{181}[3:0]$
 - **Instantaneous Equivalence Assertion**:
-  - When $Y_{custom}[3:0] == Y_{181}[3:0]$, Pin 6 of the `74xx85` ($A=B$ Out) asserts **Logic HIGH** (+5V), immediately illuminating the **Hardware Equivalence LED**.
+  - When $Y_{custom}[3:0] == Y_{181}[3:0]$, Pin 6 of the `74HCT85` ($A=B$ Out) asserts **Logic HIGH** (+5V), immediately illuminating the **Hardware Equivalence LED**.
   - Any architectural flaw, gate propagation glitch, or wiring error in the custom discrete datapath breaks equivalence within nanoseconds ($t_{pd} \approx 15\text{ ns}$), driving Pin 6 LOW and extinguishing the LED.
 
 ```
@@ -196,7 +196,7 @@ In **Mode 1**, the architecture transforms into a high-speed **Hardware Equivale
          (Pins A3..A0)       (Pins B3..B0)
              |                   |
              +---------> +-------v-------+
-                         |    74xx85     |
+                         |    74HCT85     |
                          | 4-Bit Compar. |
                          +---------------+
                                  | (Pin 6: A=B)
@@ -211,7 +211,7 @@ In **Mode 1**, the architecture transforms into a high-speed **Hardware Equivale
 | Board | Microcontroller / Platform | Primary Role | Key Hardware Connections |
 | :--- | :--- | :--- | :--- |
 | **Board 1** | **ESP32-S3 N16R8**<br>(Dual-Core Xtensa LX7 @ 240MHz, 16MB Flash, 8MB PSRAM) | **IoT Dashboard, AP & Remote Injection**<br>Broadcasts standalone Wi-Fi, serves interactive web UI, streams WebSocket bus telemetry, and remotely injects vectors via current-limiting override resistors. | • $4.7\text{ k}\Omega$ series resistors to ALU inputs ($A, B, Op, Mode$)<br>• $1.0\text{ k}\Omega / 2.2\text{ k}\Omega$ voltage dividers on $Y[7:0]$ and flags (5V $\to$ 3.3V safe) |
-| **Board 2** | **Arduino UNO R4 WiFi**<br>(Renesas RA4M1 32-bit ARM Cortex-M4 @ 48MHz + ESP32-S3) | **Software Golden Model Verifier & HUD**<br>Native 5V tolerant logic analyzer. Runs microsecond C++ reference model, verifies hardware bus against theory, and renders real-time HUD animations on onboard 12×8 LED matrix. | • Direct 5V connection to $Y[7:0]$, $A, B$, Opcode lines<br>• Direct read of `74xx85` $A=B$ pin<br>• Drives external Green (PASS) and Red (FAIL) LEDs |
+| **Board 2** | **Arduino UNO R4 WiFi**<br>(Renesas RA4M1 32-bit ARM Cortex-M4 @ 48MHz + ESP32-S3) | **Software Golden Model Verifier & HUD**<br>Native 5V tolerant logic analyzer. Runs microsecond C++ reference model, verifies hardware bus against theory, and renders real-time HUD animations on onboard 12×8 LED matrix. | • Direct 5V connection to $Y[7:0]$, $A, B$, Opcode lines<br>• Direct read of `74HCT85` $A=B$ pin<br>• Drives external Green (PASS) and Red (FAIL) LEDs |
 | **Board 3** | **Arduino UNO R4 Minima**<br>(Renesas RA4M1 32-bit ARM Cortex-M4 @ 48MHz) | **Clean 5V/1A Power Distribution Station**<br>Provides an isolated, high-current 5V USB-C power supply and stable ground plane exclusively for the breadboard logic ICs and `74LS181N`, eliminating brownouts. | • Direct 5V regulated pin to breadboard $+5\text{V}$ power rails<br>• Solid ground tying to breadboard $\text{GND}$ and common references |
 
 ---
@@ -225,13 +225,13 @@ This bill of materials reflects the **exact physical inventory** and component c
 | Component | Part Description | Logic Family | Package | In Use | Spares | Total In Hand | Circuit Role |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
 | **74LS181N** | 4-Bit High-Speed Arithmetic Logic Unit | Bipolar / LS | DIP-24 | **1** | **0** | **1** | Upper 4-bit ALU in Mode 0; Silicon verification target in Mode 1 |
-| **74xx283** | 4-Bit Binary Full Adder with Fast Carry | HC / HCT / LS | DIP-16 | **1** | **2** | **3** | Core addition & subtraction engine for Custom 4-Bit ALU |
-| **74xx85** | 4-Bit Magnitude Comparator | HC / HCT / LS | DIP-16 | **1** | **2** | **3** | Real-time hardware equivalence verification ($A=B$) |
-| **74xx86** | Quad 2-Input Exclusive-OR (XOR) Gate | HC / HCT / LS | DIP-14 | **2** | **1** | **3** | IC 1: Subtraction B-inversion; IC 2: Bitwise XOR logic array |
-| **74xx08** | Quad 2-Input AND Gate | HC / HCT / LS | DIP-14 | **1** | **2** | **3** | Bitwise AND logic array + inter-nibble mode gating |
-| **74xx32** | Quad 2-Input OR Gate | HC / HCT / LS | DIP-14 | **1** | **2** | **3** | Bitwise OR logic array |
-| **74xx04** | Hex Inverter (NOT) | HC / HCT / LS | DIP-14 | **1** | **2** | **3** | Bitwise NOT array ($A_3..A_0$) + control signal inversion |
-| **74xx151** | 8-Channel / 8:1 Data Selector / Multiplexer| HC / HCT / LS | DIP-16 | **4** | **5** | **9** | Bit-slice operation multiplexers for custom ALU ($Y_0..Y_3$) |
+| **74LS83N** | 4-Bit Binary Full Adder with Fast Carry | HC / HCT / LS | DIP-16 | **1** | **2** | **3** | Core addition & subtraction engine for Custom 4-Bit ALU |
+| **74HCT85** | 4-Bit Magnitude Comparator | HC / HCT / LS | DIP-16 | **1** | **2** | **3** | Real-time hardware equivalence verification ($A=B$) |
+| **74HC86N** | Quad 2-Input Exclusive-OR (XOR) Gate | HC / HCT / LS | DIP-14 | **2** | **1** | **3** | IC 1: Subtraction B-inversion; IC 2: Bitwise XOR logic array |
+| **74HCT08** | Quad 2-Input AND Gate | HC / HCT / LS | DIP-14 | **1** | **2** | **3** | Bitwise AND logic array + inter-nibble mode gating |
+| **74HCT32** | Quad 2-Input OR Gate | HC / HCT / LS | DIP-14 | **1** | **2** | **3** | Bitwise OR logic array |
+| **74HCT04** | Hex Inverter (NOT) | HC / HCT / LS | DIP-14 | **1** | **2** | **3** | Bitwise NOT array ($A_3..A_0$) + control signal inversion |
+| **74HCT151** | 8-Channel / 8:1 Data Selector / Multiplexer| HC / HCT / LS | DIP-16 | **4** | **5** | **9** | Bit-slice operation multiplexers for custom ALU ($Y_0..Y_3$) |
 | **74xx245** | Octal Bus Transceiver (Optional Buffer) | HC / HCT / LS | DIP-20 | **1** | **0** | **1** | Output bus isolation and LED drive buffering |
 
 ### Microcontrollers & Development Boards
@@ -265,14 +265,14 @@ This bill of materials reflects the **exact physical inventory** and component c
 
 The system supports **8 fundamental operations** selected by the 3-bit Opcode $S[2:0]$. The following table details the Custom 4-Bit ALU multiplexer routing, the corresponding control lines for the `74LS181N`, and the resulting mathematical functions:
 
-| Opcode ($S_2 S_1 S_0$) | Hex | Operation | Custom ALU 74xx151 Input ($D_0..D_7$) | 74LS181 Controls ($M, S_3 S_2 S_1 S_0, C_n$) | Algebraic / Logical Function | Arithmetic Details & Flags |
+| Opcode ($S_2 S_1 S_0$) | Hex | Operation | Custom ALU 74HCT151 Input ($D_0..D_7$) | 74LS181 Controls ($M, S_3 S_2 S_1 S_0, C_n$) | Algebraic / Logical Function | Arithmetic Details & Flags |
 | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| `000` | `0x0` | **ADD** | Channel $D_0$: `74xx283` Sum | $M=0$, $S=\text{1001}$, $C_n=1$ | $Y = A + B$ | Full binary addition. Carry propagates into $C_4$ ($C_{out8}$ in Mode 0). |
-| `001` | `0x1` | **SUB** | Channel $D_1$: `74xx283` Diff | $M=0$, $S=\text{0110}$, $C_n=0$ | $Y = A - B$ | Two's complement subtraction: $A + \overline{B} + 1$. Carry indicates borrow. |
-| `010` | `0x2` | **AND** | Channel $D_2$: `74xx08` AND | $M=1$, $S=\text{1011}$, $C_n=\text{X}$ | $Y = A \cdot B$ | Bitwise logical AND. Carry output forced LOW. |
-| `011` | `0x3` | **OR** | Channel $D_3$: `74xx32` OR | $M=1$, $S=\text{1110}$, $C_n=\text{X}$ | $Y = A + B$ | Bitwise logical OR. Carry output forced LOW. |
-| `100` | `0x4` | **XOR** | Channel $D_4$: `74xx86` XOR | $M=1$, $S=\text{0110}$, $C_n=\text{X}$ | $Y = A \oplus B$ | Bitwise logical Exclusive-OR. Carry output forced LOW. |
-| `101` | `0x5` | **NOT** | Channel $D_5$: `74xx04` NOT | $M=1$, $S=\text{0000}$, $C_n=\text{X}$ | $Y = \overline{A}$ | Bitwise logical inversion of Operand A. B is ignored. |
+| `000` | `0x0` | **ADD** | Channel $D_0$: `74LS83N` Sum | $M=0$, $S=\text{1001}$, $C_n=1$ | $Y = A + B$ | Full binary addition. Carry propagates into $C_4$ ($C_{out8}$ in Mode 0). |
+| `001` | `0x1` | **SUB** | Channel $D_1$: `74LS83N` Diff | $M=0$, $S=\text{0110}$, $C_n=0$ | $Y = A - B$ | Two's complement subtraction: $A + \overline{B} + 1$. Carry indicates borrow. |
+| `010` | `0x2` | **AND** | Channel $D_2$: `74HCT08` AND | $M=1$, $S=\text{1011}$, $C_n=\text{X}$ | $Y = A \cdot B$ | Bitwise logical AND. Carry output forced LOW. |
+| `011` | `0x3` | **OR** | Channel $D_3$: `74HCT32` OR | $M=1$, $S=\text{1110}$, $C_n=\text{X}$ | $Y = A + B$ | Bitwise logical OR. Carry output forced LOW. |
+| `100` | `0x4` | **XOR** | Channel $D_4$: `74HC86N` XOR | $M=1$, $S=\text{0110}$, $C_n=\text{X}$ | $Y = A \oplus B$ | Bitwise logical Exclusive-OR. Carry output forced LOW. |
+| `101` | `0x5` | **NOT** | Channel $D_5$: `74HCT04` NOT | $M=1$, $S=\text{0000}$, $C_n=\text{X}$ | $Y = \overline{A}$ | Bitwise logical inversion of Operand A. B is ignored. |
 | `110` | `0x6` | **SHL** | Channel $D_6$: Shift Left Bus | Mode 0: Hardware wired / Mode 1: Equiv logic | $Y = A \ll 1$ | Logical shift left: $Y_i = A_{i-1}$, $Y_0 = 0$. Bit $A_3$ ($A_7$) $\to$ Carry. |
 | `111` | `0x7` | **SHR** | Channel $D_7$: Shift Right Bus | Mode 0: Hardware wired / Mode 1: Equiv logic | $Y = A \gg 1$ | Logical shift right: $Y_i = A_{i+1}$, $Y_3$ ($Y_7$) $= 0$. Bit $A_0 \to$ Carry. |
 
@@ -280,9 +280,9 @@ The system supports **8 fundamental operations** selected by the 3-bit Opcode $S
 
 In the Custom Discrete ALU, subtraction ($A - B$) is executed without requiring a dedicated subtractor chip. When Opcode = `001` (SUB active):
 1. The SUB control line asserts HIGH.
-2. The second input of the `74xx86` XOR gate is driven HIGH, inverting every bit of Operand B:
+2. The second input of the `74HC86N` XOR gate is driven HIGH, inverting every bit of Operand B:
    $$B'_i = B_i \oplus 1 = \overline{B}_i$$
-3. The SUB control line is simultaneously connected to the carry-in ($C_0$) of the `74xx283` adder ($C_0 = 1$).
+3. The SUB control line is simultaneously connected to the carry-in ($C_0$) of the `74LS83N` adder ($C_0 = 1$).
 4. The adder evaluates:
    $$Y = A + B' + C_0 = A + \overline{B} + 1 = A - B$$
 
@@ -332,17 +332,17 @@ The architecture incorporates two independent, complementary verification layers
                |                                           |
                v                                           v
      [ LAYER 1: SILICON LEVEL ]                 [ LAYER 2: SOFTWARE HIL LEVEL ]
-     - Hardware: 74xx85 Magnitude Comp          - Hardware: Arduino UNO R4 WiFi
+     - Hardware: 74HCT85 Magnitude Comp          - Hardware: Arduino UNO R4 WiFi
      - Benchmark: Vintage 74LS181N Silicon      - Benchmark: C++ Golden Model Oracle
      - Metric: Pure Gate Equivalence (A=B)      - Metric: Algorithmic Correctness
      - Feedback: Instant Hardware LED           - Feedback: 12x8 LED Matrix HUD + Serial
 ```
 
-### Layer 1: Hardware Equivalence Verification (74xx85)
+### Layer 1: Hardware Equivalence Verification (74HCT85)
 - Operates in Mode 1.
 - Evaluates equivalence at physical gate switching speeds without any microcontroller software latency.
 - Compares the four discrete output lines ($Y_{custom}[3:0]$) against the four `74LS181N` output lines ($Y_{181}[3:0]$).
-- When all 4 bits match, Pin 6 ($A=B$) of `74xx85` asserts HIGH (+5V) and lights the **Silicon Match LED**.
+- When all 4 bits match, Pin 6 ($A=B$) of `74HCT85` asserts HIGH (+5V) and lights the **Silicon Match LED**.
 
 ### Layer 2: Software Golden Model Oracle (Arduino UNO R4 WiFi)
 - Operates across both Mode 0 and Mode 1.
@@ -446,32 +446,32 @@ To guarantee rock-solid electrical stability, the system uses a **dedicated powe
 3. Place a $100\ \mu\text{F}$ electrolytic capacitor across the main power entry and a $0.1\ \mu\text{F}$ ceramic capacitor directly across pins $V_{CC}$ and $\text{GND}$ of every IC.
 4. Mount the ICs in logical order:
    - **Board 1**: Input DIP switches, 10k pull-downs, and 4.7k override resistors.
-   - **Board 2**: Custom 4-Bit ALU (`74xx283`, `74xx86`, `74xx08`, `74xx32`, `74xx04`).
-   - **Board 3**: Four `74xx151` 8:1 Multiplexers + output buffer (`74xx245`).
-   - **Board 4**: `74LS181N` ALU + `74xx85` Magnitude Comparator + Mode Switch.
+   - **Board 2**: Custom 4-Bit ALU (`74LS83N`, `74HC86N`, `74HCT08`, `74HCT32`, `74HCT04`).
+   - **Board 3**: Four `74HCT151` 8:1 Multiplexers + output buffer (`74xx245`).
+   - **Board 4**: `74LS181N` ALU + `74HCT85` Magnitude Comparator + Mode Switch.
 
 ### Step 2: Wiring the Custom 4-Bit ALU & MUX Bank
-1. Connect $A[3:0]$ and $B[3:0]$ to the `74xx283` adder:
-   - Route $B[3:0]$ through `74xx86` XOR gates with the SUB signal for two's complement inversion.
-   - Connect the SUB signal to $C_0$ of the `74xx283`.
-2. Connect $A[3:0]$ and $B[3:0]$ in parallel to the logic arrays (`74xx08` for AND, `74xx32` for OR, `74xx86` for XOR, `74xx04` for NOT).
-3. Connect the 8 operation results to the four `74xx151` multiplexer inputs ($D_0..D_7$):
-   - $D_0 \to$ ADD (`74xx283` Sum)
-   - $D_1 \to$ SUB (`74xx283` Diff)
-   - $D_2 \to$ AND (`74xx08`)
-   - $D_3 \to$ OR (`74xx32`)
-   - $D_4 \to$ XOR (`74xx86`)
-   - $D_5 \to$ NOT (`74xx04`)
+1. Connect $A[3:0]$ and $B[3:0]$ to the `74LS83N` adder:
+   - Route $B[3:0]$ through `74HC86N` XOR gates with the SUB signal for two's complement inversion.
+   - Connect the SUB signal to $C_0$ of the `74LS83N`.
+2. Connect $A[3:0]$ and $B[3:0]$ in parallel to the logic arrays (`74HCT08` for AND, `74HCT32` for OR, `74HC86N` for XOR, `74HCT04` for NOT).
+3. Connect the 8 operation results to the four `74HCT151` multiplexer inputs ($D_0..D_7$):
+   - $D_0 \to$ ADD (`74LS83N` Sum)
+   - $D_1 \to$ SUB (`74LS83N` Diff)
+   - $D_2 \to$ AND (`74HCT08`)
+   - $D_3 \to$ OR (`74HCT32`)
+   - $D_4 \to$ XOR (`74HC86N`)
+   - $D_5 \to$ NOT (`74HCT04`)
    - $D_6 \to$ SHL (Left-shifted bus)
    - $D_7 \to$ SHR (Right-shifted bus)
-4. Tie the select pins ($S_2, S_1, S_0$) of all four `74xx151` ICs in parallel to the Opcode bus.
+4. Tie the select pins ($S_2, S_1, S_0$) of all four `74HCT151` ICs in parallel to the Opcode bus.
 
-### Step 3: Wiring 74LS181N & 74xx85 Hardware Verification
+### Step 3: Wiring 74LS181N & 74HCT85 Hardware Verification
 1. Route the Opcode translation lines to the `74LS181N` control pins ($S_3..S_0, M$).
 2. Connect Mode Switch:
-   - **Mode = 0**: Connect `74xx283` carry-out ($C_4$) to `74LS181N` carry-in; route $A[7:4]$ and $B[7:4]$ to `74LS181N` inputs.
-   - **Mode = 1**: Connect $A[3:0]$ and $B[3:0]$ to `74LS181N` inputs; route $Y_{custom}[3:0]$ to `74xx85` $A$-inputs and $Y_{181}[3:0]$ to `74xx85` $B$-inputs.
-3. Connect Pin 6 of the `74xx85` to the **Silicon Match LED** via a $330\ \Omega$ resistor.
+   - **Mode = 0**: Connect `74LS83N` carry-out ($C_4$) to `74LS181N` carry-in; route $A[7:4]$ and $B[7:4]$ to `74LS181N` inputs.
+   - **Mode = 1**: Connect $A[3:0]$ and $B[3:0]$ to `74LS181N` inputs; route $Y_{custom}[3:0]$ to `74HCT85` $A$-inputs and $Y_{181}[3:0]$ to `74HCT85` $B$-inputs.
+3. Connect Pin 6 of the `74HCT85` to the **Silicon Match LED** via a $330\ \Omega$ resistor.
 
 ### Step 4: Interfacing Microcontrollers
 1. **Arduino UNO R4 WiFi**:
@@ -496,7 +496,7 @@ To guarantee rock-solid electrical stability, the system uses a **dedicated powe
    - **SSID**: `ALU-Testbench-AP`
    - **Password**: `decaproject`
 4. Navigate to `http://192.168.4.1` in any browser to open the live telemetry HUD!
-5. Toggle DIP switches or click buttons on the web interface: observe synchronized updates across physical LEDs, the 74xx85 Silicon Match LED, the Arduino 12×8 matrix HUD, and the web browser!
+5. Toggle DIP switches or click buttons on the web interface: observe synchronized updates across physical LEDs, the 74HCT85 Silicon Match LED, the Arduino 12×8 matrix HUD, and the web browser!
 
 ---
 
@@ -507,10 +507,10 @@ To guarantee rock-solid electrical stability, the system uses a **dedicated powe
  │    DISCRETE LOGIC   │   │     EMBEDDED MCU    │   │     WEB TELEMETRY   │
  ├─────────────────────┤   ├─────────────────────┤   ├─────────────────────┤
  │ • 74LS181N ALU      │   │ • Arduino UNO R4 WFi│   │ • HTML5 / ES6 WebUI │
- │ • 74xx283 4-Bit Add │   │   (RA4M1 48MHz M4)  │   │ • WebSockets Async  │
- │ • 74xx85 Comparator │   │ • Arduino R4 Minima │   │ • Live Radix HUD    │
- │ • 74xx151 8:1 MUX   │   │   (Power Station)   │   │ • Real-time SVG Bus │
- │ • 74xx86/08/32/04   │   │ • ESP32-S3 N16R8    │   │ • Vector Test Sweep │
+ │ • 74LS83N 4-Bit Add │   │   (RA4M1 48MHz M4)  │   │ • WebSockets Async  │
+ │ • 74HCT85 Comparator │   │ • Arduino R4 Minima │   │ • Live Radix HUD    │
+ │ • 74HCT151 8:1 MUX   │   │   (Power Station)   │   │ • Real-time SVG Bus │
+ │ • 74HC86N/08/32/04   │   │ • ESP32-S3 N16R8    │   │ • Vector Test Sweep │
  └─────────────────────┘   └─────────────────────┘   └─────────────────────┘
 ```
 

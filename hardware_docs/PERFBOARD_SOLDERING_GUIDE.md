@@ -87,19 +87,19 @@ $$\text{Inputs \& Overrides (Left)} \longrightarrow \text{Custom ALU Core (Cente
 |                                                                                                                                    |
 |  +--------------+  +-------------------------------+  +-------------------------------+  +-------------------------------+  +----+ |
 |  | DIP SWITCH A |  | ROW 1: ARITHMETIC CORE        |  | ROW 2: BITWISE LOGIC          |  | ROW 3: OPERATION MULTIPLEXERS |  |LED | |
-|  | A[7..0]      |  | - IC1: 74xx283 (4-Bit Adder)  |  | - IC3: 74xx86 (Bitwise XOR)   |  | - IC7:  74xx151 (MUX Bit 0)    |  |BUS | |
+|  | A[7..0]      |  | - IC1: 74LS83N (4-Bit Adder)  |  | - IC3: 74HC86N (Bitwise XOR)  |  | - IC7:  74HCT151 (MUX Bit 0)   |  |BUS | |
 |  | + 10k Pull-  |  |   [16-Pin DIP Socket]         |  |   [14-Pin DIP Socket]         |  |   [16-Pin DIP Socket]         |  |    | |
-|  |   downs      |  |                               |  |                               |  | - IC8:  74xx151 (MUX Bit 1)    |  |Y0..| |
-|  |              |  | - IC2: 74xx86 (Sub Invert XOR)|  | - IC4: 74xx08 (Bitwise AND)   |  |   [16-Pin DIP Socket]         |  |Y7  | |
+|  |   downs      |  |                               |  |                               |  | - IC8:  74HCT151 (MUX Bit 1)   |  |Y0..| |
+|  |              |  | - IC2: 74HC86N (Sub Invert)   |  | - IC4: 74HCT08 (Bitwise AND)  |  |   [16-Pin DIP Socket]         |  |Y7  | |
 |  |              |  |   [14-Pin DIP Socket]         |  |   [14-Pin DIP Socket]         |  +-------------------------------+  +----+ |
 |  +--------------+  +-------------------------------+  +-------------------------------+                                     |🟢M | |
 |                                                                                                                             |MATCH|
 |  +--------------+  +-------------------------------+  +-------------------------------+  +-------------------------------+  +----+ |
 |  | DIP SWITCH B |  | ROW 4: LOGIC COMBINE & NOT    |  | ROW 5: HARDWARE COMPARATOR    |  | ROW 6: SILICON BENCHMARK ALU  |  |🟢P | |
-|  | B[7..0]      |  | - IC5: 74xx32 (Bitwise OR)    |  | - IC12: 74xx85 (4-Bit Comp)   |  | - IC11: 74LS181N (4-Bit ALU)  |  |PASS| |
+|  | B[7..0]      |  | - IC5: 74HCT32 (Bitwise OR)   |  | - IC12: 74HCT85 (4-Bit Comp)  |  | - IC11: 74LS181N (4-Bit ALU)  |  |PASS| |
 |  | + 10k Pull-  |  |   [14-Pin DIP Socket]         |  |   [16-Pin DIP Socket]         |  |   [24-Pin DIP-600 Socket]     |  |🔴F | |
 |  |   downs      |  |                               |  |                               |  |                               |  |FAIL| |
-|  |              |  | - IC6: 74xx04 (Hex Inverter)  |  |                               |  |                               |  +----+ |
+|  |              |  | - IC6: 74HCT04 (Hex Inverter) |  |                               |  |                               |  +----+ |
 |  +--------------+  |   [14-Pin DIP Socket]         |  +-------------------------------+  +-------------------------------+         |
 |                    +-------------------------------+                                                                               |
 |  +--------------+                                                                                                                  |
@@ -203,11 +203,11 @@ Follow this disciplined 6-phase sequence from lowest-profile components to highe
 1. **IC2 (74xx86 Subtraction Conditioning)**:
    - Wire SUB control line to IC2 pins 2, 5, 10, 13.
    - Wire $B[0..3]$ to IC2 pins 1, 4, 9, 12.
-   - Wire outputs $B'[0..3]$ (pins 3, 6, 8, 11) to IC1 (74xx283) inputs (pins 6, 2, 15, 11).
-   - Wire SUB control line also to IC1 pin 7 ($C_0$).
+   - Wire outputs $B'[0..3]$ (pins 3, 6, 8, 11) to IC1 (74LS83N) inputs (pins 11, 7, 4, 16).
+   - Wire SUB control line also to IC1 pin 13 ($C_0$).
 2. **IC1 (74xx283 Binary Adder)**:
-   - Wire $A[0..3]$ to IC1 pins 5, 3, 14, 12.
-   - Wire sum outputs $\Sigma[0..3]$ (pins 4, 1, 13, 10) to MUX channels $D_0$ and $D_1$ on IC7..IC10.
+   - Wire $A[0..3]$ to IC1 (74LS83N) pins 10, 8, 3, 15.
+   - Wire sum outputs $\Sigma[0..3]$ (pins 9, 6, 2, 1) to MUX channels $D_0$ and $D_1$ on IC7..IC10.
 3. **Logic Gate Arrays (IC3, IC4, IC5, IC6)**:
    - Wire $A[0..3]$ and $B[0..3]$ to IC3 (XOR), IC4 (AND), IC5 (OR), and IC6 (NOT) per the schematic.
    - Wire gate outputs to MUX channels:
@@ -231,7 +231,7 @@ Follow this disciplined 6-phase sequence from lowest-profile components to highe
    - Wire upper inputs $A[7:4]$ and $B[7:4]$ (or identical $A[3:0], B[3:0]$ in Mode 1) to IC11 pins 2, 23, 21, 19 and 1, 22, 20, 18.
    - Wire outputs $F[0..3]$ (pins 9, 10, 11, 13) to output bus lines $Y[4..7]$ and Comparator inputs $B[0..3]$.
 2. **IC12 (74xx85 Comparator)**:
-   - Connect Pin 16 to $+5\text{V}$, Pin 8 to $\text{GND}$.
+   - Connect Socket 1 (74LS83N) Pin 5 to $+5\text{V}$, Pin 12 to $\text{GND}$. Other 16-pin sockets connect Pin 16 to $+5\text{V}$, Pin 8 to $\text{GND}$.
    - Tie Pin 3 ($I_{A=B}$) to $+5\text{V}$; tie Pins 2 ($I_{A<B}$) and 4 ($I_{A>B}$) to $\text{GND}$.
    - Connect Inputs A ($A_0..A_3$, pins 10, 12, 13, 15) to Custom ALU outputs $Y_{custom}[0..3]$ (IC7..IC10 Pin 5).
    - Connect Inputs B ($B_0..B_3$, pins 9, 11, 14, 1) to 74LS181 outputs $F[0..3]$ (IC11 pins 9, 10, 11, 13).
@@ -239,7 +239,7 @@ Follow this disciplined 6-phase sequence from lowest-profile components to highe
 
 ### Phase 6: Mode Switch & External Interconnects
 1. Wire Mode Switch (SW3 Pin 4) to steering lines and Arduino pin `A3`.
-2. Connect IC1 Pin 9 ($C_4$) to 74LS181 Pin 7 ($\overline{C_n}$) for Mode 0 ripple carry.
+2. Connect IC1 Pin 14 ($C_4$) to 74LS181 Pin 7 ($\overline{C_n}$) for Mode 0 ripple carry.
 3. Wire output bus lines $Y[7:0]$ to LED indicators, Arduino header pins `D0..D7`, and ESP32 voltage divider inputs.
 
 ---
