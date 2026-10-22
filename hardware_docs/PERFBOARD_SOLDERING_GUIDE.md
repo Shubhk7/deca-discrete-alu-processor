@@ -183,7 +183,7 @@ Follow this disciplined 6-phase sequence from lowest-profile components to highe
 ### Phase 2: Passive Resistor Networks
 1. Solder the twenty $10\text{ k}\Omega$ pull-down resistors vertically (hairpin bend) between the input switch lines and the GND rail.
 2. Solder the nineteen $4.7\text{ k}\Omega$ series override resistors for the ESP32 input stage.
-3. Solder the thirteen $1.0\text{ k}\Omega$ and thirteen $2.2\text{ k}\Omega$ resistors forming the 5V-to-3.3V voltage dividers.
+3. Solder the nine $1.0\text{ k}\Omega$ and nine $2.2\text{ k}\Omega$ resistors forming the 5V-to-3.3V voltage dividers.
 4. Solder the twelve $220\ \Omega$ or $330\ \Omega$ LED current-limiting resistors.
 
 ### Phase 3: Sockets, Switches & Headers
