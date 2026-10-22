@@ -130,7 +130,7 @@ All chips are standard Dual In-line Packages (DIP) viewed from above with the in
 
 > [!CAUTION]
 > **CRITICAL HARDWARE WARNING — 74LS83N NON-STANDARD POWER PINS**:
-> Unlike standard TTL chips (such as the 74LS83N which uses Pin 16 for VCC and Pin 8 for GND), the **74LS83N** features non-standard power pin locations:
+> Unlike standard TTL chips (such as the 74LS283 which uses Pin 16 for VCC and Pin 8 for GND), the **74LS83N** features non-standard power pin locations:
 > - **Pin 5 is $V_{CC}$ (+5V)**!
 > - **Pin 12 is GND (0V)**!
 > **DO NOT** connect Pin 16 to +5V or Pin 8 to GND! On a 74LS83N, Pin 16 is Operand $B_4$ and Pin 8 is Operand $A_2$. Connecting Pin 16 to +5V will damage the input!
