@@ -301,13 +301,13 @@ IC2 conditionally inverts $B[3:0]$ whenever Opcode is `001` (SUB active):
 * Connect the **SUB control signal** also to IC1 Pin 13 ($C_0$ / Carry-In of adder) to provide the $+1$ for two's complement.
 
 ### 2.3 4-Bit Adder Wiring (IC1: 74LS83N):
-Wire operands $A[3:0]$ and conditioned $B'[3:0]$ to IC1:
-* Bit 0: Pin 5 (A1) $\leftarrow A_0$, Pin 6 (B1) $\leftarrow B'_0$ (IC2 Pin 3). Sum output: Pin 4 ($\Sigma 1$).
-* Bit 1: Pin 3 (A2) $\leftarrow A_1$, Pin 2 (B2) $\leftarrow B'_1$ (IC2 Pin 6). Sum output: Pin 1 ($\Sigma 2$).
-* Bit 2: Pin 14 (A3) $\leftarrow A_2$, Pin 15 (B3) $\leftarrow B'_2$ (IC2 Pin 8). Sum output: Pin 13 ($\Sigma 3$).
-* Bit 3: Pin 12 (A4) $\leftarrow A_3$, Pin 11 (B4) $\leftarrow B'_3$ (IC2 Pin 11). Sum output: Pin 10 ($\Sigma 4$).
-* Carry-in: Pin 7 ($C_0$) $\leftarrow$ SUB control line.
-* Carry-out: Pin 9 ($C_4$) $\to$ Custom Core Carry-Out (held for Stage 5).
+Wire operands $A[3:0]$ and conditioned $B'[3:0]$ to IC1 (observing non-standard 74LS83N pinout):
+* Bit 0: Pin 10 ($A_1$) $\leftarrow A_0$, Pin 11 ($B_1$) $\leftarrow B'_0$ (IC2 Pin 3). Sum output: Pin 9 ($\Sigma_1$).
+* Bit 1: Pin 8 ($A_2$) $\leftarrow A_1$, Pin 7 ($B_2$) $\leftarrow B'_1$ (IC2 Pin 6). Sum output: Pin 6 ($\Sigma_2$).
+* Bit 2: Pin 3 ($A_3$) $\leftarrow A_2$, Pin 4 ($B_3$) $\leftarrow B'_2$ (IC2 Pin 8). Sum output: Pin 2 ($\Sigma_3$).
+* Bit 3: Pin 15 ($A_4$) $\leftarrow A_3$, Pin 16 ($B_4$) $\leftarrow B'_3$ (IC2 Pin 11). Sum output: Pin 1 ($\Sigma_4$).
+* Carry-in: Pin 13 ($C_0$) $\leftarrow$ SUB control line ($SUB = 1$ injects $+1$ for 2's complement).
+* Carry-out: Pin 14 ($C_4$) $\to$ Raw Carry-out (routed to inverter IC6 Pin 11 for active-LOW $\overline{C_n}$ input on 74LS181 in Stage 5).
 
 ### 2.4 Logic Gate Arrays (IC3, IC4, IC5, IC6):
 * **IC3 (Bitwise XOR - 74HC86N)**:
@@ -342,8 +342,8 @@ Now connect the 8 data channels for each bit slice:
 
 | MUX Input | Opcode | Function | IC7 (Bit 0) | IC8 (Bit 1) | IC9 (Bit 2) | IC10 (Bit 3) |
 | :--- | :---: | :--- | :--- | :--- | :--- | :--- |
-| **$D_0$ (Pin 4)** | `000` | ADD | IC1 Pin 4 ($\Sigma 1$) | IC1 Pin 1 ($\Sigma 2$) | IC1 Pin 13 ($\Sigma 3$) | IC1 Pin 10 ($\Sigma 4$) |
-| **$D_1$ (Pin 3)** | `001` | SUB | IC1 Pin 4 ($\Sigma 1$) | IC1 Pin 1 ($\Sigma 2$) | IC1 Pin 13 ($\Sigma 3$) | IC1 Pin 10 ($\Sigma 4$) |
+| **$D_0$ (Pin 4)** | `000` | ADD | IC1 Pin 9 ($\Sigma_1$) | IC1 Pin 6 ($\Sigma_2$) | IC1 Pin 2 ($\Sigma_3$) | IC1 Pin 1 ($\Sigma_4$) |
+| **$D_1$ (Pin 3)** | `001` | SUB | IC1 Pin 9 ($\Sigma_1$) | IC1 Pin 6 ($\Sigma_2$) | IC1 Pin 2 ($\Sigma_3$) | IC1 Pin 1 ($\Sigma_4$) |
 | **$D_2$ (Pin 2)** | `010` | AND | IC4 Pin 3 (AND 0) | IC4 Pin 6 (AND 1) | IC4 Pin 8 (AND 2) | IC4 Pin 11 (AND 3) |
 | **$D_3$ (Pin 1)** | `011` | OR  | IC5 Pin 3 (OR 0) | IC5 Pin 6 (OR 1) | IC5 Pin 8 (OR 2) | IC5 Pin 11 (OR 3) |
 | **$D_4$ (Pin 15)**| `100` | XOR | IC3 Pin 3 (XOR 0) | IC3 Pin 6 (XOR 1) | IC3 Pin 8 (XOR 2) | IC3 Pin 11 (XOR 3) |
@@ -501,7 +501,7 @@ The system reconfigures dynamically between **Mode 0** (Unified 8-Bit Cascaded A
     - Custom 4-Bit ALU receives Lower Nibble: A[3:0], B[3:0]
     - 74LS181N receives Upper Nibble: A[7:4], B[7:4]
   * Carry Chain:
-    - IC1 Pin 14 (C4 of 74LS83N) is routed to IC11 Pin 7 (/Cn of 74LS181)
+    - IC1 Pin 14 (C4 of 74LS83N) passes through inverter IC6 (Pin 11 5A -> Pin 10 5Y) to provide active-LOW /Cn to IC11 Pin 7 (74LS181)
   * Outputs:
     - Y[3:0] = Custom ALU Pin Y_custom[3:0]
     - Y[7:4] = 74LS181 Pin F[3:0]
@@ -526,7 +526,7 @@ The system reconfigures dynamically between **Mode 0** (Unified 8-Bit Cascaded A
 * This node is the **MODE signal**.
 * Route **MODE** to:
   - Arduino UNO R4 WiFi pin `A3` (Mode sense).
-  - ESP32-S3 GPIO `14` (via 1k/2.2k voltage divider).
+  - ESP32-S3 GPIO `37` (via $4.7\text{ k}\Omega$ series override resistor).
   - Mode steering multiplexing lines.
 
 ### ✅ Testing Checklist 5:
@@ -560,38 +560,38 @@ The **Arduino UNO R4 WiFi** acts as the native 5V Software Golden Model Verifier
                      │   Opcode & Test Counter     │
                      └─────────────────────────────┘
                                   │
-      ALU Bus Pins                │ Control & Indicators
+      ALU Bus Pins (D2..D9)       │ Control & Indicators
       ┌────────────────────────┐  │  ┌────────────────────────┐
-      │ D0  <── Y[0]           │  │  │ D10 ──► Green PASS LED │
-      │ D1  <── Y[1]           │  │  │ D11 ──► Red FAIL LED   │
-      │ D2  <── Y[2]           │  │  │ D12 <── IC12 Pin 6     │
-      │ D3  <── Y[3]           │  │  │         (Silicon Match)│
-      │ D4  <── Y[4]           │  │  │ A0  <── Opcode S0      │
-      │ D5  <── Y[5]           │  │  │ A1  <── Opcode S1      │
-      │ D6  <── Y[6]           │  │  │ A2  <── Opcode S2      │
-      │ D7  <── Y[7]           │  │  │ A3  <── Mode Switch    │
-      │ D8  <── Cout (C8)      │  │  │                        │
+      │ D2  <── Y[0]           │  │  │ D10 ──► Green PASS LED │
+      │ D3  <── Y[1]           │  │  │ D11 ──► Red FAIL LED   │
+      │ D4  <── Y[2]           │  │  │ D12 <── IC12 Pin 6     │
+      │ D5  <── Y[3]           │  │  │         (Silicon Match)│
+      │ D6  <── Y[4]           │  │  │ A0  <── Opcode S0      │
+      │ D7  <── Y[5]           │  │  │ A1  <── Opcode S1      │
+      │ D8  <── Y[6]           │  │  │ A2  <── Opcode S2      │
+      │ D9  <── Y[7]           │  │  │ A3  <── Mode Switch    │
       └────────────────────────┘  │  └────────────────────────┘
+  (Note: D0/D1 RX/TX are reserved for USB serial monitor to prevent bus contention)
 ```
 
 ### 6.1 Wiring Connections to Arduino UNO R4 WiFi:
-1. **Output Bus $Y[7:0]$ Sampling**:
-   - Connect $Y_0$ (IC7 Pin 5) $\to$ Arduino `D0`
-   - Connect $Y_1$ (IC8 Pin 5) $\to$ Arduino `D1`
-   - Connect $Y_2$ (IC9 Pin 5) $\to$ Arduino `D2`
-   - Connect $Y_3$ (IC10 Pin 5) $\to$ Arduino `D3`
-   - Connect $Y_4$ (IC11 Pin 9 in Mode 0) $\to$ Arduino `D4`
-   - Connect $Y_5$ (IC11 Pin 10 in Mode 0) $\to$ Arduino `D5`
-   - Connect $Y_6$ (IC11 Pin 11 in Mode 0) $\to$ Arduino `D6`
-   - Connect $Y_7$ (IC11 Pin 13 in Mode 0) $\to$ Arduino `D7`
-   - Connect $C_{out8}$ (IC11 Pin 16) $\to$ Arduino `D8`
-2. **Control Inputs Sampling**:
+1. **Output Bus $Y[7:0]$ Sampling (Pins D2..D9)**:
+   - Connect $Y_0$ (IC7 Pin 5) $\to$ Arduino `D2`
+   - Connect $Y_1$ (IC8 Pin 5) $\to$ Arduino `D3`
+   - Connect $Y_2$ (IC9 Pin 5) $\to$ Arduino `D4`
+   - Connect $Y_3$ (IC10 Pin 5) $\to$ Arduino `D5`
+   - Connect $Y_4$ (IC11 Pin 9 in Mode 0) $\to$ Arduino `D6`
+   - Connect $Y_5$ (IC11 Pin 10 in Mode 0) $\to$ Arduino `D7`
+   - Connect $Y_6$ (IC11 Pin 11 in Mode 0) $\to$ Arduino `D8`
+   - Connect $Y_7$ (IC11 Pin 13 in Mode 0) $\to$ Arduino `D9`
+2. **Control Inputs Sampling (Analog/Digital Pins A0..A3)**:
    - Connect Opcode $S_0 \to$ Arduino `A0`
    - Connect Opcode $S_1 \to$ Arduino `A1`
    - Connect Opcode $S_2 \to$ Arduino `A2`
    - Connect Mode Switch $\to$ Arduino `A3`
-   - Connect Hardware Match (IC12 Pin 6) $\to$ Arduino `D12`
-3. **External Status Indicators**:
+3. **Hardware Equivalence Match Input**:
+   - Connect IC12 Pin 6 ($Q_{A=B}$) $\to$ Arduino `D12`
+4. **External Status Indicators (Digital Outputs)**:
    - Arduino `D10` $\to [220\ \Omega] \to$ Green PASS LED Anode $\to$ Cathode to GND.
    - Arduino `D11` $\to [220\ \Omega] \to$ Red FAIL LED Anode $\to$ Cathode to GND.
 
@@ -621,42 +621,57 @@ The **ESP32-S3 N16R8** runs the autonomous Wi-Fi Access Point, WebSocket telemet
 ```
 
 ### 7.1 Hybrid Input Injection Hookup (4.7kΩ Override Resistors):
-Connect each ESP32 output GPIO in series with a $4.7\text{ k}\Omega$ resistor to the input node between the DIP switch and the $10\text{ k}\Omega$ pull-down:
+Connect each ESP32 output GPIO in series with a $4.7\text{ k}\Omega$ resistor to the input node between the DIP switch and the $10\text{ k}\Omega$ pull-down.
 
-| Signal Name | DIP Switch Pin | ESP32-S3 GPIO | Series Override Resistor | Destination IC Pin |
-| :--- | :---: | :---: | :---: | :--- |
-| **$A_0$** | SW1 Pin 1 | GPIO 4  | $4.7\text{ k}\Omega$ | IC1 Pin 5, IC3 Pin 1, IC4 Pin 1, IC5 Pin 1, IC6 Pin 1 |
-| **$A_1$** | SW1 Pin 2 | GPIO 5  | $4.7\text{ k}\Omega$ | IC1 Pin 3, IC3 Pin 4, IC4 Pin 4, IC5 Pin 4, IC6 Pin 3 |
-| **$A_2$** | SW1 Pin 3 | GPIO 6  | $4.7\text{ k}\Omega$ | IC1 Pin 14, IC3 Pin 9, IC4 Pin 9, IC5 Pin 9, IC6 Pin 5 |
-| **$A_3$** | SW1 Pin 4 | GPIO 7  | $4.7\text{ k}\Omega$ | IC1 Pin 12, IC3 Pin 12, IC4 Pin 12, IC5 Pin 12, IC6 Pin 9 |
-| **$A_4$** | SW1 Pin 5 | GPIO 15 | $4.7\text{ k}\Omega$ | IC11 Pin 2 (Mode 0) |
-| **$A_5$** | SW1 Pin 6 | GPIO 16 | $4.7\text{ k}\Omega$ | IC11 Pin 23 (Mode 0) |
-| **$A_6$** | SW1 Pin 7 | GPIO 17 | $4.7\text{ k}\Omega$ | IC11 Pin 21 (Mode 0) |
-| **$A_7$** | SW1 Pin 8 | GPIO 18 | $4.7\text{ k}\Omega$ | IC11 Pin 19 (Mode 0) |
-| **$B_0$** | SW2 Pin 1 | GPIO 8  | $4.7\text{ k}\Omega$ | IC2 Pin 1, IC3 Pin 2, IC4 Pin 2, IC5 Pin 2 |
-| **$B_1$** | SW2 Pin 2 | GPIO 3  | $4.7\text{ k}\Omega$ | IC2 Pin 4, IC3 Pin 5, IC4 Pin 5, IC5 Pin 5 |
-| **$B_2$** | SW2 Pin 3 | GPIO 46 | $4.7\text{ k}\Omega$ | IC2 Pin 9, IC3 Pin 10, IC4 Pin 10, IC5 Pin 10 |
-| **$B_3$** | SW2 Pin 4 | GPIO 9  | $4.7\text{ k}\Omega$ | IC2 Pin 12, IC3 Pin 13, IC4 Pin 13, IC5 Pin 13 |
-| **$B_4$** | SW2 Pin 5 | GPIO 10 | $4.7\text{ k}\Omega$ | IC11 Pin 1 (Mode 0) |
-| **$B_5$** | SW2 Pin 6 | GPIO 11 | $4.7\text{ k}\Omega$ | IC11 Pin 22 (Mode 0) |
-| **$B_6$** | SW2 Pin 7 | GPIO 12 | $4.7\text{ k}\Omega$ | IC11 Pin 20 (Mode 0) |
-| **$B_7$** | SW2 Pin 8 | GPIO 13 | $4.7\text{ k}\Omega$ | IC11 Pin 18 (Mode 0) |
-| **$S_0$** | SW3 Pin 1 | GPIO 1  | $4.7\text{ k}\Omega$ | MUX Pin 11 (A), Sub XOR IC2 |
-| **$S_1$** | SW3 Pin 2 | GPIO 2  | $4.7\text{ k}\Omega$ | MUX Pin 10 (B) |
-| **$S_2$** | SW3 Pin 3 | GPIO 42 | $4.7\text{ k}\Omega$ | MUX Pin 9 (C) |
-| **MODE**  | SW3 Pin 4 | GPIO 14 | $4.7\text{ k}\Omega$ | Mode Steering Line |
+> [!IMPORTANT]
+> **GROUND TRUTH GPIO MAPPING**: The contiguous GPIO assignment below aligns strictly with the Master Wiring Guide (`PIN_TO_PIN_WIRING_GUIDE.md`), the Master Netlist (`CIRCUIT_DIAGRAM.md`), and the ESP32 firmware (`pin_definitions.h`). It guarantees that software vector injection aligns with physical hardware buses without scrambling bits.
 
-### 7.2 ESP32-S3 Input Bus Monitoring (1kΩ / 2.2kΩ Voltage Dividers):
-To allow the 3.3V ESP32 to safely read the 5V output bus $Y[7:0]$, connect a resistive divider on each bus line:
+| Signal Name | DIP Switch Pin | ESP32-S3 GPIO | Series Override Resistor | Destination IC Pin(s) | Signal Function |
+| :--- | :---: | :---: | :---: | :--- | :--- |
+| **$A_0$** | SW1 Pin 1 | **GPIO 1**  | $4.7\text{ k}\Omega$ | IC1 Pin 10 ($A_1$), IC3 Pin 1, IC4 Pin 1, IC5 Pin 1, IC6 Pin 1, IC8 Pin 13 | Operand A Bit 0 (LSB) |
+| **$A_1$** | SW1 Pin 2 | **GPIO 2**  | $4.7\text{ k}\Omega$ | IC1 Pin 8 ($A_2$), IC3 Pin 4, IC4 Pin 4, IC5 Pin 4, IC6 Pin 3, IC7 Pin 12, IC9 Pin 13 | Operand A Bit 1 |
+| **$A_2$** | SW1 Pin 3 | **GPIO 4**  | $4.7\text{ k}\Omega$ | IC1 Pin 3 ($A_3$), IC3 Pin 9, IC4 Pin 9, IC5 Pin 9, IC6 Pin 5, IC8 Pin 12, IC10 Pin 13 | Operand A Bit 2 |
+| **$A_3$** | SW1 Pin 4 | **GPIO 5**  | $4.7\text{ k}\Omega$ | IC1 Pin 15 ($A_4$), IC3 Pin 12, IC4 Pin 12, IC5 Pin 12, IC6 Pin 9, IC9 Pin 12 | Operand A Bit 3 (Lower MSB) |
+| **$A_4$** | SW1 Pin 5 | **GPIO 6**  | $4.7\text{ k}\Omega$ | IC11 Pin 2 ($\overline{A_0}$, Mode 0), IC10 Pin 12 ($D_7$, Mode 0) | Operand A Bit 4 (Upper LSB) |
+| **$A_5$** | SW1 Pin 6 | **GPIO 7**  | $4.7\text{ k}\Omega$ | IC11 Pin 19 ($\overline{A_1}$, Mode 0) | Operand A Bit 5 |
+| **$A_6$** | SW1 Pin 7 | **GPIO 8**  | $4.7\text{ k}\Omega$ | IC11 Pin 21 ($\overline{A_2}$, Mode 0) | Operand A Bit 6 |
+| **$A_7$** | SW1 Pin 8 | **GPIO 9**  | $4.7\text{ k}\Omega$ | IC11 Pin 23 ($\overline{A_3}$, Mode 0) | Operand A Bit 7 (Upper MSB) |
+| **$B_0$** | SW2 Pin 1 | **GPIO 10** | $4.7\text{ k}\Omega$ | IC2 Pin 1 (1A), IC3 Pin 2, IC4 Pin 2, IC5 Pin 2, IC11 Pin 1 (Mode 1) | Operand B Bit 0 (LSB) |
+| **$B_1$** | SW2 Pin 2 | **GPIO 11** | $4.7\text{ k}\Omega$ | IC2 Pin 4 (2A), IC3 Pin 5, IC4 Pin 5, IC5 Pin 5, IC11 Pin 20 (Mode 1) | Operand B Bit 1 |
+| **$B_2$** | SW2 Pin 3 | **GPIO 12** | $4.7\text{ k}\Omega$ | IC2 Pin 9 (3A), IC3 Pin 10, IC4 Pin 10, IC5 Pin 10, IC11 Pin 22 (Mode 1) | Operand B Bit 2 |
+| **$B_3$** | SW2 Pin 4 | **GPIO 13** | $4.7\text{ k}\Omega$ | IC2 Pin 12 (4A), IC3 Pin 13, IC4 Pin 13, IC5 Pin 13, IC11 Pin 24 (Mode 1) | Operand B Bit 3 (Lower MSB) |
+| **$B_4$** | SW2 Pin 5 | **GPIO 14** | $4.7\text{ k}\Omega$ | IC11 Pin 1 ($\overline{B_0}$, Mode 0) | Operand B Bit 4 (Upper LSB) |
+| **$B_5$** | SW2 Pin 6 | **GPIO 15** | $4.7\text{ k}\Omega$ | IC11 Pin 20 ($\overline{B_1}$, Mode 0) | Operand B Bit 5 |
+| **$B_6$** | SW2 Pin 7 | **GPIO 16** | $4.7\text{ k}\Omega$ | IC11 Pin 22 ($\overline{B_2}$, Mode 0) | Operand B Bit 6 |
+| **$B_7$** | SW2 Pin 8 | **GPIO 17** | $4.7\text{ k}\Omega$ | IC11 Pin 24 ($\overline{B_3}$, Mode 0) | Operand B Bit 7 (Upper MSB) |
+| **$S_0$** | SW3 Pin 1 | **GPIO 18** | $4.7\text{ k}\Omega$ | IC7-IC10 Pin 11 ($S_0$), IC2 Pins 2,5,10,13, IC1 Pin 13 ($C_0$) | Opcode Select Bit 0 ($SUB$) |
+| **$S_1$** | SW3 Pin 2 | **GPIO 35** | $4.7\text{ k}\Omega$ | IC7-IC10 Pin 10 ($S_1$) | Opcode Select Bit 1 |
+| **$S_2$** | SW3 Pin 3 | **GPIO 36** | $4.7\text{ k}\Omega$ | IC7-IC10 Pin 9 ($S_2$) | Opcode Select Bit 2 (MSB) |
+| **MODE**  | SW3 Pin 4 | **GPIO 37** | $4.7\text{ k}\Omega$ | Datapath Mode Steering Line (0 = 8-Bit, 1 = Verify) | Mode Select |
+
+### 7.2 ESP32-S3 Output Bus & Telemetry Monitoring (1.0kΩ / 2.2kΩ Voltage Dividers):
+To allow the 3.3V ESP32 to safely read the 5V signals, connect precision resistive dividers (1.0 kΩ series / 2.2 kΩ shunt to GND):
 
 ```
-  5V Bus Line (Y_k) ────[ 1.0 kΩ ]────┬────► ESP32-S3 GPIO (Sense Pin)
-                                      │
-                                 [ 2.2 kΩ ]
-                                      │
-                                     GND
+  5V Signal Line (Y_k / PASS) ────[ 1.0 kΩ ]────┬────► ESP32-S3 GPIO (Sense Pin)
+                                                │
+                                           [ 2.2 kΩ ]
+                                                │
+                                               GND
   V_sense = 5.0V * (2.2k / (1.0k + 2.2k)) = 5.0V * (2.2 / 3.2) = 3.43V (Safe for ESP32 3.3V I/O)
 ```
+
+| Signal Name | Source Pin | ESP32-S3 GPIO | Divider Resistors | Architectural Function |
+| :--- | :--- | :---: | :---: | :--- |
+| **$Y_0$** | IC7 Pin 5 (Y) | **GPIO 38** | $1.0\text{ k}\Omega / 2.2\text{ k}\Omega$ | Custom ALU Output Bit 0 |
+| **$Y_1$** | IC8 Pin 5 (Y) | **GPIO 39** | $1.0\text{ k}\Omega / 2.2\text{ k}\Omega$ | Custom ALU Output Bit 1 |
+| **$Y_2$** | IC9 Pin 5 (Y) | **GPIO 40** | $1.0\text{ k}\Omega / 2.2\text{ k}\Omega$ | Custom ALU Output Bit 2 |
+| **$Y_3$** | IC10 Pin 5 (Y) | **GPIO 41** | $1.0\text{ k}\Omega / 2.2\text{ k}\Omega$ | Custom ALU Output Bit 3 |
+| **$Y_4$** | IC11 Pin 9 ($\overline{F_0}$) | **GPIO 42** | $1.0\text{ k}\Omega / 2.2\text{ k}\Omega$ | Upper Nibble / Silicon ALU Bit 0 Output |
+| **$Y_5$** | IC11 Pin 10 ($\overline{F_1}$) | **GPIO 47** | $1.0\text{ k}\Omega / 2.2\text{ k}\Omega$ | Upper Nibble / Silicon ALU Bit 1 Output |
+| **$Y_6$** | IC11 Pin 11 ($\overline{F_2}$) | **GPIO 48** | $1.0\text{ k}\Omega / 2.2\text{ k}\Omega$ | Upper Nibble / Silicon ALU Bit 2 Output |
+| **$Y_7$** | IC11 Pin 13 ($\overline{F_3}$) | **GPIO 21** | $1.0\text{ k}\Omega / 2.2\text{ k}\Omega$ | Upper Nibble / Silicon ALU Bit 3 Output |
+| **Hardware PASS** | IC12 Pin 6 ($Q_{A=B}$) | **GPIO 3** | $1.0\text{ k}\Omega / 2.2\text{ k}\Omega$ | 74HCT85 Silicon Equivalence Match Flag |
 
 ### ✅ Testing Checklist 7:
 - [ ] Flash `esp32_firmware.ino` to the ESP32-S3 via USB-C.

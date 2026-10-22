@@ -38,17 +38,18 @@ ArduinoLEDMatrix matrix;
 // Y[7:4] (Pins 6..9) = Commercial 74LS181N ALU (F0..F3)
 const uint8_t PIN_Y[8] = { 2, 3, 4, 5, 6, 7, 8, 9 };
 
-// Opcode Bus (S0..S2) & Datapath Mode Control Pin
-const uint8_t PIN_OPCODE[3] = { 10, 11, 12 }; // S0, S1, S2
-const uint8_t PIN_MODE = 13;                  // Datapath Mode: 0 = 8-Bit Cascaded, 1 = Silicon Verification
+// Opcode Bus (S0..S2) & Datapath Mode Control Pin (Analog/Digital Inputs A0..A3)
+// Master Netlist: A0 = Opcode S0, A1 = Opcode S1, A2 = Opcode S2, A3 = Mode Switch
+const uint8_t PIN_OPCODE[3] = { A0, A1, A2 }; // S0, S1, S2
+const uint8_t PIN_MODE = A3;                  // Datapath Mode: 0 = 8-Bit Cascaded, 1 = Silicon Verification
 
 // IC12 (74HCT85 4-Bit Magnitude Comparator) Hardware Match Pin
-// Connects directly to 74HCT85 Pin 6 (A=B Output)
-const uint8_t PIN_7485_MATCH = A0;
+// Connects directly to 74HCT85 Pin 6 (A=B Output) via Pin D12
+const uint8_t PIN_7485_MATCH = 12;
 
-// Dedicated Physical Status LED Indicators
-const uint8_t PIN_LED_PASS = A4; // External Green PASS LED (via 220Ω resistor)
-const uint8_t PIN_LED_FAIL = A5; // External Red FAIL LED (via 220Ω resistor)
+// Dedicated Physical Status LED Indicators (Pins D10 and D11)
+const uint8_t PIN_LED_PASS = 10; // External Green PASS LED (via 220Ω resistor)
+const uint8_t PIN_LED_FAIL = 11; // External Red FAIL LED (via 220Ω resistor)
 
 // Modular Monitored Input Pins (Pins A1..A3 for input vector sampling)
 const uint8_t PIN_MONITOR_A[3] = { A1, A2, A3 };

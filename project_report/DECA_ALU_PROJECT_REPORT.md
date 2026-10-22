@@ -460,31 +460,31 @@ The dashboard features:
 
 | Source Component | Source Pin | Destination Component | Destination Pin | Signal Name / Function |
 | :--- | :---: | :--- | :---: | :--- |
-| **DIP SW / ESP32** | Pin A0 (GPIO 1) | 74LS83N Adder & Logic Array | Pin 5 ($A_1$) | Operand A Bit 0 (Custom ALU) |
-| **DIP SW / ESP32** | Pin A1 (GPIO 2) | 74LS83N Adder & Logic Array | Pin 3 ($A_2$) | Operand A Bit 1 (Custom ALU) |
-| **DIP SW / ESP32** | Pin A2 (GPIO 4) | 74LS83N Adder & Logic Array | Pin 14 ($A_3$) | Operand A Bit 2 (Custom ALU) |
-| **DIP SW / ESP32** | Pin A3 (GPIO 5) | 74LS83N Adder & Logic Array | Pin 12 ($A_4$) | Operand A Bit 3 (Custom ALU) |
+| **DIP SW / ESP32** | Pin A0 (GPIO 1) | 74LS83N Adder & Logic Array | Pin 10 ($A_1$) | Operand A Bit 0 (Custom ALU) |
+| **DIP SW / ESP32** | Pin A1 (GPIO 2) | 74LS83N Adder & Logic Array | Pin 8 ($A_2$) | Operand A Bit 1 (Custom ALU) |
+| **DIP SW / ESP32** | Pin A2 (GPIO 4) | 74LS83N Adder & Logic Array | Pin 3 ($A_3$) | Operand A Bit 2 (Custom ALU) |
+| **DIP SW / ESP32** | Pin A3 (GPIO 5) | 74LS83N Adder & Logic Array | Pin 15 ($A_4$) | Operand A Bit 3 (Custom ALU) |
 | **DIP SW / ESP32** | Pin B0 (GPIO 10) | 74HC86N Inverter 1 | Pin 1 ($1A$) | Operand B Bit 0 (Custom ALU) |
 | **DIP SW / ESP32** | Pin B1 (GPIO 11) | 74HC86N Inverter 1 | Pin 4 ($2A$) | Operand B Bit 1 (Custom ALU) |
 | **DIP SW / ESP32** | Pin B2 (GPIO 12) | 74HC86N Inverter 1 | Pin 9 ($3A$) | Operand B Bit 2 (Custom ALU) |
 | **DIP SW / ESP32** | Pin B3 (GPIO 13) | 74HC86N Inverter 1 | Pin 12 ($4A$) | Operand B Bit 3 (Custom ALU) |
-| **74HC86N Inverter 1**| Pin 3 ($1Y$) | 74LS83N Adder | Pin 6 ($B_1$) | Inverted/True B Bit 0 |
-| **74HC86N Inverter 1**| Pin 6 ($2Y$) | 74LS83N Adder | Pin 2 ($B_2$) | Inverted/True B Bit 1 |
-| **74HC86N Inverter 1**| Pin 8 ($3Y$) | 74LS83N Adder | Pin 15 ($B_3$) | Inverted/True B Bit 2 |
-| **74HC86N Inverter 1**| Pin 11 ($4Y$) | 74LS83N Adder | Pin 11 ($B_4$) | Inverted/True B Bit 3 |
-| **Opcode S0 (SUB)** | Pin 18 (GPIO 18)| 74HC86N Inverter 1 & 74LS83N | Pins 2, 5, 10, 13 & Pin 7 | Subtraction Control & Carry-In $C_0$ |
-| **74LS83N Adder** | Pin 9 ($C_4$) | 74LS181N ALU (Mode 0) | Pin 2 ($\overline{C_n}$) | Lower-to-Upper Nibble Carry Cascade |
-| **Custom ALU MUX 0**| Pin 5 ($Y$) | IC12 74HCT85 / Arduino D2 / ESP32 38 | Pin 12 ($A_0$) | Custom ALU Output Bit 0 ($Y_0$) |
-| **Custom ALU MUX 1**| Pin 5 ($Y$) | IC12 74HCT85 / Arduino D3 / ESP32 39 | Pin 11 ($A_1$) | Custom ALU Output Bit 1 ($Y_1$) |
-| **Custom ALU MUX 2**| Pin 5 ($Y$) | IC12 74HCT85 / Arduino D4 / ESP32 40 | Pin 14 ($A_2$) | Custom ALU Output Bit 2 ($Y_2$) |
-| **Custom ALU MUX 3**| Pin 5 ($Y$) | IC12 74HCT85 / Arduino D5 / ESP32 41 | Pin 1 ($A_3$) | Custom ALU Output Bit 3 ($Y_3$) |
-| **74LS181N ALU** | Pin 9 ($F_0$) | IC12 74HCT85 / Arduino D6 / ESP32 42 | Pin 13 ($B_0$) | 74LS181 Output Bit 0 / Bus $Y_4$ |
-| **74LS181N ALU** | Pin 10 ($F_1$) | IC12 74HCT85 / Arduino D7 / ESP32 47 | Pin 10 ($B_1$) | 74LS181 Output Bit 1 / Bus $Y_5$ |
-| **74LS181N ALU** | Pin 11 ($F_2$) | IC12 74HCT85 / Arduino D8 / ESP32 48 | Pin 15 ($B_2$) | 74LS181 Output Bit 2 / Bus $Y_6$ |
-| **74LS181N ALU** | Pin 13 ($F_3$) | IC12 74HCT85 / Arduino D9 / ESP32 21 | Pin 2 ($B_3$) | 74LS181 Output Bit 3 / Bus $Y_7$ |
-| **IC12 74HCT85 Comp**| Pin 6 ($A=B$) | Green LED / Arduino A0 / ESP32 3 | Anode / Pin A0 / GPIO 3 | Real-Time Hardware PASS Flag |
-| **Arduino UNO R4 WiFi**| Pin A4 | External Green LED (via 220Ω) | Anode | Scoreboard Verified PASS LED |
-| **Arduino UNO R4 WiFi**| Pin A5 | External Red LED (via 220Ω) | Anode | Scoreboard Fault FAIL LED |
+| **74HC86N Inverter 1**| Pin 3 ($1Y$) | 74LS83N Adder | Pin 11 ($B_1$) | Conditioned B Bit 0 ($B'_0 = B_0 \oplus SUB$) |
+| **74HC86N Inverter 1**| Pin 6 ($2Y$) | 74LS83N Adder | Pin 7 ($B_2$) | Conditioned B Bit 1 ($B'_1 = B_1 \oplus SUB$) |
+| **74HC86N Inverter 1**| Pin 8 ($3Y$) | 74LS83N Adder | Pin 4 ($B_3$) | Conditioned B Bit 2 ($B'_2 = B_2 \oplus SUB$) |
+| **74HC86N Inverter 1**| Pin 11 ($4Y$) | 74LS83N Adder | Pin 16 ($B_4$) | Conditioned B Bit 3 ($B'_3 = B_3 \oplus SUB$) |
+| **Opcode S0 (SUB)** | Pin 18 (GPIO 18)| 74HC86N Inverter 1 & 74LS83N | Pins 2, 5, 10, 13 & Pin 13 | Subtraction Control & Carry-In $C_0$ |
+| **74LS83N Adder** | Pin 14 ($C_4$) | Inverter IC6 -> 74LS181N (Mode 0) | Pin 11 -> Pin 10 -> Pin 7 ($\overline{C_n}$) | Lower-to-Upper Nibble Carry Cascade |
+| **Custom ALU MUX 0**| Pin 5 ($Y$) | IC12 74HCT85 / Arduino D2 / ESP32 38 | Pin 10 ($A_0$) | Custom ALU Output Bit 0 ($Y_0$) |
+| **Custom ALU MUX 1**| Pin 5 ($Y$) | IC12 74HCT85 / Arduino D3 / ESP32 39 | Pin 12 ($A_1$) | Custom ALU Output Bit 1 ($Y_1$) |
+| **Custom ALU MUX 2**| Pin 5 ($Y$) | IC12 74HCT85 / Arduino D4 / ESP32 40 | Pin 13 ($A_2$) | Custom ALU Output Bit 2 ($Y_2$) |
+| **Custom ALU MUX 3**| Pin 5 ($Y$) | IC12 74HCT85 / Arduino D5 / ESP32 41 | Pin 15 ($A_3$) | Custom ALU Output Bit 3 ($Y_3$) |
+| **74LS181N ALU** | Pin 9 ($\overline{F_0}$) | IC12 74HCT85 / Arduino D6 / ESP32 42 | Pin 9 ($B_0$, Mode 1) | 74LS181 Output Bit 0 / Bus $Y_4$ |
+| **74LS181N ALU** | Pin 10 ($\overline{F_1}$) | IC12 74HCT85 / Arduino D7 / ESP32 47 | Pin 11 ($B_1$, Mode 1) | 74LS181 Output Bit 1 / Bus $Y_5$ |
+| **74LS181N ALU** | Pin 11 ($\overline{F_2}$) | IC12 74HCT85 / Arduino D8 / ESP32 48 | Pin 14 ($B_2$, Mode 1) | 74LS181 Output Bit 2 / Bus $Y_6$ |
+| **74LS181N ALU** | Pin 13 ($\overline{F_3}$) | IC12 74HCT85 / Arduino D9 / ESP32 21 | Pin 1 ($B_3$, Mode 1) | 74LS181 Output Bit 3 / Bus $Y_7$ |
+| **IC12 74HCT85 Comp**| Pin 6 ($Q_{A=B}$) | Green LED / Arduino D12 / ESP32 3 | Anode / Pin D12 / GPIO 3 | Real-Time Hardware PASS Flag |
+| **Arduino UNO R4 WiFi**| Pin D10 | External Green LED (via 220Ω) | Anode | Scoreboard Verified PASS LED |
+| **Arduino UNO R4 WiFi**| Pin D11 | External Red LED (via 220Ω) | Anode | Scoreboard Fault FAIL LED |
 | **Arduino Minima** | $+5.0\text{ V}$ Pin | Breadboard Top & Bottom Red Rails | VCC Bus | Logic Power Supply Rail (+5.0V / 1A) |
 | **All Boards** | GND Pins | Breadboard Blue Rails & Ground Star | Common GND | Universal Star Ground Network |
 
