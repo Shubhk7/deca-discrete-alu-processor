@@ -161,9 +161,9 @@ flowchart TD
 In **Mode 0**, the processor functions as a unified 8-bit computational datapath:
 * **Lower Nibble ($Y[3:0]$)**: Computed by the Custom 4-Bit ALU using $A[3:0]$ and $B[3:0]$.
 * **Upper Nibble ($Y[7:4]$)**: Computed by the 74LS181N using $A[7:4]$ and $B[7:4]$.
-* **Carry Interconnect**: The Carry-Out ($C_4$, Pin 9) of the 74LS83N binary adder connects directly to the Carry-In ($\overline{C_n}$, Pin 2) of the 74LS181N. In standard 74LS181 active-high arithmetic mode:
+* **Carry Interconnect**: The Carry-Out ($C_4$, Pin 14) of the 74LS83N binary adder (IC1) is inverted through spare inverter gate 5 of the 74HCT04 (IC6, Pin 11 to Pin 10) and connects to the active-LOW Carry-In ($\overline{C_n}$, Pin 7) of the 74LS181N (IC11) via the Mode 0 carry steering switch:
   $$\overline{C_n} = \overline{C_4}$$
-  Because 74LS83N generates active-high carry ($C_4 = 1$ when carry occurs), connecting $C_4$ to active-low $\overline{C_n}$ through an inverter (or direct connection matching 74LS181 polarity) completes the 8-bit arithmetic carry chain.
+  Because the 74LS83N generates an active-HIGH carry-out ($C_4 = 1$ when an addition overflow occurs in the lower nibble) while the 74LS181N arithmetic mode requires an active-LOW carry-in ($\overline{C_n} = 0$ for carry present), inverter IC6 ($	ext{5A} 	o 	ext{5Y}$) is required to ensure seamless 8-bit ripple carry propagation across the two nibbles.
 
 ### 2.3 Mode 1: Real-Time Silicon Verification Engine
 In **Mode 1**, the processor transforms into a hardware-in-the-loop equivalence validation testbench:
@@ -179,7 +179,7 @@ In **Mode 1**, the processor transforms into a hardware-in-the-loop equivalence 
 * **Match Indication**:
   When $Y_{\text{Custom}} == F_{181}$, Pin 6 of the 74HCT85 ($A=B\text{ Output}$) drives HIGH ($+5\text{ V}$). This asserts an immediate hardware match:
   - Powers an ultra-bright green PASS LED on the breadboard.
-  - Read by Arduino UNO R4 WiFi on Pin A0.
+  - Read by Arduino UNO R4 WiFi on Pin D12.
   - Read by ESP32-S3 on Pin 3 (via $1.0\text{ k}\Omega / 2.2\text{ k}\Omega$ voltage divider).
 
 ### 2.4 Custom 4-Bit ALU Implementation
@@ -189,7 +189,7 @@ The custom ALU is synthesized using MSI and SSI components:
 2. **Two's Complement Subtraction**:
    A quad XOR gate (74HC86N) conditionally inverts $B[3:0]$ when $SUB = 1$:
    $$B'_i = B_i \oplus SUB$$
-   The carry-in of the 74LS83N ($C_0$, Pin 7) is tied to $SUB$. When $SUB = 1$:
+   The carry-in of the 74LS83N ($C_0$, Pin 13) is tied to $SUB$. When $SUB = 1$:
    $$S = A + \overline{B} + 1 = A - B$$
 3. **Logic Gate Array**:
    - Bitwise AND: 74HCT08 Quad 2-Input AND ($A_i \cdot B_i$)
@@ -589,7 +589,9 @@ Below are 25 exhaustive questions and answers designed specifically for universi
 2. **Arduino UNO R4 WiFi**: Operates at native 5.0V; acts as a non-intrusive bus sniffer, computes the Software Golden Model, and drives the $12\times 8$ matrix HUD and status LEDs.
 3. **Arduino UNO R4 Minima**: Serves as a dedicated clean $+5.0\text{ V} / 1.0\text{ A}$ power supply rail for all breadboard ICs, preventing supply droop and ground loops.
 
-### Q5: How does your 74LS83N adder differ from a standard 74LS283 adder?\n**Answer**: The 74LS83N and 74LS283 are functionally identical 4-bit binary full adders with internal fast lookahead carry. However, they feature completely different pinouts: The 74LS283 has standard corner power pins ({CC} = \text{Pin 16}$, $\text{GND} = \text{Pin 8}$). Our **74LS83N features non-standard mid-side power pins**: **Pin 5 is {CC}$ (+5V)** and **Pin 12 is GND (0V)**. Crucially, on the 74LS83N, Pin 16 is Operand Input $ and Pin 8 is Operand Input $. If wired like a 74283, the chip would remain unpowered and 5V would be applied directly to an input pin!\n
+### Q5: How does your 74LS83N adder differ from a standard 74LS283 adder?
+**Answer**: The 74LS83N and 74LS283 are functionally identical 4-bit binary full adders with internal fast lookahead carry. However, they feature completely different pinouts: The 74LS283 has standard corner power pins ($V_{CC} = \text{Pin 16}$, $\text{GND} = \text{Pin 8}$). Our **74LS83N features non-standard mid-side power pins**: **Pin 5 is $V_{CC}$ (+5V)** and **Pin 12 is GND (0V)**. Crucially, on the 74LS83N, Pin 16 is Operand Input $B_4$ and Pin 8 is Operand Input $A_2$. If wired like a 74283, the chip would remain unpowered and 5V would be applied directly to an input pin!
+
 ### Q6: How is two's complement subtraction achieved in the Custom ALU?
 **Answer**: Subtraction $A - B$ is computed as $A + \overline{B} + 1$. A 74HC86N Quad XOR gate conditionally inverts $B$ ($B_i \oplus SUB$). When $SUB = 1$, each bit of $B$ is inverted, and $SUB$ is simultaneously applied to the adder's carry-in $C_0$, adding the required $+1$.
 
@@ -597,7 +599,7 @@ Below are 25 exhaustive questions and answers designed specifically for universi
 **Answer**: The 74HCT151 is an 8-to-1 data selector with 3 address select lines ($S_2, S_1, S_0$), matching our 8 operations (ADD, SUB, AND, OR, XOR, NOT, SHL, SHR). The 74xx157 is a quad 2-to-1 multiplexer with only 1 select line, which would require multi-stage cascading to select between 8 operations.
 
 ### Q8: How is the carry signal cascaded between the Custom ALU and the 74LS181N in Mode 0?
-**Answer**: The 74LS83N Carry-Out ($, Pin 14) generates an active-high carry signal. The 74LS181N Carry-In ($\overline{C_n}$, Pin 7) expects an active-low carry signal in active-high data mode. The carry signal is inverted through a 74HCT04 inverter (IC6 Pins 11 -> 10) to match the active-low carry-in requirement of the 74LS181N in Mode 0.\n
+**Answer**: The 74LS83N Carry-Out ($C_4$, Pin 14) generates an active-high carry signal. The 74LS181N Carry-In ($\overline{C_n}$, Pin 7) expects an active-low carry signal in active-high data mode. The carry signal is inverted through a 74HCT04 inverter (IC6 Pins 11 -> 10) to match the active-low carry-in requirement of the 74LS181N in Mode 0.\n
 ### Q9: How does the level translation between 5.0 V logic and the 3.3 V ESP32-S3 work?
 **Answer**: A resistor divider with $R_1 = 1.0\text{ k}\Omega$ and $R_2 = 2.2\text{ k}\Omega$ scales the 5.0V signals down:
 $$V = 5.0\text{ V} \times \frac{2200}{1000 + 2200} = 3.43\text{ V}$$
@@ -666,14 +668,18 @@ This achieves instantaneous shifting with zero gate delay beyond the multiplexer
 
 | Part ID | Description | Logic Family | Package | Quantity | Reference Location |
 | :---: | :--- | :---: | :---: | :---: | :--- |
-| **IC1** | 74LS83N 4-Bit Binary Full Adder | HCT/LS | DIP-16 | 1 | Custom 4-Bit ALU Adder Core |
-| **IC2** | 74LS181N 4-Bit High-Functionality ALU | LS | DIP-24 | 1 | Upper Nibble ALU & Silicon Reference |
-| **IC3** | 74HCT85 4-Bit Magnitude Comparator | HCT/LS | DIP-16 | 1 | Hardware Equivalence Checker |
-| **IC4-IC7** | 74HCT151 8:1 Multiplexer / Data Selector | HCT/LS | DIP-16 | 4 | Bit-Slice MUX Bank ($Y_0..Y_3$) |
-| **IC8** | 74HC86N Quad 2-Input XOR Gate | HCT/LS | DIP-14 | 1 | Controlled Inverter for 2's Complement |
-| **IC9** | 74HCT08 Quad 2-Input AND Gate | HCT/LS | DIP-14 | 1 | Bitwise AND & Carry Gating |
-| **IC10** | 74HCT32 Quad 2-Input OR Gate | HCT/LS | DIP-14 | 1 | Bitwise OR Engine |
-| **IC11** | 74HCT04 Hex Inverter | HCT/LS | DIP-14 | 1 | Bitwise NOT & Logic Inverters |
+| **IC1** | 74LS83N 4-Bit Binary Full Adder | TTL-LS | DIP-16 | 1 | Custom 4-Bit ALU Adder Core (VCC=P5, GND=P12) |
+| **IC2** | 74HC86N Quad 2-Input XOR Gate #1 | CMOS-HC | DIP-14 | 1 | Subtraction Controlled Inverter ($B'_i = B_i \oplus SUB$) |
+| **IC3** | 74HC86N Quad 2-Input XOR Gate #2 | CMOS-HC | DIP-14 | 1 | Bitwise XOR Logic Array ($A_i \oplus B_i$) |
+| **IC4** | 74HCT08 Quad 2-Input AND Gate | CMOS-HCT | DIP-14 | 1 | Bitwise AND Logic Array ($A_i \cdot B_i$) |
+| **IC5** | 74HCT32 Quad 2-Input OR Gate | CMOS-HCT | DIP-14 | 1 | Bitwise OR Logic Array ($A_i + B_i$) |
+| **IC6** | 74HCT04 Hex Inverter | CMOS-HCT | DIP-14 | 1 | Bitwise NOT Array ($\overline{A_i}$) & Carry Inverter |
+| **IC7** | 74HCT151 8:1 Multiplexer (Bit 0) | CMOS-HCT | DIP-16 | 1 | Bit-Slice 0 Operation Selector ($Y_0$) |
+| **IC8** | 74HCT151 8:1 Multiplexer (Bit 1) | CMOS-HCT | DIP-16 | 1 | Bit-Slice 1 Operation Selector ($Y_1$) |
+| **IC9** | 74HCT151 8:1 Multiplexer (Bit 2) | CMOS-HCT | DIP-16 | 1 | Bit-Slice 2 Operation Selector ($Y_2$) |
+| **IC10** | 74HCT151 8:1 Multiplexer (Bit 3) | CMOS-HCT | DIP-16 | 1 | Bit-Slice 3 Operation Selector ($Y_3$) |
+| **IC11** | 74LS181N 4-Bit High-Functionality ALU | TTL-LS | DIP-24 | 1 | Upper Nibble ALU (Mode 0) & Silicon Reference (Mode 1) |
+| **IC12** | 74HCT85 4-Bit Magnitude Comparator | CMOS-HCT | DIP-16 | 1 | Real-Time Hardware Equivalence Checker |
 | **MCU1** | ESP32-S3 N16R8 (16MB Flash, 8MB PSRAM) | Tensilica | DevKit | 1 | The Brain: WebSockets AP & Injector |
 | **MCU2** | Arduino UNO R4 WiFi (RA4M1 ARM Cortex-M4) | 5V ARM | DevKit | 1 | The Verifier: Golden Model & LED HUD |
 | **MCU3** | Arduino UNO R4 Minima (RA4M1 ARM Cortex-M4)| 5V ARM | DevKit | 1 | The Power Station: Clean 5V/1A Rail |

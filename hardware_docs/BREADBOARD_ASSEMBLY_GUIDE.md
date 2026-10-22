@@ -139,7 +139,7 @@ This guide provides a rigorous, step-by-step physical assembly protocol for cons
 | **SW3** | 4-Position DIP Switch     | DIP-8  | 1 | Manual Opcode ($S_2, S_1, S_0$) + Mode Switch |
 | **R_PD**| $10\text{ k}\Omega$ 1/4W Resistors | Axial | 20 | Pull-down resistors for all DIP switch inputs |
 | **R_OV**| $4.7\text{ k}\Omega$ 1/4W Resistors | Axial | 19 | Series override resistors for ESP32 input injection |
-| **R_DIV**| $1.0\text{ k}\Omega$ & $2.2\text{ k}\Omega$ | Axial | 13+13 | Voltage dividers for ESP32 3.3V safe inputs |
+| **R_DIV**| $1.0\text{ k}\Omega$ & $2.2\text{ k}\Omega$ | Axial | 9+9 (9 pairs) | Precision voltage dividers for ESP32 3.3V safe telemetry ($Y[7:0]$ + Silicon Match) |
 | **R_LED**| $220\ \Omega$ / $330\ \Omega$ | Axial | 12 | Current-limiting resistors for LEDs |
 | **C_DEC**| $0.1\ \mu\text{F}$ Monolithic Ceramic | Radial | 14 | Decoupling capacitors (one per IC socket + rails) |
 | **C_BLK**| $100\ \mu\text{F}$ 25V Electrolytic | Radial | 2 | Bulk smoothing capacitors across power rails |

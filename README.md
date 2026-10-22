@@ -250,7 +250,7 @@ This bill of materials reflects the **exact physical inventory** and component c
 | **DIP Switch** | 4-Position SPST DIP Switch | DIP-8 | **1** | Opcode select ($S_2, S_1, S_0$) and Mode Switch (0/1) |
 | **Pull-down Resistors**| 10 kΩ, 1/4W, 1% Metal Film | Axial | **24** | Bus termination for DIP switches and control lines |
 | **Override Resistors** | 4.7 kΩ, 1/4W, 1% Metal Film | Axial | **16** | Non-destructive series override resistors for ESP32 GPIOs |
-| **Voltage Dividers** | 1.0 kΩ & 2.2 kΩ, 1/4W, 1% | Axial | **12+12** | 5V $\to$ 3.3V step-down network for ESP32 input protection |
+| **Voltage Dividers** | 1.0 kΩ & 2.2 kΩ, 1/4W, 1% | Axial | **9+9 (9 pairs)** | 5V $\to$ 3.3V step-down network for ESP32 input protection ($Y[7:0]$ + Silicon Match) |
 | **LED Resistors** | 220 Ω / 330 Ω, 1/4W | Axial | **12** | Current limiters for bus LEDs and status indicators |
 | **Decoupling Caps** | 0.1 µF (104) Multilayer Ceramic | Radial | **16** | Power supply bypass placed directly across $V_{CC}$/GND of every IC |
 | **Bulk Capacitors** | 100 µF, 25V Electrolytic | Radial | **3** | Breadboard power rail smoothing & transient suppression |

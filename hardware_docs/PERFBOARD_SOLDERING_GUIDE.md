@@ -57,7 +57,7 @@ This guide provides an exhaustive engineering manual for transferring the **12-I
 * **Bulk Capacitors**: 2× $100\ \mu\text{F}$ 25V radial electrolytic capacitors (power input smoothing).
 * **Pull-Down Resistors**: 20× $10\text{ k}\Omega$ 1/4W 1% metal film resistors (for DIP switches SW1, SW2, SW3).
 * **Override Resistors**: 19× $4.7\text{ k}\Omega$ 1/4W 1% metal film resistors (ESP32 remote input injection).
-* **Voltage Dividers**: 13× $1.0\text{ k}\Omega$ + 13× $2.2\text{ k}\Omega$ 1/4W 1% resistors (5V-to-3.3V ESP32 safety bus sniffers).
+* **Voltage Dividers**: 9× $1.0\text{ k}\Omega$ + 9× $2.2\text{ k}\Omega$ 1/4W 1% resistors (9 pairs for 5V-to-3.3V ESP32 safety bus sniffers: $Y_0..Y_7$ and Silicon Match).
 * **LED Current Limiters**: 12× $220\ \Omega$ or $330\ \Omega$ 1/4W metal film resistors.
 * **Input Switches**:
   * 2× 8-position DIP switches (SW1 for Operand $A[7:0]$, SW2 for Operand $B[7:0]$).
@@ -104,7 +104,7 @@ $$\text{Inputs \& Overrides (Left)} \longrightarrow \text{Custom ALU Core (Cente
 |                    +-------------------------------+                                                                               |
 |  +--------------+                                                                                                                  |
 |  | OPCODE & MODE|  [ESP32 VOLTAGE DIVIDER ARRAY]      [ESP32 OVERRIDE RESISTORS]      [ARDUINO R4 INTERFACE HEADERS]               |
-|  | (SW3: 4-Pos) |  [13× 1.0kΩ / 2.2kΩ]                [19× 4.7kΩ RESISTORS]           [FEMALE HEADER STRIPS: D0-D13, A0-A3]        |
+|  | (SW3: 4-Pos) |  [9× 1.0kΩ / 2.2kΩ PAIRS]           [19× 4.7kΩ RESISTORS]           [FEMALE HEADER STRIPS: D2-D12, A0-A3]        |
 |  +--------------+                                                                                                                  |
 |                                                                                                                                    |
 | ============================== COMMON GROUND BUS RAIL (20 AWG TINNED WIRE) ======================================================== |
