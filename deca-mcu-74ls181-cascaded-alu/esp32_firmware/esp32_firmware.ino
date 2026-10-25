@@ -21,8 +21,27 @@
 #include <WebServer.h>
 #include <WebSocketsServer.h>
 #include <ArduinoJson.h>
+#include <Wire.h>
 #include "pin_definitions.h"
 #include "web_page.h"
+
+// =====================================================================================
+// OPTIONAL 0.96" I2C OLED DISPLAY (SSD1306 128x64)
+// Set to 1 if you have an OLED plugged into SDA=GPIO 8, SCL=GPIO 9. Set to 0 to disable.
+// =====================================================================================
+#define USE_OLED 1
+
+#if USE_OLED
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET -1
+#define PIN_OLED_SDA 8
+#define PIN_OLED_SCL 9
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+bool oled_found = false;
+#endif
 
 // Wi-Fi Access Point Credentials
 const char* AP_SSID = "DECA-ALU-HYBRID";
@@ -197,6 +216,23 @@ void setup() {
     Serial.print(F(" Dashboard URL:  http://")); Serial.println(IP);
     Serial.println(F("======================================================="));
 
+#if USE_OLED
+    Wire.begin(PIN_OLED_SDA, PIN_OLED_SCL);
+    if (display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+        oled_found = true;
+        display.clearDisplay();
+        display.setTextColor(SSD1306_WHITE);
+        display.setTextSize(1);
+        display.setCursor(0, 4);
+        display.println(F("DECA HYBRID ALU"));
+        display.println(F("74LS181 + R4 WiFi"));
+        display.println(F("AP: DECA-ALU-HYBRID"));
+        display.println(F("IP: 192.168.4.1"));
+        display.display();
+        delay(800);
+    }
+#endif
+
     // 3. Start Web Server
     server.on("/", []() {
         server.send_P(200, "text/html", index_html);
@@ -209,7 +245,7 @@ void setup() {
 }
 
 // =====================================================================================
-// BROADCAST TELEMETRY JSON (Every 100 ms)
+// BROADCAST TELEMETRY JSON (Every 100 ms) + RENDER OLED
 // =====================================================================================
 void broadcastTelemetry() {
     uint8_t a, b, op, m, y, c8;
@@ -224,6 +260,32 @@ void broadcastTelemetry() {
     } else if (op == 1 && m == 0) {
         c4_calc = (a_lo >= b_lo) ? 1 : 0;
     }
+
+#if USE_OLED
+    if (oled_found) {
+        display.clearDisplay();
+        display.setTextSize(1);
+        display.setTextColor(SSD1306_WHITE);
+        display.setCursor(0, 0);
+        const char* op_names[] = {"ADD", "SUB", "AND", "OR ", "XOR", "NOT", "SHL", "SHR"};
+        display.print(F("OP:")); display.print(op_names[op & 0x07]);
+        display.print(m ? F(" [LOG]") : F(" [ARI]"));
+        display.print(F(" C4:")); display.println(c4_calc);
+
+        display.print(F("A:0x")); if(a<16)display.print('0'); display.print(a, HEX);
+        display.print(F(" (")); display.print(a); display.println(F(")"));
+
+        display.print(F("B:0x")); if(b<16)display.print('0'); display.print(b, HEX);
+        display.print(F(" (")); display.print(b); display.println(F(")"));
+
+        display.print(F("Y:0x")); if(y<16)display.print('0'); display.print(y, HEX);
+        display.print(F(" (")); display.print(y); display.println(F(")"));
+
+        display.print(F("C8:")); display.print(c8);
+        display.print(F(" IP:192.168.4.1"));
+        display.display();
+    }
+#endif
 
     StaticJsonDocument<192> doc;
     doc["a"] = a;
