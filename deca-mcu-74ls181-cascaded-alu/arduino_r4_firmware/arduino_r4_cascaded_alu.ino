@@ -139,23 +139,23 @@ void setup() {
     // Configure Hardware Carry Cascade line (Pin 16 of 74LS181)
     pinMode(PIN_C4_CASCADE, INPUT);
 
-    // Configure Upper Nibble inputs
-    pinMode(PIN_A4, INPUT);
-    pinMode(PIN_A5, INPUT);
-    pinMode(PIN_A6, INPUT);
-    pinMode(PIN_A7, INPUT);
+    // Configure Upper Nibble inputs with internal pull-downs (No external resistors needed!)
+    pinMode(PIN_A4, INPUT_PULLDOWN);
+    pinMode(PIN_A5, INPUT_PULLDOWN);
+    pinMode(PIN_A6, INPUT_PULLDOWN);
+    pinMode(PIN_A7, INPUT_PULLDOWN);
 
-    pinMode(PIN_B4, INPUT);
-    pinMode(PIN_B5, INPUT);
-    pinMode(PIN_B6, INPUT);
-    pinMode(PIN_B7, INPUT);
+    pinMode(PIN_B4, INPUT_PULLDOWN);
+    pinMode(PIN_B5, INPUT_PULLDOWN);
+    pinMode(PIN_B6, INPUT_PULLDOWN);
+    pinMode(PIN_B7, INPUT_PULLDOWN);
 
-    // Configure Opcode, Mode, and C0 inputs
-    pinMode(PIN_S0, INPUT);
-    pinMode(PIN_S1, INPUT);
-    pinMode(PIN_S2, INPUT);
-    pinMode(PIN_MODE, INPUT);
-    pinMode(PIN_C0, INPUT);
+    // Configure Opcode, Mode, and C0 inputs with internal pull-downs
+    pinMode(PIN_S0, INPUT_PULLDOWN);
+    pinMode(PIN_S1, INPUT_PULLDOWN);
+    pinMode(PIN_S2, INPUT_PULLDOWN);
+    pinMode(PIN_MODE, INPUT_PULLDOWN);
+    pinMode(PIN_C0, INPUT_PULLDOWN);
 
     Serial.println(F("====================================================================="));
     Serial.println(F(" DECA Dual 4-Bit Cascaded 8-Bit Hybrid ALU Processor"));
